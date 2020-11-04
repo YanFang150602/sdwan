@@ -1,0 +1,62 @@
+{
+  "firstMenus": [
+    {
+      "title": "Zones",
+      "key": "Zones"
+    },
+    {
+      "title": "Class of Service",
+      "key": "Class of Service",
+      "children": [
+        {
+          "title": "Qos Profiles",
+          "key": "QosProfiles"
+        },
+        {
+          "title": "Qos Policies",
+          "key": "QosPolicies"
+        },
+        {
+          "title": "Associate Interface/Network",
+          "key": "AssociateInterfaceNetwork"
+        }
+      ]
+    }
+  ],
+  "secondMenus": [
+    {
+      "title": "IPSec",
+      "key": "IPSec",
+      "children": [
+        {
+          "title": "VPN Profiles",
+          "key": "VPNConfigFile"
+        }
+      ]
+    }
+  ],
+  "thirdMenus": [
+    {
+      "title": "Objects",
+      "key": "Objects",
+      "children": [
+        {
+          "title": "Address",
+          "key": "Address"
+        }
+      ]
+    }
+  ],
+  "fourthMenus": [
+    {
+      "title": "Objects",
+      "key": "Objects2",
+      "children": [
+        {
+          "title": "Schedules",
+          "key": "Schedules"
+        }
+      ]
+    }
+  ]
+}

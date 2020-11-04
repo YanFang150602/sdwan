@@ -1,0 +1,80 @@
+{
+      "name"：""
+      "tunnelnitiate" : "",
+      "vpnType" : ""
+      "hardwareAccelerator":"",
+      "routingInstance": "",
+      "tunnelRoutingInstance":"",
+      "tunnelInterface":"",
+      "branchSdwanProfile:"",
+      "precedence":0,//优先级
+      "remoteAuthType":"",//远端认证类型
+      "certAuthClients":{ //鉴权认证客户端 证书
+        remoteCertClient:["",……]; 
+      },
+      "pskAuthClients":{ //鉴权认证客户端 psk
+        remoteClient:["",……],
+      },
+      "revocationCheck": "",
+      "alarms":{ 
+        "ipsecStateChange":"",
+        "ikeStateChange":"",
+        "ikeAuthFailure":""
+      },
+      "ike":{
+        "version":"",
+        "mode":"",
+        "group":"",
+        "transform":"",
+        "authDimain":"",
+        "dpdTimeout":"",
+        "lifetime":"",
+        "hashAlgorithms":""[],
+        "encryptionAlgorithms":""[],
+        "groups":""[]
+      },
+      "ipsec": {
+        "forceNatT":"",
+        "fragmentation:"",
+        "transform":"",
+        "pfsGroup":"",
+        "mode":"",
+        "pfsGroups":"",
+        "hashAlgorithms":""[],
+        "encryptionAlgorithms":""[],
+        "antiReplay":"",
+        "keepaliveTimeout":"",
+        "Life":{
+          "duration":"",
+          "volume":""
+        }
+      },
+      "localAuthInfo":{
+        "authType":"",
+        "idType":"",
+        "key":"",
+        "idString":"",
+        "caChain":"",
+        "certDomain":"",
+        "certName":""
+      },
+      "peerAuthInfo":{
+        "authType":"",
+        "idType":"",
+        "idString":"",
+        "key":"",
+        "caChain":""
+      },
+      "local":{
+        "address":"",
+        "inet":"",
+        "interfaceName":"",
+        "hostname":""
+      },
+      "peer": {
+        "address":[],
+        "inet":"",
+        "hostname":"",
+        "peerFqdnList":[]
+      }
+    }
