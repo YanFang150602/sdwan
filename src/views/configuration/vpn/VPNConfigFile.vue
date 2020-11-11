@@ -614,6 +614,8 @@ export default {
         if (res.message === 'Success') {
           this.addOrEditWinVisible = false;
           this.queryTableDataList();
+        } else {
+          this.$message.error(res.message);
         }
       }
     },
@@ -673,6 +675,8 @@ export default {
         this.delWinVisible = false;
         this.pageIndex = 1;
         this.queryTableDataList();
+      } else {
+        this.$message.error(res.message);
       }
     },
     delCancel() {
