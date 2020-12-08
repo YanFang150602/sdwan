@@ -354,8 +354,10 @@
                   </a-col>
                   <a-col>
                     <a-form-model-item :label="$t('VPNBasePriority')">
-                      <a-input
+                      <a-input-number
                         size="small"
+                        :min="0"
+                        :max="10000"
                         v-model="cVPNProfile.precedence"
                         style="width:250px;"
                       />
@@ -554,19 +556,21 @@
           </a-tabs>
         </a-form-model>
       </div>
-      <div v-if="showTabObj.secondTabRef" class="tabpan-common-cls">
+      <div v-show="showTabObj.secondTabRef" class="tabpan-common-cls">
         <IKE
           ref="ikeRef"
           :vpnProfile="cVPNProfile"
           :conSDWAN="conSDWAN"
           @passChildContent="ikePassContent"
+          :key="ikeKey"
         ></IKE>
       </div>
-      <div v-if="showTabObj.thirdTabRef" class="tabpan-common-cls">
+      <div v-show="showTabObj.thirdTabRef" class="tabpan-common-cls">
         <IPsec
           ref="ipsecRef"
           :vpnProfile="cVPNProfile"
           @passChildContent="ipsecPassContent"
+          :key="ipsecKey"
         ></IPsec>
       </div>
     </div>
@@ -1019,7 +1023,9 @@ export default {
         }
       ],
       tunnelInfcIsRequired: true,
-      visible: true
+      visible: true,
+      ikeKey: 'firstIke',
+      ipsecKey: 'firstIpsec'
     };
   },
   computed: {
@@ -1117,9 +1123,6 @@ export default {
     this.queryTunnelInterfaceOptions();
   },
   updated() {
-    if (this.showBaseStrategy) {
-      this.cVPNProfile.precedence = Number(this.cVPNProfile.precedence) || 0;
-    }
     this.$emit('passChildContent', this.cVPNProfile);
   },
   methods: {
@@ -1298,6 +1301,14 @@ export default {
         if (ref === curRef) {
           this.showTabObj[ref] = true;
           this.$refs[ref][0].style.backgroundColor = '#aac0d5';
+          if (curRef === 'secondTabRef') {
+            this.ikeKey = 'secondIke';
+          } else if (curRef === 'thirdTabRef') {
+            this.ipsecKey = 'secondIpsec';
+          } else {
+            this.ikeKey = 'firstIke';
+            this.ipsecKey = 'firstIpsec';
+          }
         } else {
           this.showTabObj[ref] = false;
           this.$refs[ref][0].style.backgroundColor = '#8d9fb3';
@@ -1478,8 +1489,7 @@ export default {
           this.strategyList = this.cVPNProfile.rule
             ? this.cVPNProfile.rule
             : [];
-          this.cVPNProfile.precedence =
-            Number(this.cVPNProfile.precedence) || 0;
+          this.cVPNProfile.precedence = this.cVPNProfile.precedence || 0;
           break;
         default:
           break;

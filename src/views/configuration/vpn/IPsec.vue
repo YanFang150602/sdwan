@@ -163,9 +163,9 @@
                 v-if="visible"
                 ref="dhGroupRef"
                 :list-data="dhOptions"
-                :item-data="dhList"
+                :item-data="forwardModeList"
                 :title="PerfectGroup"
-                @subdata="dhCustomFunc"
+                @subdata="pfsCustomFunc"
               />
             </div>
           </a-col>
