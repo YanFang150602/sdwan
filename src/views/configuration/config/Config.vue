@@ -1,7 +1,7 @@
 <template>
   <a-layout id="device_config_page" :style="{ height: '100%' }">
     <DevSideNav></DevSideNav>
-    <a-layout-content>
+    <a-layout-content style="margin: 5px 0 30px 15px">
       <router-view></router-view>
     </a-layout-content>
   </a-layout>

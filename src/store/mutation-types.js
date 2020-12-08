@@ -13,10 +13,6 @@ export const TO_LOGIN = 'to_login';
 
 // 获取组织名称列表
 export const ADM_NAME_LIST = 'adm_name_list';
-// 组织名对应用户列表
-export const ADM_USERS_LIST = 'adm_user_list';
-// 组织名对应模板列表
-export const TEMPLATE_LIST = 'template_list';
 
 //设备弹出层切换
 export const DEVICES_SHOW = 'devices_show';
@@ -33,6 +29,7 @@ export const DEVICE_NAME_LIST = 'queryDeviceNameList';
 // 记录deviceName
 export const DEVICE_NAME_SAVE = 'saveDeviceName';
 export const ORGANIZATION_SAVE = 'saveOrganization';
+export const OBJECT_TYPE = 'saveObjectType';
 export const SPOKEGROUP_FORM = 'spoke_form';
 // 更新VPN相关下拉框数据
 export const VPN_PEERFQDN_OPTIONS = 'savePeerFQDNOptions';

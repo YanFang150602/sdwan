@@ -19,6 +19,7 @@
       </a-form-model-item>
       <a-form-model-item label="Tags">
         <a-select
+          dropdownClassName="dropdownClassName"
           mode="tags"
           size="small"
           placeholder="--Select--"
@@ -28,9 +29,8 @@
             v-for="(item, index) in tagsOptions"
             :value="item.value"
             :key="index"
+            >{{ item.label }}</a-select-option
           >
-            {{ item.label }}
-          </a-select-option>
         </a-select>
       </a-form-model-item>
       <a-form-model-item label="Recurrence">
@@ -44,9 +44,8 @@
             :value="item.value"
             v-for="(item, index) in optionList"
             :key="index"
+            >{{ item.label }}</a-select-option
           >
-            {{ item.label }}
-          </a-select-option>
         </a-select>
       </a-form-model-item>
     </a-form-model>
@@ -71,6 +70,7 @@
       style="width:100%;"
       isFrozen="true"
       @on-custom-comp="customTableFunc"
+      error-content="Temporarily no data"
     ></v-table>
     <v-table
       v-if="showDailyTable"
@@ -81,6 +81,7 @@
       style="width:100%;"
       isFrozen="true"
       @on-custom-comp="customTableFunc"
+      error-content="Temporarily no data"
     ></v-table>
     <v-table
       v-if="showWeeklyTable"
@@ -91,6 +92,7 @@
       style="width:100%;"
       isFrozen="true"
       @on-custom-comp="customTableFunc"
+      error-content="Temporarily no data"
     ></v-table>
   </div>
 </template>
@@ -352,7 +354,10 @@ export default {
       // coding
     },
     customTableFunc(params) {
-      console.log('customTableFunc this.cSchedule.tempRecurring = ', this.cSchedule.tempRecurring);
+      console.log(
+        'customTableFunc this.cSchedule.tempRecurring = ',
+        this.cSchedule.tempRecurring
+      );
       switch (params.type) {
         case 'add':
           if (this.showNonRecurringTable) {
@@ -377,7 +382,8 @@ export default {
           break;
         case 'starttime':
           if (this.showNonRecurringTable) {
-            this.nonRecurringTableData[params.index]['start-time'] = params.time;
+            this.nonRecurringTableData[params.index]['start-time'] =
+              params.time;
           } else if (this.showDailyTable) {
             this.dailyTableData[params.index]['start-time'] = params.time;
           } else {
@@ -401,7 +407,10 @@ export default {
       console.log('this.nonRecurringTableData = ', this.nonRecurringTableData);
     },
     editRecurring() {
-      console.log('this.cSchedule.tempRecurring = ', this.cSchedule.tempRecurring);
+      console.log(
+        'this.cSchedule.tempRecurring = ',
+        this.cSchedule.tempRecurring
+      );
       this.cSchedule.recurring = [];
       if (this.cSchedule.tempRecurring === 'daily') {
         this.cSchedule.recurring.push({});
@@ -704,5 +713,10 @@ Vue.component('custom-opration', {
 }
 /deep/.ant-form-vertical .ant-form-item {
   margin-bottom: 8px;
+}
+</style>
+<style lang="scss">
+.dropdownClassName {
+  display: none;
 }
 </style>

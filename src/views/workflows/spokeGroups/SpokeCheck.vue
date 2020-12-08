@@ -169,7 +169,6 @@ export default {
   props: ['formCheck'],
   created() {
     this.orange();
-    // this.hubDevice();
     this.formInline = this.formCheck;
     console.log(this.formCheck);
   },
@@ -189,27 +188,6 @@ export default {
     },
     async handleChange(value) {
       console.log(`selected ${value}`);
-      // if (this.formInline.region === '---Please select---') {
-      //   this.isShow = false;
-      // } else {
-      //   this.isShow = true;
-      // }
-
-      // const res = await DeviceHub(value);
-      // console.log(res);
-      // console.log(res.result.vrfs[0].assetList);
-      // this.hubs = res.result.SdwanAssetList.assetList;
-
-      // console.log(this.hubs);
-      // if (this.hubs !== null && this.hubs.length > 0) {
-      //   this.isHubs = true;
-      //   this.formInline.vrfs[0].hubs = this.hubs;
-      // } else {
-      //   this.isHubs = false;
-      // }
-      // const resRouting = await routingInstances(value);
-      // console.log(resRouting.result.vrfsGroups[0].name);
-      // this.formInline.vrfs[0].name = resRouting.result.vrfsGroups[0].name;
     },
     // Organization下拉框获取值
     async orange() {
@@ -217,11 +195,6 @@ export default {
       console.log(res.result.organizations);
       this.organ = res.result.organizations;
     }
-    // hub获取数据
-    // async hubDevice() {
-    //   const res = await DeviceHub(this.formInline.org);
-    //   console.log(res);
-    // }
   }
 };
 </script>
@@ -268,6 +241,7 @@ export default {
       margin-left: 12px;
       color: #ffffff;
       height: 20px;
+      font-size: 12px;
     }
   }
   .left-bottom {
@@ -276,6 +250,7 @@ export default {
       width: 210px;
       height: 30px;
       line-height: 30px;
+      font-size: 12px;
     }
     /deep/.ant-select-selection--single {
       width: 175px;

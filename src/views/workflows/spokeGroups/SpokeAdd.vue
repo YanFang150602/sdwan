@@ -12,7 +12,7 @@
         <a-row type="flex" justify="space-between" align="middle">
           <a-col>
             <a-form-model-item label="Name" prop="name">
-              <a-input v-model="formInline.name"/>
+              <a-input v-model="formInline.name" />
             </a-form-model-item>
           </a-col>
           <a-col>
@@ -22,12 +22,15 @@
                 @change="handleChange"
                 default-value="---Please select---"
               >
-                <a-select-option value="---Please select---">---Please Select---</a-select-option>
+                <a-select-option value="---Please select---"
+                  >---Please Select---</a-select-option
+                >
                 <a-select-option
                   :value="item.name"
                   v-for="(item, index) in organ"
                   :key="index"
-                >{{ item.name }}</a-select-option>
+                  >{{ item.name }}</a-select-option
+                >
               </a-select>
             </a-form-model-item>
           </a-col>
@@ -47,7 +50,7 @@
                 <a-col :span="8">
                   <!-- <span>cmcc_shanghai-LAN-VR</span> -->
                   <a-form-model-item>
-                    <a-input v-model="formInline.vrfs[0].name" disabled/>
+                    <a-input v-model="formInline.vrfs[0].name" disabled />
                   </a-form-model-item>
                 </a-col>
                 <a-col :span="8">
@@ -59,9 +62,15 @@
                       placeholder="请选择"
                       v-model="formInline.vrfs[0].groupType"
                     >
-                      <a-select-option value="---Please select---">---Please Select---</a-select-option>
-                      <a-select-option value="SpokeToSpokeViaHub">SpokeToSpokeViaHub</a-select-option>
-                      <a-select-option value="HubAndSpoke">HubAndSpoke</a-select-option>
+                      <a-select-option value="---Please select---"
+                        >---Please Select---</a-select-option
+                      >
+                      <a-select-option value="SpokeToSpokeViaHub"
+                        >SpokeToSpokeViaHub</a-select-option
+                      >
+                      <a-select-option value="HubAndSpoke"
+                        >HubAndSpoke</a-select-option
+                      >
                     </a-select>
                   </a-form-model-item>
                 </a-col>
@@ -80,7 +89,10 @@
               <a-row v-for="(item, index) in hubs" :key="index">
                 <a-col :span="12">
                   <a-form-model-item>
-                    <a-input v-model="formInline.vrfs[0].hubs[index].name" disabled/>
+                    <a-input
+                      v-model="formInline.vrfs[0].hubs[index].name"
+                      disabled
+                    />
                   </a-form-model-item>
                 </a-col>
                 <a-col :span="12">
@@ -213,6 +225,13 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+/deep/.ant-form label {
+  font-size: 12px;
+}
+/deep/.ant-modal-close-x {
+  line-height: 36px;
+  width: 40px;
+}
 /deep/.ant-form-explain {
   display: none !important;
 }
@@ -259,6 +278,7 @@ export default {
       margin-left: 12px;
       color: #ffffff;
       height: 20px;
+      font-size: 12px;
     }
   }
   .left-bottom {
@@ -285,6 +305,7 @@ export default {
       line-height: 30px;
       background-color: #36536b;
       color: #ffffff;
+      font-size: 12px;
     }
   }
   .right-bottom {

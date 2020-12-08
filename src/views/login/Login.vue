@@ -13,16 +13,30 @@
           hideRequiredMark
           layout="vertical"
         >
-          <a-form-model-item prop="username" ref="username">
-            <a-input v-model="loginData.username" placeholder="User Name" />
+          <a-form-model-item prop="userName" ref="username">
+            <a-input v-model="loginData.userName" placeholder="User Name" />
           </a-form-model-item>
-          <a-form-model-item prop="password" ref="password">
+          <a-form-model-item prop="evidence" ref="password">
             <a-input-password
-              v-model="loginData.password"
+              v-model="loginData.evidence"
               type="password"
               placeholder="Password"
             />
           </a-form-model-item>
+          <a-row type="flex" justify="space-between" align="middle">
+            <a-col :span="14">
+              <a-form-model-item prop="text" ref="text">
+                <a-input v-model="loginData.text" placeholder="Code" />
+              </a-form-model-item>
+            </a-col>
+            <a-col @click="verif" :span="8">
+              <img
+                width="100%"
+                :src="'data:image/png;base64,' + imgStr"
+                alt=""
+              />
+            </a-col>
+          </a-row>
         </a-form-model>
         <div class="tip-message">{{ tipMessage }}</div>
         <div class="login-btn">
@@ -38,7 +52,7 @@
   </a-spin>
 </template>
 <script>
-import { login, getUserInfo } from 'apis/common';
+import { login, getUserInfo, verification } from 'apis/common';
 import { mapMutations } from 'vuex';
 export default {
   data() {
@@ -56,24 +70,45 @@ export default {
         callback();
       }
     };
+    const validatorCode = (rule, value, callback) => {
+      if (!value) {
+        callback('Enter Code');
+      } else {
+        callback();
+      }
+    };
     return {
       spinning: false,
       // 表单错误信息
       tipMessage: '',
+      imgStr: '',
       loginData: {
-        // 用户名
-        username: 'core',
-        // 用户密码
-        password: '@e6vC3sj6d3J9@3##'
+        loginType: 'ACCOUNT',
+        evidenceType: 'PASSWORD',
+        userName: 'core',
+        evidence: '@e6vC3sj6d3J9@3##',
+        key: '',
+        text: '',
+        systemId: '407616384',
+        binded: false
       },
       loginRule: {
-        username: [{ required: true, validator: validatorUserName }],
-        password: [{ required: true, validator: validatorPassword }]
+        userName: [{ required: true, validator: validatorUserName }],
+        evidence: [{ required: true, validator: validatorPassword }],
+        text: [{ required: true, validator: validatorCode }]
       }
     };
   },
+  created() {
+    this.verif();
+  },
   methods: {
     ...mapMutations('common', ['set_token', 'set_user_info']),
+    async verif() {
+      const { result } = await verification();
+      this.loginData.key = result.key;
+      this.imgStr = result.img;
+    },
     userlogin() {
       this.$refs.loginRef.validate(async (valid, messages) => {
         switch (true) {
@@ -83,31 +118,27 @@ export default {
           case Object.prototype.hasOwnProperty.call(messages, 'password'):
             this.tipMessage = messages.password[0].message;
             break;
+          case Object.prototype.hasOwnProperty.call(messages, 'text'):
+            this.tipMessage = messages.text[0].message;
+            break;
         }
         if (valid) {
           this.spinning = true;
-          const userData = {
-            loginType: 'ACCOUNT',
-            evidenceType: 'PASSWORD',
-            userName: this.loginData.username,
-            evidence: this.loginData.password,
-            encrypted: false
-          };
-          const loginRes = await login(userData);
-          if (loginRes.status !== '000_0000_0000')
-            return (this.tipMessage = 'Invalid user name or password.');
+          const loginRes = await login(this.loginData);
+          this.spinning = false;
+          if (loginRes.status !== '000_0000_0000') {
+            this.verif();
+            return (this.tipMessage = 'Invalid user name or password or code.');
+          }
           const token = loginRes.result.accessToken;
           this.set_token(token);
           const { accountId } = loginRes.result;
           if (accountId) {
             const userInfoRes = await getUserInfo(accountId);
-            this.spinning = false;
             if (userInfoRes.status !== '0000')
               return this.$message.error(userInfoRes.message);
             this.set_user_info({ userInfoRes, accountId });
-            userInfoRes.result.level === 3
-              ? this.$router.replace('/configuration')
-              : this.$router.replace('/administration');
+            this.$router.replace('/');
           }
         }
       });
@@ -178,7 +209,6 @@ export default {
         margin: 20px 0 0 100px;
         width: 260px;
         .ant-form-item {
-          width: 260px;
           margin: 0;
           height: 46px;
           padding: 10px 0;

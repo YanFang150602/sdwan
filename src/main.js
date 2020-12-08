@@ -14,10 +14,47 @@ import 'vue-easytable/libs/themes-base/index.css';
 // 导入 table 和 分页组件
 import { VTable, VPagination } from 'vue-easytable';
 
+import globalModal from 'components/GlobalModal';
+Vue.component('GlobalModal', globalModal);
 // 注册到全局
 Vue.component(VTable.name, VTable);
 Vue.component(VPagination.name, VPagination);
-
+Vue.component('vTableName', {
+  props: {
+    rowData: {
+      type: Object
+    },
+    field: {
+      type: String
+    },
+    index: {
+      type: Number
+    }
+  },
+  template: `<span>
+        <a href="javascript:;" @click.stop.prevent="update(rowData,index)">{{rowData[field]}}</a>
+        </span>`,
+  methods: {
+    update() {
+      let params = { type: 'edit', index: this.index, rowData: this.rowData };
+      this.$emit('on-custom-comp', params);
+    }
+  }
+});
+Vue.component('vTableCheck', {
+  props: {
+    rowData: {
+      type: Object
+    },
+    field: {
+      type: String
+    }
+  },
+  template: `
+    <span><input type="checkbox" :checked=rowData[field] disabled /></span>
+    
+    `
+});
 import { axiosBaseUrl } from '@/config/index';
 import CustomComponents from 'components/common/index';
 

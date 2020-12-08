@@ -1,8 +1,21 @@
 <template>
   <div>
-    <a-modal v-model="visible" title="Edit Qos Profile" on-ok="handleOk" width="526px">
+    <a-modal
+      v-drag
+      v-model="visible"
+      title="Edit Qos Profile"
+      on-ok="handleOk"
+      width="526px"
+      :maskClosable="false"
+    >
       <template slot="footer">
-        <a-button key="submit" type="primary" @click="handleOk">Ok</a-button>
+        <a-button
+          key="submit"
+          type="primary"
+          @click="handleOk"
+          :loading="loading"
+          >Ok</a-button
+        >
         <a-button key="back" @click="handleCancel">Cancel</a-button>
       </template>
       <a-form-model :model="qosProfilesCheck" ref="ruleForm" :rules="rules">
@@ -11,7 +24,7 @@
             <a-col :span="24">
               <a-form-model-item>
                 <a-form-model-item label="Name" prop="name">
-                  <a-input v-model="qosProfilesCheck.name" disabled/>
+                  <a-input v-model="qosProfilesCheck.name" disabled />
                 </a-form-model-item>
               </a-form-model-item>
             </a-col>
@@ -20,7 +33,7 @@
             <a-col :span="24">
               <a-form-model-item>
                 <a-form-model-item label="Description">
-                  <a-input v-model="qosProfilesCheck.description"/>
+                  <a-input v-model="qosProfilesCheck.description" />
                 </a-form-model-item>
               </a-form-model-item>
             </a-col>
@@ -31,44 +44,85 @@
           <a-row>
             <a-col :span="8">
               <a-form-model-item label="Peak Rate(pps)">
-                <a-input v-model="qosProfilesCheck.peakRatePps"/>
+                <a-input
+                  :disabled="!!qosProfilesCheck.peakRateKbps"
+                  v-model="qosProfilesCheck.peakRatePps"
+                />
               </a-form-model-item>
             </a-col>
             <a-col :span="8">
               <a-form-model-item label="Peak Rate(Kbps)">
-                <a-input v-model="qosProfilesCheck.peakRateKbps"/>
+                <a-input
+                  :disabled="!!qosProfilesCheck.peakRatePps"
+                  v-model="qosProfilesCheck.peakRateKbps"
+                />
               </a-form-model-item>
             </a-col>
             <a-col :span="8">
               <a-form-model-item label="Peak Burst Size(Bytes)">
-                <a-input v-model="qosProfilesCheck.peakBurstSize"/>
+                <a-input v-model="qosProfilesCheck.peakBurstSize" />
               </a-form-model-item>
             </a-col>
           </a-row>
         </div>
         <div class="footer">
-          <div class="ForWardingClass">ForWarding Class</div>
+          <div class="ForWardingClass">Forwarding Class</div>
           <a-row>
             <a-col :span="12">
-              <a-form-model-item label="Forwarding Class" prop="forwardingClass">
+              <a-form-model-item
+                label="Forwarding Class"
+                prop="forwardingClass"
+              >
                 <a-select v-model="qosProfilesCheck.forwardingClass">
                   <a-select-option value="shanghai">--Select</a-select-option>
-                  <a-select-option value="fc_nc">Forwarding Class 0(Network-control)</a-select-option>
-                  <a-select-option value="fc1">Forwarding Class 1</a-select-option>
-                  <a-select-option value="fc2">Forwarding Class 2</a-select-option>
-                  <a-select-option value="fc3">Forwarding Class 3</a-select-option>
-                  <a-select-option value="fc_ef">Forwarding Class 4(Expedited-Forwarfing)</a-select-option>
-                  <a-select-option value="fc5">Forwarding Class 5</a-select-option>
-                  <a-select-option value="fc6">Forwarding Class 6</a-select-option>
-                  <a-select-option value="fc7">Forwarding Class 7</a-select-option>
-                  <a-select-option value="fc_af">Forwarding Class 8(Assured-Forwarding)</a-select-option>
-                  <a-select-option value="fc9">Forwarding Class 9</a-select-option>
-                  <a-select-option value="fc10">Forwarding Class 10</a-select-option>
-                  <a-select-option value="fc11">Forwarding Class 11</a-select-option>
-                  <a-select-option value="fc_be">Forwarding Class 12(Best-Effort)</a-select-option>
-                  <a-select-option value="fc13">Forwarding Class 13</a-select-option>
-                  <a-select-option value="fc14">Forwarding Class 14</a-select-option>
-                  <a-select-option value="fc15">Forwarding Class 15</a-select-option>
+                  <a-select-option value="fc_nc"
+                    >Forwarding Class 0(Network-control)</a-select-option
+                  >
+                  <a-select-option value="fc1"
+                    >Forwarding Class 1</a-select-option
+                  >
+                  <a-select-option value="fc2"
+                    >Forwarding Class 2</a-select-option
+                  >
+                  <a-select-option value="fc3"
+                    >Forwarding Class 3</a-select-option
+                  >
+                  <a-select-option value="fc_ef"
+                    >Forwarding Class 4(Expedited-Forwarfing)</a-select-option
+                  >
+                  <a-select-option value="fc5"
+                    >Forwarding Class 5</a-select-option
+                  >
+                  <a-select-option value="fc6"
+                    >Forwarding Class 6</a-select-option
+                  >
+                  <a-select-option value="fc7"
+                    >Forwarding Class 7</a-select-option
+                  >
+                  <a-select-option value="fc_af"
+                    >Forwarding Class 8(Assured-Forwarding)</a-select-option
+                  >
+                  <a-select-option value="fc9"
+                    >Forwarding Class 9</a-select-option
+                  >
+                  <a-select-option value="fc10"
+                    >Forwarding Class 10</a-select-option
+                  >
+                  <a-select-option value="fc11"
+                    >Forwarding Class 11</a-select-option
+                  >
+                  <a-select-option value="fc_be"
+                    >Forwarding Class 12(Best-Effort)</a-select-option
+                  >
+                  <a-select-option value="fc13"
+                    >Forwarding Class 13</a-select-option
+                  >
+                  <a-select-option value="fc14"
+                    >Forwarding Class 14</a-select-option
+                  >
+                  <a-select-option value="fc15"
+                    >Forwarding Class 15</a-select-option
+                  >
                 </a-select>
               </a-form-model-item>
             </a-col>
@@ -104,7 +158,7 @@ export default {
   props: ['qosProfilesCheck'],
   data() {
     return {
-      // loading: false,
+      loading: false,
       visible: false,
       form: {
         name: '',
@@ -157,6 +211,44 @@ export default {
   computed: {
     ...mapState(['organization', 'deviceName'])
   },
+  directives: {
+    // 拖拽自定义指令
+    drag(el) {
+      console.log('移动', el);
+      // 将ant-modal的position改为静态，使拖拽框按照电脑屏幕定位
+      // el.children[1].children[0].style.position = 'static';
+      // 获取到ant-modal-content元素
+      let targetEl = el.children[1].children[0].children[1];
+      // targetEl.style.top = '100px';
+      targetEl.onmousedown = function(e) {
+        // 点下鼠标的位置
+        let startX = e.pageX;
+        let startY = e.pageY;
+        // 点下鼠标的元素的位置
+        let offsetX = targetEl.offsetLeft;
+        let offsetY = targetEl.offsetTop;
+        document.onmousemove = function(e) {
+          // 计算出元素的left 和 top 值
+          let dx = offsetX + (e.pageX - startX);
+          let dy = offsetY + (e.pageY - startY);
+          // // 进行拖拽范围的限制(不能超出屏幕)
+          // dx = Math.max(0, dx);
+          // dy = Math.max(0, dy);
+          // let scrollWidth = window.innerWidth - targetEl.offsetWidth;
+          // let scrollHeight = window.innerHeight - targetEl.offsetHeight;
+          // dx = Math.min(scrollWidth, dx);
+          // dy = Math.min(scrollHeight, dy);
+          // 设置元素的left和top值，实现拖拽
+          targetEl.style.left = dx + 'px';
+          targetEl.style.top = dy + 'px';
+        };
+        // 鼠标弹起，取消鼠标移动事件
+        targetEl.onmouseup = function() {
+          document.onmousemove = null;
+        };
+      };
+    }
+  },
   watch: {
     visible(newVal) {
       if (!newVal) this.form.type = [];
@@ -178,11 +270,10 @@ export default {
       this.visible = true;
     },
     async handleOk() {
-      // this.loading = true;
-      // setTimeout(() => {
-      //   this.visible = false;
-      //   this.loading = false;
-      // }, 3000);
+      this.loading = true;
+      setTimeout(() => {
+        this.loading = false;
+      }, 3000);
       this.formEdit.data = this.qosProfilesCheck;
       this.formEdit.data.dot1pRwEnable = this.form.type.includes(
         'dot1pRwEnable'
@@ -202,6 +293,8 @@ export default {
       if (res.message === 'success') {
         this.$message.success('编辑成功');
         this.visible = false;
+      } else {
+        this.$message.error(res.message);
       }
     },
     handleCancel() {
@@ -225,6 +318,19 @@ export default {
 }
 </style>
 <style lang="scss" scoped>
+// label样式
+/deep/.ant-modal-title {
+  font-size: 12px;
+  margin-left: -12px;
+}
+/deep/.ant-form label {
+  font-size: 12px;
+}
+/deep/.ant-modal-close-x {
+  line-height: 36px;
+  width: 40px;
+}
+// -----------------------
 /deep/.ant-form-item-label > label::after {
   display: none;
 }
@@ -306,8 +412,8 @@ export default {
   position: relative;
   padding-top: 5px;
   .subscrition {
-    width: 140px;
-    height: 21px;
+    width: 96px;
+    height: 22px;
     background-color: #507691;
     border-radius: 5px;
     position: absolute;
@@ -316,6 +422,7 @@ export default {
     line-height: 21px;
     text-align: center;
     color: #fff;
+    font-size: 12px;
   }
 }
 .footer {
@@ -327,9 +434,12 @@ export default {
   border: solid 3px #456880;
   position: relative;
   padding-top: 5px;
+  /deep/.ant-checkbox-wrapper {
+    color: #fff;
+  }
   .ForWardingClass {
-    width: 140px;
-    height: 21px;
+    width: 105px;
+    height: 22px;
     background-color: #507691;
     border-radius: 5px;
     position: absolute;
@@ -338,6 +448,7 @@ export default {
     line-height: 21px;
     text-align: center;
     color: #fff;
+    font-size: 12px;
   }
   /deep/.ant-form-item-label > label {
     color: #f9f9f9;
@@ -372,6 +483,7 @@ export default {
   height: 30px;
   background-color: #a7d054;
   border: none;
+  font-size: 12px;
 }
 /deep/.ant-btn:nth-child(2) {
   width: 70px;
@@ -379,5 +491,6 @@ export default {
   background-color: #3f4a5b;
   border: none;
   color: #ffffff;
+  font-size: 12px;
 }
 </style>

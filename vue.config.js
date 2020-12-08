@@ -36,28 +36,38 @@ module.exports = {
     open: true,
     port,
     proxy: {
-      /* '/controller': {
-        target: 'http://oscargw.dev.cmiov.virtueit.net:81',
-        changeOrigin: true,
-        ws: true,
-        pathRewrite: {
-          '^/controller': '/v0-snapshot/gateway/api/openapi/sdwan/controller'
-        }
-      }, */
+      // '/controller': {
+      //   target:
+      //     'http://oscargw.ft.cmiov.virtueit.net:81/v0-snapshot/gateway/api',
+      //   changeOrigin: true,
+      //   ws: true,
+      //   pathRewrite: {
+      //     '^/controller': '/openapi/sdwan/controller'
+      //   }
+      // },
+      // '/login-verification-standard': {
+      //   target:
+      //     'http://oscargw.dev.cmiov.virtueit.net:81/v0-snapshot/gateway/api',
+      //   changeOrigin: true,
+      //   ws: true,
+      //   pathRewrite: {
+      //     '^/login-verification-standard': '/login-verification-standard'
+      //   }
+      // },
+      // '/verification-code': {
+      //   target: 'http://oscargw.dev.cmiov.virtueit.net:81/v0-snapshot/gateway',
+      //   changeOrigin: true,
+      //   ws: true,
+      //   pathRewrite: {
+      //     '^/verification-code': '/verification-code'
+      //   }
+      // }
       '/controller': {
-        target: 'http://sdwanmano.dev.internal.virtueit.net:81',
+        target: 'http://sdwanmano.ft.internal.virtueit.net:81',
         changeOrigin: true,
         ws: true,
         pathRewrite: {
           '^/controller': '/v0-snapshot/sdwanservice/controller'
-        }
-      },
-      '/v0-snapshot/gateway/api/openapi/sdwan': {
-        target: 'http://sdwanmano.dev.internal.virtueit.net:81',
-        changeOrigin: true,
-        ws: true,
-        pathRewrite: {
-          '^/v0-snapshot/gateway/api/openapi/sdwan': '/v0-snapshot/sdwanservice'
         }
       }
     }

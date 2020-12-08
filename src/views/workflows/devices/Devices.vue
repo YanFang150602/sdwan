@@ -1,72 +1,20 @@
 <template>
   <div class="devices">
     <!-- 搜索框 -->
-    <a-row
-      class="table-header"
-      type="flex"
-      justify="space-between"
-      align="middle"
-    >
-      <!--搜索栏-->
-      <a-col :style="{ width: 'calc(100%-475px)' }">
-        <a-input
-          class="search-bar"
-          ref="searchInput"
-          v-model="keyworks"
-          placeholder="Search"
-          @keyup.enter="search"
-        >
-          <a-icon slot="prefix" type="search" />
-          <a-icon
-            @click="keyworks = ''"
-            v-show="keyworks != ''"
-            slot="suffix"
-            type="close"
-          />
-        </a-input>
-      </a-col>
-      <!--表格功能按钮-->
-      <a-col>
-        <a-row
-          :style="{ width: '425px' }"
-          type="flex"
-          justify="end"
-          align="middle"
-        >
-          <a-col
-            :style="{
-              fontSize: '18px',
-              cursor: 'pointer',
-              marginRight: '20px'
-            }"
-          >
-            <a-icon @click="showModal" type="plus" />
-          </a-col>
-          <a-col
-            :style="{
-              fontSize: '18px',
-              cursor: 'pointer',
-              marginRight: '20px'
-            }"
-          >
-            <a-icon @click="showModalDelete" type="minus" />
-          </a-col>
-          <a-col>
-            <v-pagination
-              :total="device.totalCount"
-              size="small"
-              :page-size="pageSize"
-              :layout="['prev', 'jumper', 'total', 'next', 'sizer']"
-              @page-change="pageChange"
-              @page-size-change="pageSizeChange"
-            ></v-pagination>
-          </a-col>
-        </a-row>
-      </a-col>
-    </a-row>
+    <Pagination
+      :total="totalCount"
+      :page-size="pageSize"
+      @page-change="pageChange"
+      @page-size-change="pageSizeChange"
+      @create-item="showModal"
+      @delete-item="showModalDelete"
+      @search="search"
+      @cancelSearch="cancelSearch"
+    />
     <!-- 列表 -->
     <!-- 表单主体内容 -->
     <v-table
+      class="mainTable"
       is-horizontal-resize
       column-width-drag
       :columns="columns"
@@ -74,14 +22,16 @@
       :select-all="selectALL"
       :select-change="selectChange"
       :select-group-change="selectGroupChange"
-      :height="540"
+      :height="500"
       style="width:100%;"
       isFrozen="true"
       @on-custom-comp="customCompFunc"
+      error-content="Temporarily no data"
     ></v-table>
     <!-- 新增弹框 -->
     <div class="add">
       <a-modal
+        v-drag
         v-model="visible"
         title="Add Device"
         on-ok="handleOk"
@@ -89,6 +39,7 @@
         height="365px"
         :afterClose="clearData"
         :destroyOnClose="true"
+        :maskClosable="false"
       >
         <DevicesAdd
           ref="devicesAddRef"
@@ -98,11 +49,17 @@
         ></DevicesAdd>
         <template slot="footer">
           <span style="float:left;">
-            <a-button key="back" @click="handleBack" v-if="!showAdd.isShow"
+            <a-button
+              key="back"
+              class="back"
+              @click="handleBack"
+              v-if="!showAdd.isShow"
               >&lt; Back</a-button
             >
           </span>
-          <a-button key="cancel" @click="handleCancel">Cancel</a-button>
+          <a-button class="cancel" key="cancel" @click="handleCancel"
+            >Cancel</a-button
+          >
           <a-button
             key="submit"
             type="primary"
@@ -120,6 +77,7 @@
           >
           <a-button
             key="Continue"
+            class="continue"
             @click="handleContinue"
             v-if="!showAdd.isExhibition"
             >Continue &gt;</a-button
@@ -134,9 +92,12 @@
         title="Confirm Decommission"
         @ok="handleOkDelete"
         width="430px"
+        :maskClosable="false"
       >
         <template slot="footer">
-          <a-button key="back" @click="handleCancelDelete">Yes</a-button>
+          <a-button class="back" key="back" @click="handleCancelDelete"
+            >Yes</a-button
+          >
           <a-button
             key="submit"
             type="primary"
@@ -176,10 +137,12 @@
     <!-- 查看弹框 -->
     <div>
       <a-modal
+        v-drag
         v-model="visibleCheck"
         title="Edit Device"
         width="865px"
         :destroyOnClose="true"
+        :maskClosable="false"
       >
         <DevicesCheck
           ref="devicesCheckRef"
@@ -191,12 +154,15 @@
           <span style="float:left;">
             <a-button
               key="back"
+              class="back"
               @click="handleBackCheck"
               v-if="!showEdit.isShow"
               >&lt; Back</a-button
             >
           </span>
-          <a-button key="back" @click="handleCancelCheck">Cancel</a-button>
+          <a-button class="cancel" key="back" @click="handleCancelCheck"
+            >Cancel</a-button
+          >
           <a-button
             key="submit"
             type="primary"
@@ -205,14 +171,15 @@
             >Save</a-button
           >
           <a-button
-            key="Deploy"
             type="primary"
+            key="Deploy"
             @click="handleOkDeployCheck"
             v-if="showEdit.isExhibition"
             >Deploy</a-button
           >
           <a-button
             key="Continue"
+            class="continue"
             @click="handleContinueCheck"
             v-if="!showEdit.isExhibition"
             >Continue &gt;</a-button
@@ -227,13 +194,14 @@
 import DevicesAdd from './DevicesAdd';
 // import DevicesDelete from './DevicesDelete';
 import DevicesCheck from './DevicesCheck';
+import Pagination from 'components/Pagination';
 import { mapState } from 'vuex';
 import {
   devicesDelete,
   addDevices,
   DeviceCheck,
   DeviceEdit,
-  DeviceSearch,
+  // DeviceSearch,
   DeviceDeploy
 } from 'apis/workFlows';
 import {
@@ -248,7 +216,8 @@ export default {
   components: {
     DevicesAdd,
     // DevicesDelete,
-    DevicesCheck
+    DevicesCheck,
+    Pagination
   },
   data() {
     return {
@@ -276,7 +245,7 @@ export default {
         {
           field: 'deviceName',
           title: 'Name',
-          width: 246,
+          width: 210,
           titleAlign: 'left',
           columnAlign: 'left',
           isResize: true,
@@ -285,7 +254,7 @@ export default {
         {
           field: 'siteId',
           title: 'Global Device ID',
-          width: 246,
+          width: 200,
           titleAlign: 'left',
           columnAlign: 'left',
           isResize: true
@@ -293,7 +262,7 @@ export default {
         {
           field: 'workflowStatus',
           title: 'Status',
-          width: 246,
+          width: 210,
           titleAlign: 'left',
           columnAlign: 'left',
           isResize: true
@@ -301,7 +270,7 @@ export default {
         {
           field: 'lastModifiedTime',
           title: 'Last Modified Time',
-          width: 246,
+          width: 230,
           titleAlign: 'left',
           columnAlign: 'left',
           isResize: true
@@ -309,7 +278,7 @@ export default {
         {
           field: 'lastModifiedBy',
           title: 'Last Modified By',
-          width: 245,
+          width: 230,
           titleAlign: 'left',
           columnAlign: 'left',
           isResize: true
@@ -463,7 +432,6 @@ export default {
     async handleCancelDelete() {
       const res = await devicesDelete(this.dele);
       console.log(res);
-      // console.log(this.organization);
       if (res.message === 'Success') {
         this.$message.success('Successfully deleted');
         this.visibleDelete = false;
@@ -553,22 +521,37 @@ export default {
     DevCheck(check) {
       this.dev = { ...check };
     },
-    // 设备查询
-    async search() {
-      const res = await DeviceSearch(this.keyworks);
-      console.log(res);
+    // 设备查询old
+    // async search() {
+    //   const res = await DeviceSearch(this.keyworks);
+    //   console.log(res);
 
-      this.$store.dispatch('Tabledevice', {
-        deep: true,
-        orgname: this.organization,
-        offset: 0,
-        limit: this.pageSize
-      });
+    //   this.$store.dispatch('Tabledevice', {
+    //     deep: true,
+    //     orgname: this.organization,
+    //     offset: 0,
+    //     limit: this.pageSize
+    //   });
+    // },
+
+    // 搜索框设备查询
+    search(data) {
+      // 转换全小写,实现模糊匹配
+      const keyword = data.trim().toLowerCase();
+      const list = this.device['versanms.sdwan-device-list'].filter(item =>
+        item.deviceName.toLowerCase().includes(keyword)
+      );
+      this.device['versanms.sdwan-device-list'] = list;
+    },
+    // 取消搜索，显示当前数据
+    cancelSearch() {
+      if (this.keyworks.trim() === '') {
+        this.queryDevice();
+      }
     },
     // 新增中的部署按钮
     async handleOkDeploy() {
       console.log('deploy', this.$refs.devicesAddRef.dev);
-
       this.depl.id = this.devAdd.deviceName;
       await addDevices(this.devAdd);
       const res = await DeviceDeploy(this.depl);
@@ -725,6 +708,44 @@ export default {
       },
       deep: true //true 深度监听
     }
+  },
+  directives: {
+    // 拖拽自定义指令
+    drag(el) {
+      console.log('移动', el);
+      // 将ant-modal的position改为静态，使拖拽框按照电脑屏幕定位
+      // el.children[1].children[0].style.position = 'static';
+      // 获取到ant-modal-content元素
+      let targetEl = el.children[1].children[0].children[1];
+      // targetEl.style.top = '100px';
+      targetEl.onmousedown = function(e) {
+        // 点下鼠标的位置
+        let startX = e.pageX;
+        let startY = e.pageY;
+        // 点下鼠标的元素的位置
+        let offsetX = targetEl.offsetLeft;
+        let offsetY = targetEl.offsetTop;
+        document.onmousemove = function(e) {
+          // 计算出元素的left 和 top 值
+          let dx = offsetX + (e.pageX - startX);
+          let dy = offsetY + (e.pageY - startY);
+          // // 进行拖拽范围的限制(不能超出屏幕)
+          // dx = Math.max(0, dx);
+          // dy = Math.max(0, dy);
+          // let scrollWidth = window.innerWidth - targetEl.offsetWidth;
+          // let scrollHeight = window.innerHeight - targetEl.offsetHeight;
+          // dx = Math.min(scrollWidth, dx);
+          // dy = Math.min(scrollHeight, dy);
+          // 设置元素的left和top值，实现拖拽
+          targetEl.style.left = dx + 'px';
+          targetEl.style.top = dy + 'px';
+        };
+        // 鼠标弹起，取消鼠标移动事件
+        targetEl.onmouseup = function() {
+          document.onmousemove = null;
+        };
+      };
+    }
   }
 };
 import Vue from 'vue';
@@ -756,37 +777,84 @@ Vue.component('table-operationDevice', {
 <style lang="scss" scoped>
 .devices {
   padding: 5px 20px 30px 15px;
-  /deep/.search-bar {
-    .ant-input {
-      width: 700px;
-      color: #6a6f75;
-      border: 1px solid #b0c7d5;
-      height: 20px;
-      border-radius: 4px;
-      font-size: 12px;
-      line-height: 18px;
-      &:focus {
-        box-shadow: none;
-        border-color: #b0c7d5;
-      }
+  // 搜索栏与表格主体的间隔
+  .table-header {
+    margin-bottom: 10px;
+    height: 22px;
+    // 统一搜索框这行的样式统一，不需要以下样式
+    // /deep/.search-bar {
+    //   .ant-input {
+    //     width: 700px;
+    //     color: #6a6f75;
+    //     border: 1px solid #b0c7d5;
+    //     height: 20px;
+    //     border-radius: 4px;
+    //     font-size: 12px;
+    //     line-height: 18px;
+    //     &:focus {
+    //       box-shadow: none;
+    //       border-color: #b0c7d5;
+    //     }
+    //   }
+    // }
+    // 统一分页器字体颜色
+    .pagination {
+      color: #0f2c3e;
     }
   }
 }
-
-/deep/.ant-modal-content {
-  max-height: 325px;
-  .ant-modal-header {
-    background-color: #e9f4fc;
-    .ant-modal-title {
-      line-height: 8px;
+// 解决拖拽超出宽度丢失的bug
+/deep/ .ant-modal-wrap {
+  overflow: visible;
+}
+/deep/ .ant-modal {
+  // 修改modal字体大小为12px
+  font-size: 12px;
+  .ant-modal-content {
+    max-height: 325px;
+    .ant-modal-close-x {
+      width: 30px;
+      height: 34px;
+      line-height: 34px;
+      color: #0d496a;
+    }
+    .ant-modal-header {
+      padding: 6px 10px;
+      background-color: #e9f4fc;
+      .ant-modal-title {
+        font-size: 12px;
+        line-height: 22px;
+      }
+    }
+    .ant-modal-body {
+      font-size: 12px;
+      padding: 10px;
+      background-color: #36536b;
+      // 三个tab下边框和下边距
+      .switchover {
+        border-bottom: 1px solid #456880;
+        margin-bottom: 10px;
+      }
+    }
+    .ant-modal-footer {
+      background-color: #e9f4fc;
     }
   }
-  .ant-modal-body {
-    padding: 3px;
-    background-color: #36536b;
+  // 修改按钮样式
+  .ant-btn {
+    color: #fff;
+    border: none;
+    &:hover {
+      border: none;
+      opacity: 0.8;
+    }
   }
-  .ant-modal-footer {
-    background-color: #e9f4fc;
+  .back,
+  .continue {
+    background-color: #a7d054;
+  }
+  .cancel {
+    background-color: #3f4a5b;
   }
 }
 </style>

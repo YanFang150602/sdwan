@@ -1,6 +1,10 @@
 {
   "firstMenus": [
     {
+      "title": "Interfaces",
+      "key": "Interfaces"
+    },
+    {
       "title": "Zones",
       "key": "Zones"
     },
@@ -17,6 +21,22 @@
           "key": "QosPolicies"
         },
         {
+          "title": "App Qos Policies",
+          "key": "AppQosPolicies"
+        },
+        {
+          "title": "Drop Profile",
+          "key": "dropProfile"
+        },
+        {
+          "title": "Scheduler",
+          "key": "Scheduler"
+        },
+        {
+          "title": "Scheduler Maps",
+          "key": "SchedulerMaps"
+        },
+        {
           "title": "Associate Interface/Network",
           "key": "AssociateInterfaceNetwork"
         }
@@ -31,6 +51,10 @@
         {
           "title": "VPN Profiles",
           "key": "VPNConfigFile"
+        },
+        {
+          "title": "Branch SDWAN Profile",
+          "key": "BranchSDWANProfile"
         }
       ]
     }
@@ -43,18 +67,36 @@
         {
           "title": "Address",
           "key": "Address"
-        }
-      ]
-    }
-  ],
-  "fourthMenus": [
-    {
-      "title": "Objects",
-      "key": "Objects2",
-      "children": [
+        },
         {
           "title": "Schedules",
           "key": "Schedules"
+        },
+        {
+          "title": "Custom Objects",
+          "key": "CustomObjects",
+          "children": [
+            {
+              "title": "Applications",
+              "key": "Applications"
+            },
+            {
+              "title": "Application Filters",
+              "key": "ApplicationFilters"
+            },
+            {
+              "title": "URL Categories",
+              "key": "URLCategories"
+            },
+            {
+              "title": "Application Groups",
+              "key": "ApplicationGroups"
+            },
+            {
+              "title": "Services",
+              "key": "Service"
+            }
+          ]
         }
       ]
     }

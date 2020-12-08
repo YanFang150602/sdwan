@@ -16,6 +16,8 @@ module.exports = {
   WFSerialNumber: '序列号',
   VPNConfigFileName: 'VPN配置文件名称',
   VPNType: 'VPN类型',
+  VPNGeneral: '一般',
+  VPNAddressPool: '地址池',
   VPNTypeBRStagingSDW: '分支分期SDWAN',
   VPNTypeBRSDW: '分支SDWAN',
   VPNTypeRemoteVisitClient: '远端访问客户端',

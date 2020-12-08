@@ -7,7 +7,12 @@
       ref="strategyForm"
     >
       <a-row type="flex" justify="start" align="top">
-        <a-col>
+        <a-col
+          :span="17"
+          @mouseenter="enter('name')"
+          @mouseleave="leave"
+          @mousemove="updateXY"
+        >
           <a-form-model-item :label="$t('VPNStrategyName')" prop="name">
             <a-input
               size="small"
@@ -128,9 +133,11 @@
   </div>
 </template>
 <script>
+import common from '@/mixins/common';
 export default {
   name: 'StrategyAddOrEdit',
   props: ['strategy'],
+  mixins: [common],
   data() {
     return {
       cStrategy: {

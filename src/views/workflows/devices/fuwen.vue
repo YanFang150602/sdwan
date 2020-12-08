@@ -11,7 +11,7 @@
     <div class="switchover">
       <div class="basic" @click="handleClick">Basic</div>
       <div class="location" @click="ShowClick">Location information</div>
-      <div class="bid" @click="bidClick">Bid Data</div>
+      <div class="bid" @click="bidClick">Bind Data</div>
     </div>
     <!-- basic -->
     <div v-if="isShow" class="form_basic">

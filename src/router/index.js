@@ -27,7 +27,7 @@ const routes = [
     meta: {
       title: '首页'
     },
-    component: () => import('views/home/Home'),
+    component: () => import('views/home'),
     children: [
       {
         path: '/configuration',
@@ -36,7 +36,7 @@ const routes = [
         meta: {
           title: '组织管理'
         },
-        component: () => import('views/configuration/Configuration'),
+        component: () => import('views/configuration'),
         children: [
           {
             path: '/configuration/Devices',
@@ -49,6 +49,87 @@ const routes = [
         ]
       },
       {
+        path: '/configuration/Template',
+        name: 'CommonTemplate',
+        meta: {
+          title: '模板'
+        },
+        component: () => import('views/configuration/commonTemplate'),
+        children: [
+          {
+            path: '/configuration/commonTemplate/zones',
+            name: 'ZonesTem',
+            meta: {
+              title: '区'
+            },
+            component: () => import('views/configuration/commonTemplate/zones')
+          },
+          {
+            path: '/configuration/commonTemplate/zonesPP',
+            name: 'ZonesPPTem',
+            meta: {
+              title: '区'
+            },
+            component: () =>
+              import('views/configuration/commonTemplate/zonesPP')
+          },
+          {
+            path: '/configuration/commonTemplate/URLCategories',
+            name: 'TemplateUrlCategories',
+            meta: {
+              title: '路径'
+            },
+            component: () =>
+              import('views/configuration/URLCategories/URLCategories')
+          },
+          {
+            path: '/configuration/commonTemplate/Service',
+            name: 'TemplateService',
+            meta: {
+              title: '路径'
+            },
+            component: () => import('views/configuration/service/Service')
+          },
+          {
+            path: '/configuration/commonTemplate/Applications',
+            name: 'TemplateApplications',
+            meta: {
+              title: '路径'
+            },
+            component: () =>
+              import('views/configuration/Applications/Applications')
+          },
+          {
+            path: '/configuration/commonTemplate/ApplicationGroups',
+            name: 'TemplateApplicationGroups',
+            meta: {
+              title: '组'
+            },
+            component: () =>
+              import('views/configuration/ApplicationGroups/ApplicationGroups')
+          },
+          {
+            path: '/configuration/commonTemplate/ApplicationFilters',
+            name: 'TemplateApplicationFilters',
+            meta: {
+              title: '过滤'
+            },
+            component: () =>
+              import(
+                'views/configuration/ApplicationFilters/ApplicationFilters'
+              )
+          },
+          {
+            path: '/configuration/commonTemplate/Address',
+            name: 'TemplateAddress',
+            meta: {
+              title: '地址'
+            },
+            component: () => import('views/configuration/address/Address')
+          }
+        ]
+      },
+      {
         path: '/configuration/deviceConfig',
         name: 'DeviceConfig',
         meta: {
@@ -57,12 +138,31 @@ const routes = [
         component: () => import('views/configuration/config/Config'),
         children: [
           {
+            path: '/configuration/deviceConfig/interfaces',
+            name: 'Interfaces',
+            meta: {
+              title: '接口'
+            },
+            component: () => import('views/configuration/interfaces')
+          },
+          {
             path: '/configuration/deviceConfig/zones',
             name: 'Zones',
             meta: {
               title: '区'
             },
-            component: () => import('views/configuration/zones/Zones')
+            component: () => import('views/configuration/zones')
+          },
+          {
+            path: '/configuration/deviceConfig/branchSDWANProfile',
+            name: 'BranchSDWANProfile',
+            meta: {
+              title: '分支概要'
+            },
+            component: () =>
+              import(
+                'views/configuration/BranchSDWANProfile/branchSDWANProfile'
+              )
           },
           {
             path: '/configuration/deviceConfig/schedule',
@@ -95,8 +195,7 @@ const routes = [
             meta: {
               title: '青年'
             },
-            component: () =>
-              import('views/configuration/qosPolices/QosPolicies')
+            component: () => import('views/configuration/qosPolices')
           },
           {
             path: '/configuration/deviceConfig/AppQosPolicies',
@@ -104,8 +203,33 @@ const routes = [
             meta: {
               title: '应用策略'
             },
+            component: () => import('views/configuration/appQosPolicies')
+          },
+          {
+            path: '/configuration/deviceConfig/dropProfile',
+            name: 'dropProfile',
+            meta: {
+              title: 'Drop配置文件'
+            },
             component: () =>
-              import('views/configuration/appQosPolicies/AppQosPolicies')
+              import('views/configuration/dropProfile/DropProfile')
+          },
+          {
+            path: '/configuration/deviceConfig/Scheduler',
+            name: 'Scheduler',
+            meta: {
+              title: '调度程序配置'
+            },
+            component: () => import('views/configuration/Scheduler/Scheduler')
+          },
+          {
+            path: '/configuration/deviceConfig/SchedulerMaps',
+            name: 'SchedulerMaps',
+            meta: {
+              title: '调度程序映射配置'
+            },
+            component: () =>
+              import('views/configuration/SchedulerMaps/SchedulerMaps')
           },
           {
             path: '/configuration/deviceConfig/AssociateInterfaceNetwork',
@@ -118,6 +242,7 @@ const routes = [
                 'views/configuration/AssociateInterfaceNetwork/AssociateInterfaceNetwork'
               )
           },
+          // 1111111111111111111111111111111111111111111111111111111111111111
           {
             path: '/configuration/deviceConfig/Address',
             name: 'Address',
@@ -125,25 +250,86 @@ const routes = [
               title: '地址'
             },
             component: () => import('views/configuration/address/Address')
+          },
+          // 111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+          {
+            path: '/configuration/deviceConfig/Applications',
+            name: 'Applications',
+            meta: {
+              title: '应用程序'
+            },
+            component: () =>
+              import('views/configuration/Applications/Applications')
+          },
+
+          // 1111111111111111111111111111111111111111111111111111111111111111111111111111
+          {
+            path: '/configuration/deviceConfig/ApplicationFilters',
+            name: 'ApplicationFilters',
+            meta: {
+              title: '应用程序'
+            },
+            component: () =>
+              import(
+                'views/configuration/ApplicationFilters/ApplicationFilters'
+              )
+          },
+          // 1111111111111111111111111111111111111111111111111111111111111111111111111111
+          {
+            path: '/configuration/deviceConfig/ApplicationGroups',
+            name: 'ApplicationGroups',
+            meta: {
+              title: '路径'
+            },
+            component: () =>
+              import('views/configuration/ApplicationGroups/ApplicationGroups')
+          },
+          // 1111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+          {
+            path: '/configuration/deviceConfig/Service',
+            name: 'Service',
+            meta: {
+              title: '路径'
+            },
+            component: () => import('views/configuration/service/Service')
+          },
+          // qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
+          {
+            path: '/configuration/deviceConfig/URLCategories',
+            name: 'URLCategories',
+            meta: {
+              title: '路径'
+            },
+            component: () =>
+              import('views/configuration/URLCategories/URLCategories')
           }
+          // {
+          //   path: '/configuration/deviceConfig/VPNConfigFile',
+          //   name: 'VPNConfigFile',
+          //   meta: {
+          //     title: 'VPN Config File'
+          //   },
+          //   component: () => import('views/configuration/vpn/VPNConfigFile')
+          // }
         ]
       },
       {
+        // administration页面组
         path: '/administration',
         name: 'Administration',
-        redirect: '/administration/Organize',
+        redirect: '/administration/organize',
         meta: {
           title: '组织管理'
         },
-        component: () => import('views/administration/Administration'),
+        component: () => import('views/administration'),
         children: [
           {
-            path: '/administration/Organize',
+            path: '/administration/organize',
             name: 'Organizations',
             meta: {
               title: '组织'
             },
-            component: () => import('views/administration/organize/Organize')
+            component: () => import('views/administration/organize')
           },
           {
             path: '/administration/organize-users',
@@ -151,8 +337,15 @@ const routes = [
             meta: {
               title: '组织成员'
             },
-            component: () =>
-              import('views/administration/organizeUsers/OrganizeUsers')
+            component: () => import('views/administration/organizeUsers')
+          },
+          {
+            path: '/administration/devices/Devices',
+            name: 'device',
+            meta: {
+              title: '组织成员'
+            },
+            component: () => import('views/administration/devices/Devices')
           }
         ]
       },
@@ -164,7 +357,7 @@ const routes = [
         meta: {
           title: '设备'
         },
-        component: () => import('views/workflows/Workflows'),
+        component: () => import('views/workflows'),
         children: [
           {
             // workflows templates页面
@@ -173,7 +366,15 @@ const routes = [
             meta: {
               title: '模板'
             },
-            component: () => import('views/workflows/templates/Templates')
+            component: () => import('views/workflows/templates')
+          },
+          {
+            path: '/workflows/applicationSteering',
+            name: 'applicationSteering',
+            meta: {
+              title: '应用指导'
+            },
+            component: () => import('views/workflows/applicationSteering')
           },
           {
             path: '/workflows/spoke-groups',

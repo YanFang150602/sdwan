@@ -14,9 +14,8 @@
                 :value="item.value"
                 v-for="(item, index) in versionOptions"
                 :key="index"
+                >{{ item.label }}</a-select-option
               >
-                {{ item.label }}
-              </a-select-option>
             </a-select>
           </a-form-model-item>
           <a-form-model-item :label="$t('VPNIKETime')">
@@ -25,9 +24,8 @@
                 :value="item.value"
                 v-for="(item, index) in rekeyTimeOptions"
                 :key="index"
+                >{{ item.label }}</a-select-option
               >
-                {{ item.label }}
-              </a-select-option>
             </a-select>
           </a-form-model-item>
         </a-col>
@@ -60,7 +58,7 @@
               @blur="validIkeData"
             />
           </a-form-model-item>
-         <!--  <a-form-model-item :label="$t('VPNIKEBackCheck')">
+          <!--  <a-form-model-item :label="$t('VPNIKEBackCheck')">
             <a-select
               v-model="ike.revocationCheck"
               size="small"
@@ -74,7 +72,7 @@
                 {{ item.label }}
               </a-select-option>
             </a-select>
-          </a-form-model-item> -->
+          </a-form-model-item>-->
         </a-col>
         <a-col v-show="showMode">
           <a-form-model-item :label="$t('VPNIKEModel')">
@@ -88,14 +86,14 @@
                 :value="item.value"
                 v-for="(item, index) in modelOptions"
                 :key="index"
+                >{{ item.label }}</a-select-option
               >
-                {{ item.label }}
-              </a-select-option>
             </a-select>
           </a-form-model-item>
         </a-col>
       </a-row>
     </a-form-model>
+    <!-- Transforms & DH Group -->
     <a-tabs default-active-key="1" @change="changeATabs">
       <a-tab-pane key="1" :tab="$t('VPNIKEChangeAndGroup')">
         <a-form-model layout="vertical" :model="ike">
@@ -115,7 +113,7 @@
             v-if="cVPNProfile.tempIkeNewOrOld == 'New'"
           >
             <a-col>
-              <v-table
+              <!-- <v-table
                 is-horizontal-resize
                 :columns="hashColumns"
                 :table-data="hashList"
@@ -127,10 +125,16 @@
                 :title-click="hashTitleClick"
                 :cell-merge="hashCellMerge"
                 @on-custom-comp="customFunc"
-              ></v-table>
+              ></v-table>-->
+              <AddModle
+                :title="HashAlgorithms"
+                style="width:290px;"
+                @subdata="hashCustomFunc"
+                :listdate="hashList"
+              />
             </a-col>
             <a-col>
-              <v-table
+              <!-- <v-table
                 is-horizontal-resize
                 :columns="entryColumns"
                 :table-data="encryList"
@@ -142,10 +146,16 @@
                 :title-click="entryTitleClick"
                 :cell-merge="entryCellMerge"
                 @on-custom-comp="customFunc"
-              ></v-table>
+              ></v-table>-->
+              <AddModle
+                :title="EncryptionAlgorithms"
+                style="width:290px;"
+                @subdata="encryCustomFunc"
+                :listdate="encryList"
+              />
             </a-col>
             <a-col>
-              <v-table
+              <!-- <v-table
                 is-horizontal-resize
                 :columns="dhColumns"
                 :table-data="dhList"
@@ -157,7 +167,13 @@
                 :title-click="dhTitleClick"
                 :cell-merge="dhCellMerge"
                 @on-custom-comp="customFunc"
-              ></v-table>
+              ></v-table>-->
+              <AddModle
+                :title="DHGroup"
+                style="width:290px;"
+                @subdata="dhCustomFunc"
+                :listdate="dhList"
+              />
             </a-col>
           </a-row>
           <a-row
@@ -177,9 +193,8 @@
                     :value="item.value"
                     v-for="(item, index) in changeOptions"
                     :key="index"
+                    >{{ item.label }}</a-select-option
                   >
-                    {{ item.label }}
-                  </a-select-option>
                 </a-select>
               </a-form-model-item>
             </a-col>
@@ -190,9 +205,8 @@
                     :value="item.value"
                     v-for="(item, index) in dhOptions"
                     :key="index"
+                    >{{ item.label }}</a-select-option
                   >
-                    {{ item.label }}
-                  </a-select-option>
                 </a-select>
               </a-form-model-item>
             </a-col>
@@ -219,9 +233,8 @@
                     :value="item.value"
                     v-for="(item, index) in authTypeOptions"
                     :key="index"
+                    >{{ item.label }}</a-select-option
                   >
-                    {{ item.label }}
-                  </a-select-option>
                 </a-select>
               </a-form-model-item>
             </a-col>
@@ -241,9 +254,8 @@
                     :value="item.value"
                     v-for="(item, index) in certNameOptions"
                     :key="index"
+                    >{{ item.label }}</a-select-option
                   >
-                    {{ item.label }}
-                  </a-select-option>
                 </a-select>
               </a-form-model-item>
               <a-form-model-item
@@ -274,9 +286,8 @@
                     :value="item.value"
                     v-for="(item, index) in localCAOptions"
                     :key="index"
+                    >{{ item.label }}</a-select-option
                   >
-                    {{ item.label }}
-                  </a-select-option>
                 </a-select>
               </a-form-model-item>
               <a-form-model-item
@@ -294,9 +305,8 @@
                     :value="item.value"
                     v-for="(item, index) in idTypeOptions"
                     :key="index"
+                    >{{ item.label }}</a-select-option
                   >
-                    {{ item.label }}
-                  </a-select-option>
                 </a-select>
               </a-form-model-item>
             </a-col>
@@ -316,9 +326,8 @@
                     :value="item.value"
                     v-for="(item, index) in certAreaOptions"
                     :key="index"
+                    >{{ item.label }}</a-select-option
                   >
-                    {{ item.label }}
-                  </a-select-option>
                 </a-select>
               </a-form-model-item>
               <a-form-model-item
@@ -348,9 +357,8 @@
                     :value="item.value"
                     v-for="(item, index) in tenantOptions"
                     :key="index"
+                    >{{ item.label }}</a-select-option
                   >
-                    {{ item.label }}
-                  </a-select-option>
                 </a-select>
               </a-form-model-item>
             </a-col>
@@ -387,9 +395,8 @@
                     :value="item.value"
                     v-for="(item, index) in authTypeOptions"
                     :key="index"
+                    >{{ item.label }}</a-select-option
                   >
-                    {{ item.label }}
-                  </a-select-option>
                 </a-select>
               </a-form-model-item>
             </a-col>
@@ -409,9 +416,8 @@
                     :value="item.value"
                     v-for="(item, index) in peerCAOptions"
                     :key="index"
+                    >{{ item.label }}</a-select-option
                   >
-                    {{ item.label }}
-                  </a-select-option>
                 </a-select>
               </a-form-model-item>
               <a-form-model-item
@@ -442,9 +448,8 @@
                     :value="item.value"
                     v-for="(item, index) in idTypeOptions"
                     :key="index"
+                    >{{ item.label }}</a-select-option
                   >
-                    {{ item.label }}
-                  </a-select-option>
                 </a-select>
               </a-form-model-item>
             </a-col>
@@ -482,9 +487,8 @@
                     :value="item.value"
                     v-for="(item, index) in authTypeOptions"
                     :key="index"
+                    >{{ item.label }}</a-select-option
                   >
-                    {{ item.label }}
-                  </a-select-option>
                 </a-select>
               </a-form-model-item>
             </a-col>
@@ -514,6 +518,7 @@
                 style="width:800px"
                 isFrozen="true"
                 @on-custom-comp="customFunc"
+                error-content="Temporarily no data"
               ></v-table>
             </a-col>
           </a-row>
@@ -525,9 +530,13 @@
 <script>
 import Vue from 'vue';
 import { mapState, mapMutations } from 'vuex';
+import AddModle from 'components/PeerFqdnAdd';
 export default {
   name: 'IKE',
   props: ['vpnProfile', 'conSDWAN'],
+  components: {
+    AddModle
+  },
   data() {
     return {
       cVPNProfile: {
@@ -545,6 +554,9 @@ export default {
         encryptionAlgorithms: [],
         groups: []
       },
+      HashAlgorithms: 'Hash Algorithms',
+      EncryptionAlgorithms: 'Encryption Algorithms',
+      DHGroup: 'DH Group',
       placeholders: {
         dpdTimeout: '10-180',
         lifetime: '132-28800',
@@ -646,9 +658,9 @@ export default {
         columnAlign: 'left',
         isResize: true
       },
-      hashList: [{}],
-      encryList: [{}],
-      dhList: [{}],
+      hashList: [],
+      encryList: [],
+      dhList: [],
       delHashList: [],
       deleEncryList: [],
       delDHList: [],
@@ -930,7 +942,19 @@ export default {
       showConCert: false
     };
   },
+  created() {
+    console.log(this.vpnProfile.ike, 7789);
+    console.log(this.hashColumns, 999);
+    this.getMultipleList();
+    // this.customFunc();
+    // if (!this.vpnProfile.ike.encryptionAlgorithms) {
+    // }
+  },
+  // computed: {
+  //   ...mapState(['vpnTableSelects'])
+  // },
   computed: {
+    ...mapState(['vpnTableSelects']),
     hashColumns() {
       let column = {
         field: 't-hash',
@@ -969,7 +993,7 @@ export default {
     }
   },
   mounted() {
-    console.log('ike mounted...',this.vpnProfile);
+    console.log('ike mounted...', this.vpnProfile);
     this.localAuthInfo = this.vpnProfile.localAuthInfo
       ? this.vpnProfile.localAuthInfo
       : {
@@ -996,18 +1020,22 @@ export default {
       this.hashList = [];
       this.encryList = [];
       this.dhList = [];
-      this.ike.hashAlgorithms && this.ike.hashAlgorithms.forEach(hash => {
-        let row = { hash };
-        this.hashList.push(row);
-      });
-      this.ike.encryptionAlgorithms && this.ike.encryptionAlgorithms.forEach(encry => {
-        let row = { encry };
-        this.encryList.push(row);
-      });
-      this.ike.groups && this.ike.groups.forEach(dh => {
-        let row = { dh };
-        this.dhList.push(row);
-      });
+      this.ike.hashAlgorithms &&
+        this.ike.hashAlgorithms.forEach(hash => {
+          let row = { hash };
+          console.log(row, '修改');
+          this.hashList.push(row);
+        });
+      this.ike.encryptionAlgorithms &&
+        this.ike.encryptionAlgorithms.forEach(encry => {
+          let row = { encry };
+          this.encryList.push(row);
+        });
+      this.ike.groups &&
+        this.ike.groups.forEach(dh => {
+          let row = { dh };
+          this.dhList.push(row);
+        });
     }
     this.vpnTableSelectsAll({ key: 'vpnIKEHash' });
     this.vpnTableSelectsAll({ key: 'vpnIKEEntry' });
@@ -1041,6 +1069,19 @@ export default {
         this.ike.transform = 'aes128-sha1';
         this.ike.group = 'mod2';
       }
+    },
+    getMultipleList() {
+      const list = this.vpnTableSelects;
+      list.vpnIKEHash.forEach(item => {
+        this.hashList.push(item.label);
+      });
+      list.vpnIPsecEntry.forEach(item => {
+        this.encryList.push(item.label);
+      });
+      list.vpnIPsecForward.forEach(item => {
+        this.dhList.push(item.label);
+      });
+      console.log(this.vpnTableSelects, 1122);
     },
     changeLocalIdType(value) {
       if (value === 'email') {
@@ -1235,7 +1276,18 @@ export default {
         this.delDHList.push(item['dh']);
       });
     },
+    hashCustomFunc(data) {
+      this.ike.hashAlgorithms = data;
+    },
+    encryCustomFunc(data) {
+      this.ike.encryptionAlgorithms = data;
+    },
+    dhCustomFunc(data) {
+      this.ike.groups = data;
+    },
     customFunc(params) {
+      console.log(params, 8876);
+      console.log(this.vpnTableSelects, 7788);
       switch (params.type) {
         case 'hash':
           this.hashList[params.index]['hash'] = params.label;
@@ -1286,7 +1338,11 @@ export default {
           this.dhList.forEach(obj => {
             this.ike.groups.push(obj.dh);
           });
-          this.vpnTableSelectsMinus({ key: 'vpnIKEDH', label: params.label, value: params.label });
+          this.vpnTableSelectsMinus({
+            key: 'vpnIKEDH',
+            label: params.label,
+            value: params.label
+          });
           break;
       }
     },

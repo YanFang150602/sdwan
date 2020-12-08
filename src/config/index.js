@@ -26,7 +26,7 @@ export const statusMap = new Map([
 ]);
 
 const axiosBaseUrl = {
-  //url: 'http://oscargw.dev.cmiov.virtueit.net:81/v0-snapshot/gateway/api'
+  //url: 'http://oscargw.dev.cmiov.virtueit.net:81/v0-snapshot/gateway'
   url: ''
 };
 

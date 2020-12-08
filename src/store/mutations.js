@@ -1,7 +1,5 @@
 import {
   ADM_NAME_LIST,
-  ADM_USERS_LIST,
-  TEMPLATE_LIST,
   DEVICES_SHOW,
   DEVICES_BID,
   DEVICES_HANDLE,
@@ -17,28 +15,15 @@ import {
   DEVICE_NAME_SAVE,
   ORGANIZATION_SAVE,
   VPN_PEERFQDN_OPTIONS,
-  SPOKEGROUP_FORM
+  SPOKEGROUP_FORM,
+  OBJECT_TYPE
 } from '@/store/mutation-types';
 
 export default {
   // 修改home组织名称列表数据
   [ADM_NAME_LIST](state, { adminNameList }) {
     state.admNameList = [...adminNameList];
-  },
-  // 修改租户列表数据
-  [ADM_USERS_LIST](state, { result, organization }) {
-    console.log(result, organization);
-    state.admUsersList = { ...result };
-    if (organization) {
-      state.organization = organization;
-    }
-  },
-  // 修改模板列表数据
-  [TEMPLATE_LIST](state, { result, orgname }) {
-    state.tempList = { ...result };
-    if (orgname) {
-      state.organization = orgname;
-    }
+    localStorage.setItem('admNameList', JSON.stringify(adminNameList));
   },
   // ###################################zwj
   [DEVICES_BID](state) {
@@ -132,7 +117,10 @@ export default {
   },
   [VPN_PLUS_OPTIONS](state, { key, label, value }) {
     for (let i = 0; i < state.vpnTableSelects[key].length; i++) {
-      if ((label && state.vpnTableSelects[key][i].label === label) || (value && state.vpnTableSelects[key][i].value === value)) {
+      if (
+        (label && state.vpnTableSelects[key][i].label === label) ||
+        (value && state.vpnTableSelects[key][i].value === value)
+      ) {
         state.vpnTableSelects[key][i].used = false;
         break;
       }
@@ -140,7 +128,10 @@ export default {
   },
   [VPN_MINUS_OPTIONS](state, { key, label, value }) {
     for (let i = 0; i < state.vpnTableSelects[key].length; i++) {
-      if ((label && state.vpnTableSelects[key][i].label === label) || (value && state.vpnTableSelects[key][i].value === value)) {
+      if (
+        (label && state.vpnTableSelects[key][i].label === label) ||
+        (value && state.vpnTableSelects[key][i].value === value)
+      ) {
         state.vpnTableSelects[key][i].used = true;
         break;
       }
@@ -155,8 +146,13 @@ export default {
     state.deviceName = deviceName;
     localStorage.setItem('deviceName', deviceName);
   },
-  [ORGANIZATION_SAVE](state, { organization }) {
+  [ORGANIZATION_SAVE](state, organization) {
     state.organization = organization;
+    localStorage.setItem('organization', organization);
+  },
+  [OBJECT_TYPE](state, objectType) {
+    state.objectType = objectType;
+    localStorage.setItem('objectType', objectType);
   },
   [VPN_PEERFQDN_OPTIONS](state, { peerFQDNOptions }) {
     state.vpnTableSelects.vpnPeerFQDN = peerFQDNOptions;

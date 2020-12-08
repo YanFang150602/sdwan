@@ -9,7 +9,7 @@
         class="devcfg-tab-common"
         @click="tabClick(tab.refObj)"
       >
-        <a-icon :type="tab.icon" />
+        <a-icon :type="tab.icon"/>
       </div>
     </div>
     <div v-if="showTabObj.firstTabRef">
@@ -22,10 +22,10 @@
       >
         <template v-for="item in menus.firstMenus">
           <a-menu-item v-if="!item.children" :key="item.key">
-            <a-icon type="pie-chart" />
+            <a-icon type="area-chart"/>
             <span>{{ item.title }}</span>
           </a-menu-item>
-          <sub-menu v-else :key="item.key" :menu-info="item" />
+          <sub-menu v-else :key="item.key" :menu-info="item"/>
         </template>
       </a-menu>
     </div>
@@ -39,10 +39,10 @@
       >
         <template v-for="item in menus.secondMenus">
           <a-menu-item v-if="!item.children" :key="item.key">
-            <a-icon type="pie-chart" />
+            <a-icon type="fund"/>
             <span>{{ item.title }}</span>
           </a-menu-item>
-          <sub-menu v-else :key="item.key" :menu-info="item" />
+          <sub-menu v-else :key="item.key" :menu-info="item"/>
         </template>
       </a-menu>
     </div>
@@ -56,10 +56,10 @@
       >
         <template v-for="item in menus.thirdMenus">
           <a-menu-item v-if="!item.children" :key="item.key">
-            <a-icon type="pie-chart" />
+            <a-icon type="heat-map"/>
             <span>{{ item.title }}</span>
           </a-menu-item>
-          <sub-menu v-else :key="item.key" :menu-info="item" />
+          <sub-menu v-else :key="item.key" :menu-info="item"/>
         </template>
       </a-menu>
     </div>
@@ -73,10 +73,10 @@
       >
         <template v-for="item in menus.fourthMenus">
           <a-menu-item v-if="!item.children" :key="item.key">
-            <a-icon type="pie-chart" />
+            <a-icon type="radar-chart"/>
             <span>{{ item.title }}</span>
           </a-menu-item>
-          <sub-menu v-else :key="item.key" :menu-info="item" />
+          <sub-menu v-else :key="item.key" :menu-info="item"/>
         </template>
       </a-menu>
     </div>
@@ -138,13 +138,6 @@ export default {
             backgroundColor: '#8d9fb3'
           },
           icon: 'codepen-circle'
-        },
-        {
-          refObj: 'fourthTabRef',
-          style: {
-            backgroundColor: '#8d9fb3'
-          },
-          icon: 'global'
         }
       ],
       showTabObj: {
@@ -188,7 +181,7 @@ export default {
 .switchover {
   overflow: hidden;
   .devcfg-tab-common {
-    width: 50px;
+    width: 33.33%;
     height: 22px;
     border-radius: 5px 3px 0px 0px;
     line-height: 22px;

@@ -10,15 +10,18 @@ export const adminNameLists = () =>
 
 /**
  * @desc 获取组织名称
- * @param {Number} offset
- * @param {Number} limit
+ * @param {Object}
  */
 
-export const adminList = ({ offset = 1, limit = 1024 }) =>
-  $http.get('/controller/sdwan/v1/organizations', {
-    offset,
-    limit
-  });
+export const adminList = param =>
+  $http.get('/controller/sdwan/v1/organizations', param);
+
+  /**
+ * @desc 获取组织导航树信息
+ * @param {Object}
+ */
+export const adminTreeList = () =>
+  $http.get('/controller/sdwan/v1/organizations/organization/nav-tree');
 
 /**
  * @desc 获取组织全局id
@@ -84,16 +87,11 @@ export const adminSearch = param =>
 
 /**
  * @desc 组织用户查询
- * @param {Number} offset
- * @param {Number} limit
+ * @param {Object}
  */
 
-export const adminUsersLists = ({ organization, offset, limit }) =>
-  $http.get('/controller/sdwan/v1/tenant', {
-    organization,
-    offset,
-    limit
-  });
+export const adminUsersLists = param =>
+  $http.get('/controller/sdwan/v1/tenant', param);
 
 /**
  * @desc 查询权限对应的个性化页面
@@ -135,20 +133,8 @@ export const adminUserEdt = (name, param) =>
  * @param {String} name
  */
 
-export const adminTempList = ({ orgname, offset, limit }) =>
-  $http.get(
-    '/controller/sdwan/v1/template',
-    orgname
-      ? {
-          orgname,
-          offset,
-          limit
-        }
-      : {
-          offset,
-          limit
-        }
-  );
+export const templateList = param =>
+  $http.get('/controller/sdwan/v1/template', param);
 
 /**
  * @desc 组织用户修改
@@ -243,11 +229,26 @@ export const netWrokNameCre = param =>
 
 /**
  * @desc 模板networkname Transport Domain查询
- * @param {Object} param
  */
 
 export const TraDomain = () =>
   $http.get('/controller/sdwan/v1/template/template/domains');
+
+/**
+ * @param {Object} 组织名
+ * @desc 模板server porpfile 下拉内容
+ */
+
+export const profile = param =>
+  $http.get('/controller/sdwan/v1/template/template/dhcpProfile', param);
+
+/**
+ * @desc 模板interface zones 下拉内容
+ * @param {Object} 父组织名
+ */
+
+export const zones = param =>
+  $http.get('/controller/sdwan/v1/template/template/zones', param);
 
 /**
  * @desc 租户密码修改

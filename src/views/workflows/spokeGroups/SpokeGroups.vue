@@ -1,78 +1,23 @@
 <template>
   <div class="spokeGroups">
     <!-- 搜索框 -->
-    <a-row
-      class="table-header"
-      type="flex"
-      justify="space-between"
-      align="middle"
-    >
-      <!--搜索栏-->
-      <a-col :style="{ width: 'calc(100%-475px)' }">
-        <a-input
-          class="search-bar"
-          ref="searchInput"
-          v-model="keyworks"
-          placeholder="Search"
-          @keyup.enter="search"
-        >
-          <a-icon slot="prefix" type="search" />
-          <a-icon
-            @click="keyworks = ''"
-            v-show="keyworks != ''"
-            slot="suffix"
-            type="close"
-          />
-        </a-input>
-      </a-col>
-      <!--表格功能按钮-->
-      <a-col>
-        <a-row
-          :style="{ width: '425px' }"
-          type="flex"
-          justify="end"
-          align="middle"
-        >
-          <a-col
-            :style="{
-              fontSize: '18px',
-              cursor: 'pointer',
-              marginRight: '20px'
-            }"
-          >
-            <a-icon @click="showModal" type="plus" />
-          </a-col>
-          <a-col
-            :style="{
-              fontSize: '18px',
-              cursor: 'pointer',
-              marginRight: '20px'
-            }"
-          >
-            <a-button type="link" @click="groupDel" :disabled="delet">
-              <a-icon type="minus" />
-            </a-button>
-          </a-col>
-          <a-col>
-            <v-pagination
-              :total="totalCount"
-              size="small"
-              :page-size="pageSize"
-              :layout="['prev', 'jumper', 'total', 'next', 'sizer']"
-              @page-change="pageChange"
-              @page-size-change="pageSizeChange"
-            ></v-pagination>
-          </a-col>
-        </a-row>
-      </a-col>
-    </a-row>
+    <Pagination
+      :total="totalCount"
+      :page-size="pageSize"
+      @page-change="pageChange"
+      @page-size-change="pageSizeChange"
+      @create-item="showModal"
+      @delete-item="groupDel"
+      @search="search"
+      @cancelSearch="cancelSearch"
+    />
     <!-- 列表 -->
     <!-- 表单主体内容 -->
     <v-table
       is-horizontal-resize
       column-width-drag
       :columns="columns"
-      :table-data="spoke.data"
+      :table-data="tableData"
       :select-all="selectALL"
       :select-change="selectChange"
       :select-group-change="selectGroupChange"
@@ -80,6 +25,7 @@
       style="width:100%;"
       isFrozen="true"
       @on-custom-comp="customCompFunc"
+      error-content="Temporarily no data"
     ></v-table>
     <!-- 新增弹框 -->
     <div>
@@ -95,7 +41,9 @@
           <a-button key="submit" type="primary" @click="handleOk"
             >Save</a-button
           >
-          <a-button key="back" @click="handleCancel">Cancel</a-button>
+          <a-button key="back" type="danger" @click="handleCancel"
+            >Cancel</a-button
+          >
         </template>
         <SpokeAdd @add="add" ref="spokeAdd"></SpokeAdd>
       </a-modal>
@@ -115,7 +63,9 @@
           <a-button key="submit" type="primary" @click="handleOkEdit"
             >Save</a-button
           >
-          <a-button key="back" @click="handleCancelEdit">Cancel</a-button>
+          <a-button key="back" type="danger" @click="handleCancelEdit"
+            >Cancel</a-button
+          >
         </template>
       </a-modal>
     </div>
@@ -124,6 +74,7 @@
 
 <script>
 import SpokeAdd from './SpokeAdd';
+import Pagination from 'components/Pagination';
 import SpokeCheck from './SpokeCheck';
 import {
   SPTableForm,
@@ -137,10 +88,12 @@ import { mapState } from 'vuex';
 export default {
   components: {
     SpokeAdd,
-    SpokeCheck
+    SpokeCheck,
+    Pagination
   },
   data() {
     return {
+      list: [],
       delet: true,
       //分页
       pageIndex: 1,
@@ -164,7 +117,7 @@ export default {
         {
           field: 'name',
           title: 'Name',
-          width: 180,
+          width: 130,
           titleAlign: 'left',
           columnAlign: 'left',
           isResize: true,
@@ -173,7 +126,7 @@ export default {
         {
           field: 'org',
           title: 'Organization',
-          width: 180,
+          width: 140,
           titleAlign: 'left',
           columnAlign: 'left',
           isResize: true
@@ -181,7 +134,7 @@ export default {
         {
           field: 'modifyDate',
           title: 'Routing Instance',
-          width: 180,
+          width: 160,
           titleAlign: 'left',
           columnAlign: 'left',
           isResize: true
@@ -189,7 +142,7 @@ export default {
         {
           field: 'status',
           title: 'Status',
-          width: 180,
+          width: 130,
           titleAlign: 'left',
           columnAlign: 'left',
           isResize: true
@@ -197,7 +150,7 @@ export default {
         {
           field: 'createDate',
           title: 'Create Date',
-          width: 180,
+          width: 160,
           titleAlign: 'left',
           columnAlign: 'left',
           isResize: true
@@ -205,7 +158,7 @@ export default {
         {
           field: 'modifyDate',
           title: 'Last Modified Date',
-          width: 180,
+          width: 160,
           titleAlign: 'left',
           columnAlign: 'left',
           isResize: true
@@ -213,7 +166,7 @@ export default {
         {
           field: 'lastUpdatedBy',
           title: 'Last Modified By',
-          width: 180,
+          width: 140,
           titleAlign: 'left',
           columnAlign: 'left',
           isResize: true
@@ -296,6 +249,21 @@ export default {
     ...mapState(['spoke', 'organization'])
   },
   methods: {
+    // 搜索框查询
+    search(data) {
+      // 转换全小写,实现模糊匹配
+      const keyword = data.trim().toLowerCase();
+      const list = this.tableData.filter(item =>
+        item.name.toLowerCase().includes(keyword)
+      );
+      this.tableData = list;
+    },
+    // 取消搜索，显示当前数据
+    cancelSearch() {
+      if (this.keyworks.trim() === '') {
+        this.tableForm();
+      }
+    },
     // 分页
     pageChange(pageIndex) {
       this.pageIndex = pageIndex;
@@ -331,15 +299,10 @@ export default {
             this.visible = true;
           }
         } else {
-          // this.$message.error(res.message);
           console.log('error submit!!');
           return false;
         }
       });
-
-      // this.$refs.spokeAdd.spokeAdd.name = '';
-      // this.$refs.spokeAdd.$refs.ruleForm.resetFields();
-      // this.spokeAdd.vrfs = [];
     },
     handleCancel() {
       this.$refs.spokeAdd.$refs.ruleForm.resetFields();
@@ -366,8 +329,8 @@ export default {
     selectALL(selection) {
       console.log('select-aLL1111111111111', selection);
       selection.forEach(item => {
-        console.log(item.deviceName);
-        this.dele.ids.push(item.deviceName);
+        console.log(item.name);
+        this.dele.ids.push(item.name);
       });
       const newArr = Array.from(new Set(this.dele.ids));
       this.dele.ids = newArr;
@@ -416,10 +379,11 @@ export default {
       const limit = this.pageSize;
       const orgname = '';
       const res = await SPTableForm(orgname, offset, limit);
-      console.log(res.result.totalCount);
-      this.spoke.data = res.result.data;
-      this.totalCount = res.result.totalCount;
+      // console.log(res.result.totalCount);
       this.tableData = res.result.data;
+      this.totalCount = res.result.totalCount;
+      // this.tableData = res.result.data;
+      console.log(this.tableData);
     },
     // 选取了组织
     queryDeviceGrops() {
@@ -434,10 +398,10 @@ export default {
     async groupDel() {
       const res = await SPDelete(this.dele);
       console.log(res);
-      this.tableForm();
       if (res.message === 'Success') {
         this.$message.success('删除成功');
         this.dele.ids = [];
+        this.tableForm();
       } else {
         this.$message.error(res.message);
       }
@@ -485,21 +449,26 @@ Vue.component('table-operationSpoke', {
 <style lang="scss" scoped>
 .spokeGroups {
   padding: 5px 20px 30px 15px;
-  /deep/.search-bar {
-    .ant-input {
-      width: 400%;
-      color: #6a6f75;
-      border: 1px solid #b0c7d5;
-      height: 20px;
-      border-radius: 4px;
-      font-size: 12px;
-      line-height: 18px;
-      &:focus {
-        box-shadow: none;
-        border-color: #b0c7d5;
-      }
-    }
+  .table-header {
+    margin-bottom: 10px;
+    height: 22px;
   }
+  // 统一搜索框这行的样式统一，不需要以下样式
+  // /deep/.search-bar {
+  //   .ant-input {
+  //     width: 400%;
+  //     color: #6a6f75;
+  //     border: 1px solid #b0c7d5;
+  //     height: 20px;
+  //     border-radius: 4px;
+  //     font-size: 12px;
+  //     line-height: 18px;
+  //     &:focus {
+  //       box-shadow: none;
+  //       border-color: #b0c7d5;
+  //     }
+  //   }
+  // }
 }
 //新增弹框
 /deep/.ant-modal-content {
@@ -511,13 +480,39 @@ Vue.component('table-operationSpoke', {
     }
   }
   .ant-modal-body {
-    padding: 0;
+    padding: 10px;
     height: 100%;
     background-color: #36536b;
   }
   .ant-modal-footer {
     background-color: #e9f4fc;
   }
+}
+/deep/.ant-modal-title {
+  font-size: 12px;
+  margin-left: -12px;
+}
+// 模态框标题
+/deep/.ant-modal-title {
+  font-size: 12px;
+}
+// 模态框右上角x
+/deep/.ant-modal-close-x {
+  line-height: 40px;
+  width: 40px;
+}
+// 两个按钮
+/deep/.ant-btn-primary {
+  width: 56px;
+  height: 30px;
+  background: #a7d054;
+  border-color: unset;
+}
+/deep/.ant-btn-danger {
+  width: 67px;
+  height: 30px;
+  background-color: #3f4a5b;
+  border-color: unset;
 }
 
 // 查看弹框

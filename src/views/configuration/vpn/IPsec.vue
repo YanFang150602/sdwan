@@ -9,9 +9,8 @@
                 :value="item.value"
                 v-for="(item, index) in modeList"
                 :key="index"
+                >{{ item.label }}</a-select-option
               >
-                {{ item.label }}
-              </a-select-option>
             </a-select>
           </a-form-model-item>
         </a-col>
@@ -27,9 +26,8 @@
                 :value="item.value"
                 v-for="(item, index) in backReplayList"
                 :key="index"
+                >{{ item.label }}</a-select-option
               >
-                {{ item.label }}
-              </a-select-option>
             </a-select>
           </a-form-model-item>
         </a-col>
@@ -45,9 +43,8 @@
                 :value="item.value"
                 v-for="(item, index) in fragmentList"
                 :key="index"
+                >{{ item.label }}</a-select-option
               >
-                {{ item.label }}
-              </a-select-option>
             </a-select>
           </a-form-model-item>
         </a-col>
@@ -65,9 +62,8 @@
                 :value="item.value"
                 v-for="(item, index) in natCfgList"
                 :key="index"
+                >{{ item.label }}</a-select-option
               >
-                {{ item.label }}
-              </a-select-option>
             </a-select>
           </a-form-model-item>
         </a-col>
@@ -90,9 +86,8 @@
                 :value="item.value"
                 v-for="(item, index) in restartTimeTypeOptions"
                 :key="index"
+                >{{ item.label }}</a-select-option
               >
-                {{ item.label }}
-              </a-select-option>
             </a-select>
             <a-input
               size="small"
@@ -109,9 +104,8 @@
                 :value="item.value"
                 v-for="(item, index) in restartVolumneTypeOptions"
                 :key="index"
+                >{{ item.label }}</a-select-option
               >
-                {{ item.label }}
-              </a-select-option>
             </a-select>
             <a-input
               size="small"
@@ -141,53 +135,32 @@
         >
           <a-col>
             <a-form-model-item>
-              <v-table
-                is-horizontal-resize
-                :columns="hashColumns"
-                :table-data="hashList"
-                :select-all="selectALLHash"
-                :select-change="selectChangeHash"
-                :height="80"
-                style="width:275px;"
-                isFrozen="true"
-                :title-click="hashTitleClick"
-                :cell-merge="hashCellMerge"
-                @on-custom-comp="customFunc"
-              ></v-table>
+              <AddModle
+                :title="HashAlgorithms"
+                style="width:270px;"
+                @subdata="hashCustomFunc"
+                :listdate="hashList"
+              />
             </a-form-model-item>
           </a-col>
           <a-col>
             <a-form-model-item>
-              <v-table
-                is-horizontal-resize
-                :columns="encryColumns"
-                :table-data="encryList"
-                :select-all="selectALLEncry"
-                :select-change="selectChangeEncry"
-                :height="80"
-                style="width:275px;"
-                isFrozen="true"
-                :title-click="encryTitleClick"
-                :cell-merge="encryCellMerge"
-                @on-custom-comp="customFunc"
-              ></v-table>
+              <AddModle
+                :title="EncryptionAlgorithms"
+                style="width:270px;"
+                @subdata="encryCustomFunc"
+                :listdate="encryList"
+              />
             </a-form-model-item>
           </a-col>
           <a-col>
             <a-form-model-item>
-              <v-table
-                is-horizontal-resize
-                :columns="forwardModeColumns"
-                :table-data="forwardModeList"
-                :select-all="selectALLFMode"
-                :select-change="selectChangeFMode"
-                :height="80"
-                style="width:275px;"
-                isFrozen="true"
-                :title-click="fModeTitleClick"
-                :cell-merge="fModeCellMerge"
-                @on-custom-comp="customFunc"
-              ></v-table>
+              <AddModle
+                :title="PerfectGroup"
+                style="width:270px;"
+                @subdata="pfsCustomFunc"
+                :listdate="forwardModeList"
+              />
             </a-form-model-item>
           </a-col>
         </a-row>
@@ -208,9 +181,8 @@
                   :value="item.value"
                   v-for="(item, index) in changeOptions"
                   :key="index"
+                  >{{ item.label }}</a-select-option
                 >
-                  {{ item.label }}
-                </a-select-option>
               </a-select>
             </a-form-model-item>
           </a-col>
@@ -225,9 +197,8 @@
                   :value="item.value"
                   v-for="(item, index) in forwardModeOptions"
                   :key="index"
+                  >{{ item.label }}</a-select-option
                 >
-                  {{ item.label }}
-                </a-select-option>
               </a-select>
             </a-form-model-item>
           </a-col>
@@ -239,9 +210,13 @@
 <script>
 import Vue from 'vue';
 import { mapState, mapMutations } from 'vuex';
+import AddModle from 'components/PeerFqdnAdd';
 export default {
   name: 'IPsec',
   props: ['vpnProfile'],
+  components: {
+    AddModle
+  },
   data() {
     return {
       cVPNProfile: {
@@ -263,6 +238,9 @@ export default {
           volume: ''
         }
       },
+      HashAlgorithms: 'Hash Algorithms',
+      EncryptionAlgorithms: 'Encryption Algorithms',
+      PerfectGroup: 'Perfect Forward Secrecy Group',
       placeholders: {
         keepaliveTimeout: '3-30',
         duration: '120-28800',
@@ -363,9 +341,9 @@ export default {
         columnAlign: 'left',
         isResize: true
       },
-      hashList: [{}],
-      encryList: [{}],
-      forwardModeList: [{}],
+      hashList: [],
+      encryList: [],
+      forwardModeList: [],
       delHashList: [],
       delEncryList: [],
       delFModeList: [],
@@ -456,7 +434,13 @@ export default {
       ]
     };
   },
+  created() {
+    console.log(this.vpnProfile.ike, 7789);
+    console.log(this.hashColumns, 999);
+    this.getMultipleList();
+  },
   computed: {
+    ...mapState(['vpnTableSelects']),
     hashColumns() {
       let column = {
         field: 't-hash',
@@ -540,6 +524,20 @@ export default {
         this.ipsec.transform = 'esp-aes128-sha1';
         this.ipsec.pfsGroup = 'mod-none';
       }
+    },
+    // 获取选择框的数据
+    getMultipleList() {
+      const list = this.vpnTableSelects;
+      console.log(this.vpnTableSelects, 1122);
+      list.vpnIKEHash.forEach(item => {
+        this.hashList.push(item.label);
+      });
+      list.vpnIPsecEntry.forEach(item => {
+        this.encryList.push(item.label);
+      });
+      list.vpnIPsecForward.forEach(item => {
+        this.forwardModeList.push(item.label);
+      });
     },
     hashTitleClick(title) {
       if (/class="plus"/.test(title)) {
@@ -686,6 +684,15 @@ export default {
       checked.forEach(item => {
         this.delFModeList.push(item['forward']);
       });
+    },
+    hashCustomFunc(data) {
+      this.ipsec.hashAlgorithms = data;
+    },
+    encryCustomFunc(data) {
+      this.ipsec.encryptionAlgorithms = data;
+    },
+    pfsCustomFunc(data) {
+      this.ipsec.pfsGroups = data;
     },
     customFunc(params) {
       switch (params.type) {
@@ -837,7 +844,10 @@ Vue.component('forward-opration', {
     ...mapState(['vpnTableSelects']),
     showValue() {
       for (let i = 0; i < this.vpnTableSelects.vpnIPsecForward.length; i++) {
-        if (this.rowData['forward'] == this.vpnTableSelects.vpnIPsecForward[i].value) {
+        if (
+          this.rowData['forward'] ==
+          this.vpnTableSelects.vpnIPsecForward[i].value
+        ) {
           return this.vpnTableSelects.vpnIPsecForward[i].label;
         }
       }

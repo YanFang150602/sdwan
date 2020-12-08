@@ -2,7 +2,7 @@ import { $http } from '@/utils/axios';
 // ---------------zone------------------
 /**
  * @desc 获取zone列表
- * @param {Object}  //设备名称
+ * @param {Object}
  */
 
 export const zoneLists = param =>
@@ -83,6 +83,94 @@ export const routingInstance = param =>
  */
 export const organizations = param =>
   $http.get('/controller/sdwan/v1/objects/zones/params/org', param);
+// ---------------zone template------------------
+/**
+ * @desc 获取zone template列表
+ * @param {Object}
+ */
+
+export const zoneTemLists = param =>
+  $http.get('/controller/sdwan/v1/config/zones', param);
+
+/**
+ * @desc 新建zone template
+ * @param {Object}
+ */
+
+export const zoneTemCreate = param =>
+  $http.post('/controller/sdwan/v1/config/zones', param);
+
+/**
+ * @desc 查询zone template
+ * @param {Object}
+ */
+
+export const zoneTemSearch = param =>
+  $http.get('/controller/sdwan/v1/config/query/zones', param);
+
+/**
+ * @desc 修改zone template
+ * @param {Object}
+ */
+
+export const zoneTemModify = param =>
+  $http.post('/controller/sdwan/v1/config/modify/zones', param);
+
+/**
+ * @desc 删除zone template
+ * @param {Object}
+ */
+
+export const zoneTemDelete = param =>
+  $http.post('/controller/sdwan/v1/config/delete/zones', param);
+
+/**
+ * @desc 查询zone Protection Profile
+ * @param {Object}
+ */
+
+export const zonePPName = param =>
+  $http.get('/controller/sdwan/v1/config/query/zone-protection-name', param);
+// ---------------zone Protection Profile------------------
+/**
+ * @desc 获取zone Protection Profile列表
+ * @param {Object}
+ */
+
+export const zonePPLists = param =>
+  $http.get('/controller/sdwan/v1/config/zone-protection', param);
+
+/**
+ * @desc 新建zone Protection Profile
+ * @param {Object}
+ */
+
+export const zonePPCreate = param =>
+  $http.post('/controller/sdwan/v1/config/zone-protection', param);
+
+/**
+ * @desc 查询zone Protection Profile
+ * @param {Object}
+ */
+
+export const zonePPSearch = param =>
+  $http.get('/controller/sdwan/v1/config/query/zone-protection', param);
+
+/**
+ * @desc 修改zone Protection Profile
+ * @param {Object}
+ */
+
+export const zonePPModify = param =>
+  $http.post('/controller/sdwan/v1/config/modify/zone-protection', param);
+
+/**
+ * @desc 删除zone Protection Profile
+ * @param {Object}
+ */
+
+export const zonePPDelete = param =>
+  $http.post('/controller/sdwan/v1/config/delete/zone-protection', param);
 
 // ---------------QosPolicy------------------
 /**
@@ -151,20 +239,20 @@ export const appQosPolicySearch = param =>
   $http.get('/controller/sdwan/v1/qosPolicies/qosPolicy/get', param);
 
 /**
- * @desc 修改QosPolicy
+ * @desc 修改appQosPolicy
  * @param {Object}
  */
 
 export const appQosPolicyModify = param =>
-  $http.post('/controller/sdwan/v1/policies/update/', param);
+  $http.post('/controller/sdwan/v1/policies/update/id', param);
 
 /**
- * @desc 删除QosPolicy
+ * @desc 删除vQosPolicy
  * @param {Object}
  */
 
 export const appQosPolicyDelete = param =>
-  $http.post('/controller/sdwan/v1/policies/delete', param);
+  $http.post('/controller/sdwan/v1/policies/delete/id', param);
 
 /**
  * @desc 查询Source Zone Destination Zone
@@ -185,7 +273,7 @@ export const addressList = param =>
  * @param {Object}
  */
 export const serviceList = param =>
-  $http.get('/controller/sdwan/v1/policies/getServiceList', param);
+  $http.get('/controller/sdwan/v1/config/query/services-name-all', param);
 
 /**
  * @desc 查询ProfileSetting
@@ -193,6 +281,13 @@ export const serviceList = param =>
  */
 export const ProfileSetting = param =>
   $http.get('/controller/sdwan/v1/policies/getProfileSetting', param);
+
+/**
+ * @desc 查询Schedules
+ * @param {Object}
+ */
+export const schedules = param =>
+  $http.get('/controller/sdwan/v1/policies/getSchedules', param);
 
 /**
  * @desc 查询applicationList

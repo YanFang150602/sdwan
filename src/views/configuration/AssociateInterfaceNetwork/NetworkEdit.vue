@@ -1,11 +1,24 @@
 <template>
   <div>
-    <a-modal v-model="visible" title="Edit Address" on-ok="handleOk" width="420px">
+    <a-modal
+      v-drag
+      v-model="visible"
+      title="Edit Associate Interface/Network"
+      on-ok="handleOk"
+      width="420px"
+      :maskClosable="false"
+    >
       <template slot="footer">
-        <a-button key="submit" type="primary" @click="handleOk">Ok</a-button>
+        <a-button
+          key="submit"
+          type="primary"
+          @click="handleOk"
+          :loading="loading"
+          >Ok</a-button
+        >
         <a-button key="back" @click="handleCancel">Cancel</a-button>
       </template>
-      <a-form-model :model="form">
+      <a-form-model :model="form" ref="ruleForm" :rules="rules">
         <div class="title">
           <a-row>
             <a-col :span="24">
@@ -20,8 +33,8 @@
           <a-row>
             <a-col :span="24">
               <a-form-model-item>
-                <a-form-model-item label="Name">
-                  <a-input v-model="AssocNetworkCheck.name" disabled/>
+                <a-form-model-item label="Name" prop="name">
+                  <a-input v-model="AssocNetworkCheck.name" disabled />
                 </a-form-model-item>
               </a-form-model-item>
             </a-col>
@@ -30,7 +43,7 @@
             <a-col :span="24">
               <a-form-model-item>
                 <a-form-model-item label="Description">
-                  <a-input v-model="AssocNetworkCheck.description"/>
+                  <a-input v-model="AssocNetworkCheck.description" />
                 </a-form-model-item>
               </a-form-model-item>
             </a-col>
@@ -45,12 +58,7 @@
                   size="small"
                   :open="false"
                   v-model="AssocNetworkCheck.tags"
-                >
-                  <!-- <a-select-option
-                      v-for="i in 25"
-                      :key="(i + 9).toString(36) + i"
-                  >{{ (i + 9).toString(36) + i }}</a-select-option>-->
-                </a-select>
+                ></a-select>
               </a-form-model-item>
             </a-col>
           </a-row>
@@ -60,12 +68,20 @@
           <a-row>
             <a-col :span="12">
               <a-form-model-item label="Burst Size(Bytes)">
-                <a-input v-model="AssocNetworkCheck.burstSize" disabled/>
+                <a-input
+                  v-model="AssocNetworkCheck.burstSize"
+                  disabled
+                  placeholder="e.g.1000-4294967295"
+                />
               </a-form-model-item>
             </a-col>
             <a-col :span="12">
               <a-form-model-item label="Rate(Kbps)">
-                <a-input v-model="AssocNetworkCheck.rate" disabled/>
+                <a-input
+                  v-model="AssocNetworkCheck.rate"
+                  disabled
+                  placeholder="e.g.8-10000000"
+                />
               </a-form-model-item>
             </a-col>
           </a-row>
@@ -79,7 +95,8 @@
                     value="item"
                     v-for="(item, index) in RewriteSelect"
                     :key="index"
-                  >{{ item }}</a-select-option>
+                    >{{ item }}</a-select-option
+                  >
                 </a-select>
               </a-form-model-item>
             </a-col>
@@ -90,7 +107,8 @@
                     value="item"
                     v-for="item in RewriteRuleSelect"
                     :key="item"
-                  >{{ item }}</a-select-option>
+                    >{{ item }}</a-select-option
+                  >
                 </a-select>
               </a-form-model-item>
             </a-col>
@@ -107,7 +125,9 @@
               <a-form-model-item label="Scheduler Map">
                 <a-select v-model="AssocNetworkCheck.schedulerMap" disabled>
                   <a-select-option value="test">test</a-select-option>
-                  <a-select-option value="testSchedule">testSchedule</a-select-option>
+                  <a-select-option value="testSchedule"
+                    >testSchedule</a-select-option
+                  >
                 </a-select>
               </a-form-model-item>
             </a-col>
@@ -115,7 +135,11 @@
           <a-row>
             <a-col :span="12">
               <a-form-model-item label="Logging Interval(Secs)">
-                <a-input v-model="AssocNetworkCheck.loggingInterval" disabled/>
+                <a-input
+                  v-model="AssocNetworkCheck.loggingInterval"
+                  disabled
+                  placeholder="e.g.2-300"
+                />
               </a-form-model-item>
             </a-col>
             <a-col :span="12">
@@ -146,7 +170,7 @@ export default {
   props: ['AssocNetworkCheck'],
   data() {
     return {
-      // loading: false,
+      loading: false,
       visible: false,
       form: {
         resource: '',
@@ -177,7 +201,16 @@ export default {
       tags: [],
       RewriteSelect: [],
       RewriteRuleSelect: [],
-      eightRewriteRuleSelect: []
+      eightRewriteRuleSelect: [],
+      rules: {
+        name: [
+          {
+            required: true,
+            message: 'Please select Activity zone',
+            trigger: 'change'
+          }
+        ]
+      }
     };
   },
   created() {
@@ -187,6 +220,44 @@ export default {
     this.eightRewriteRule();
     this.Rewrite();
   },
+  directives: {
+    // 拖拽自定义指令
+    drag(el) {
+      console.log('移动', el);
+      // 将ant-modal的position改为静态，使拖拽框按照电脑屏幕定位
+      // el.children[1].children[0].style.position = 'static';
+      // 获取到ant-modal-content元素
+      let targetEl = el.children[1].children[0].children[1];
+      // targetEl.style.top = '100px';
+      targetEl.onmousedown = function(e) {
+        // 点下鼠标的位置
+        let startX = e.pageX;
+        let startY = e.pageY;
+        // 点下鼠标的元素的位置
+        let offsetX = targetEl.offsetLeft;
+        let offsetY = targetEl.offsetTop;
+        document.onmousemove = function(e) {
+          // 计算出元素的left 和 top 值
+          let dx = offsetX + (e.pageX - startX);
+          let dy = offsetY + (e.pageY - startY);
+          // // 进行拖拽范围的限制(不能超出屏幕)
+          // dx = Math.max(0, dx);
+          // dy = Math.max(0, dy);
+          // let scrollWidth = window.innerWidth - targetEl.offsetWidth;
+          // let scrollHeight = window.innerHeight - targetEl.offsetHeight;
+          // dx = Math.min(scrollWidth, dx);
+          // dy = Math.min(scrollHeight, dy);
+          // 设置元素的left和top值，实现拖拽
+          targetEl.style.left = dx + 'px';
+          targetEl.style.top = dy + 'px';
+        };
+        // 鼠标弹起，取消鼠标移动事件
+        targetEl.onmouseup = function() {
+          document.onmousemove = null;
+        };
+      };
+    }
+  },
   computed: {
     ...mapState(['organization', 'deviceName'])
   },
@@ -195,11 +266,10 @@ export default {
       this.visible = true;
     },
     async handleOk() {
-      // this.loading = true;
-      // setTimeout(() => {
-      //   this.visible = false;
-      //   this.loading = false;
-      // }, 3000);
+      this.loading = true;
+      setTimeout(() => {
+        this.loading = false;
+      }, 3000);
 
       this.netWorkEdit.data.name = this.AssocNetworkCheck.name;
       this.netWorkEdit.data.description = this.AssocNetworkCheck.description;
@@ -215,6 +285,8 @@ export default {
         this.visible = false;
         this.$message.success('编辑成功');
         this.$parent.tableForm();
+      } else {
+        this.$message.error(res.message);
       }
     },
     handleCancel() {
@@ -269,6 +341,19 @@ export default {
 }
 </style>
 <style lang="scss" scoped>
+// label样式
+/deep/.ant-modal-title {
+  font-size: 12px;
+  margin-left: -12px;
+}
+/deep/.ant-form label {
+  font-size: 12px;
+}
+/deep/.ant-modal-close-x {
+  line-height: 36px;
+  width: 40px;
+}
+// -----------------------
 /deep/.ant-form-item-label > label::after {
   display: none;
 }
@@ -356,8 +441,8 @@ export default {
   position: relative;
   padding-top: 5px;
   .subscrition {
-    width: 80px;
-    height: 21px;
+    width: 55px;
+    height: 22px;
     background-color: #507691;
     border-radius: 5px;
     position: absolute;
@@ -366,6 +451,7 @@ export default {
     line-height: 21px;
     text-align: center;
     color: #fff;
+    font-size: 12px;
   }
 }
 .footer {
@@ -394,5 +480,21 @@ export default {
       line-height: unset;
     }
   }
+}
+// 按钮
+/deep/.ant-btn-primary {
+  width: 70px;
+  height: 30px;
+  background-color: #a7d054;
+  border: none;
+  font-size: 12px;
+}
+/deep/.ant-btn:nth-child(2) {
+  width: 70px;
+  height: 30px;
+  background-color: #3f4a5b;
+  border: none;
+  color: #ffffff;
+  font-size: 12px;
 }
 </style>

@@ -30,8 +30,8 @@ export const routingInstances = name =>
 
 // spoke组查询
 export const spokeCheck = name =>
-  $http.get(`//controller/sdwan/v1/spokegroup/modify/${name}`);
+  $http.get(`/controller/sdwan/v1/spokegroup/modify/${name}`);
 
 // spoke组编辑
 export const spokeEdit = (name, param) =>
-  $http.post(`//controller/sdwan/v1/spokegroup/modify/${name}`, param);
+  $http.post(`/controller/sdwan/v1/spokegroup/modify/${name}`, param);

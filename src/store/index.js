@@ -10,12 +10,9 @@ Vue.use(Vuex);
 const state = {
   // 当前组织名称
   organization: localStorage.getItem('organization') || '',
+  objectType: localStorage.getItem('objectType') || '',
   // home页下拉宽数据
-  admNameList: [],
-  // 租户列表数据
-  admUsersList: {},
-  // 模板列表数据
-  tempList: {},
+  admNameList: JSON.parse(localStorage.getItem('admNameList')) || [],
   // ######################zwj
   show: {
     isShow: true,

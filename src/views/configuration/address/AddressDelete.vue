@@ -1,15 +1,15 @@
 <template>
   <div>
-    <a-modal v-model="visible" title="Confirm Delete" on-ok="handleOk">
+    <a-modal v-model="visible" title="Confirm Delete" on-ok="handleOk" :maskClosable="false">
       <template slot="footer">
         <a-button
+          :loading="loading"
           key="submit"
           type="primary"
           @click="handleOk"
           style="baclGround:#a7d054"
-          >Yes</a-button
-        >
-        <a-button key="back" @click="handleCancel">No</a-button>
+        >Yes</a-button>
+        <a-button key="back" type="danger" @click="handleCancel">No</a-button>
       </template>
       <p>Are you sure want to delete the selected record(s)?</p>
     </a-modal>
@@ -22,38 +22,41 @@ export default {
   props: ['addressDele'],
   data() {
     return {
-      // loading: false,
+      loading: false,
       visible: false,
       dele: {
-        id: '',
-        deviceName: '',
-        userName: ''
+        name: '',
+        objectName: '',
+        objectType: '',
+        orgName: ''
       }
     };
   },
   computed: {
-    ...mapState(['organization', 'deviceName'])
+    ...mapState(['organization', 'deviceName', 'objectType'])
   },
   methods: {
     showModalDelete() {
       this.visible = true;
     },
     async handleOk() {
-      // this.loading = true;
-      // setTimeout(() => {
-      //   this.visible = false;
-      //   this.loading = false;
-      // }, 3000);
+      this.loading = true;
+      setTimeout(() => {
+        this.loading = false;
+      }, 3000);
       console.log(this.addressDele);
-      this.dele.id = this.addressDele;
-      this.dele.deviceName = this.deviceName;
-      this.dele.userName = this.organization;
-      const res = await addressDelete(this.dele.id, this.dele);
+      this.dele.name = this.addressDele;
+      this.dele.objectName = this.deviceName;
+      this.dele.orgName = this.organization;
+      this.dele.objectType = this.objectType;
+      const res = await addressDelete(this.dele);
       console.log(res);
       if (res.message === 'Success') {
         this.visible = false;
         this.$message.success('删除成功');
         this.$parent.tableForm();
+      } else {
+        this.$message.error(res.message);
       }
     },
     handleCancel() {
@@ -86,6 +89,14 @@ export default {
     height: 50px;
   }
 }
+/deep/.ant-modal-title {
+  font-size: 12px;
+  margin-left: -12px;
+}
+/deep/.ant-modal-close-x {
+  line-height: 36px;
+  width: 40px;
+}
 
 // 按钮
 /deep/.ant-btn-primary {
@@ -94,7 +105,7 @@ export default {
   background-color: #a7d054;
   border: none;
 }
-/deep/button[data-v-36f0eb6c]:nth-child(2) {
+/deep/.ant-btn-danger {
   width: 70px;
   height: 30px;
   background-color: #3f4a5b;

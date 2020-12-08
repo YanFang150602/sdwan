@@ -1,69 +1,15 @@
 <template>
   <div class="schedules">
-    <!-- 搜索框 -->
-    <a-row
-      class="table-header"
-      type="flex"
-      justify="space-between"
-      align="middle"
-    >
-      <!--搜索栏-->
-      <a-col :style="{ width: 'calc(100%-475px)' }">
-        <a-input
-          size="small"
-          ref="searchInput"
-          v-model="keywords"
-          placeholder="Search"
-          @keyup="search"
-        >
-          <a-icon slot="prefix" type="search" />
-          <a-icon
-            @click="keywords = ''"
-            v-show="keywords != ''"
-            slot="suffix"
-            type="close"
-          />
-        </a-input>
-      </a-col>
-      <!--表格功能按钮-->
-      <a-col>
-        <a-row
-          :style="{ width: '425px' }"
-          type="flex"
-          justify="end"
-          align="middle"
-        >
-          <a-col
-            :style="{
-              fontSize: '18px',
-              cursor: 'pointer',
-              marginRight: '20px'
-            }"
-          >
-            <a-icon @click="showAddWinModal" type="plus" />
-          </a-col>
-          <a-col
-            :style="{
-              fontSize: '18px',
-              cursor: 'pointer',
-              marginRight: '20px'
-            }"
-          >
-            <a-icon @click="showDelWinModal" type="minus" />
-          </a-col>
-          <a-col>
-            <v-pagination
-              :total="totalCount"
-              size="small"
-              :page-size="pageSize"
-              :layout="['prev', 'jumper', 'total', 'next', 'sizer']"
-              @page-change="pageChange"
-              @page-size-change="pageSizeChange"
-            ></v-pagination>
-          </a-col>
-        </a-row>
-      </a-col>
-    </a-row>
+    <Pagination
+      :total="totalCount"
+      :page-size="pageSize"
+      @page-change="pageChange"
+      @page-size-change="pageSizeChange"
+      @create-item="showAddWinModal"
+      @delete-item="showDelWinModal"
+      @search="search"
+      @cancelSearch="cancelSearch"
+    />
     <!-- 列表 -->
     <!-- 表单主体内容 -->
     <v-table
@@ -78,31 +24,21 @@
       style="width:100%;"
       isFrozen="true"
       @on-custom-comp="customTableFunc"
+      error-content="Temporarily no data"
     ></v-table>
     <!-- 组群弹框 -->
     <div>
-      <a-modal
-        v-model="delWinVisible"
-        title="Confirm Decommission"
-        @ok="delOK"
-        width="430px"
-      >
+      <a-modal v-model="delWinVisible" title="Confirm Decommission" @ok="delOK" width="430px">
         <template slot="footer">
-          <a-button
-            key="submit"
-            type="primary"
-            :loading="delLoading"
-            @click="delOK"
-          >
-            OK
-          </a-button>
+          <a-button key="submit" type="primary" :loading="delLoading" @click="delOK">OK</a-button>
           <a-button key="back" @click="delCancel">Cancel</a-button>
         </template>
-        <span style="color:#fff;margin:12px 0;">
-          Are you sure you want to delete the selected record(s)?
-        </span>
+        <span
+          style="color:#fff;margin:12px 0;"
+        >Are you sure you want to delete the selected record(s)?</span>
       </a-modal>
       <a-modal
+        v-drag
         v-model="addOrEditWinVisible"
         :title="title"
         :destroyOnClose="true"
@@ -114,14 +50,7 @@
           @passChildContent="passChildContent"
         ></ScheduleAddOrEdit>
         <template slot="footer">
-          <a-button
-            key="submit"
-            type="primary"
-            :loading="addOrEditLoading"
-            @click="addOrEditOK"
-          >
-            OK
-          </a-button>
+          <a-button key="submit" type="primary" :loading="addOrEditLoading" @click="addOrEditOK">OK</a-button>
           <a-button key="back" @click="addOrEditCancel">Cancel</a-button>
         </template>
       </a-modal>
@@ -132,6 +61,7 @@
 import Vue from 'vue';
 import { mapState } from 'vuex';
 import ScheduleAddOrEdit from './ScheduleAddOrEdit';
+import Pagination from 'components/Pagination';
 import {
   ScheduleQuery,
   ScheduleAdd,
@@ -141,7 +71,53 @@ import {
 export default {
   name: 'Schedule',
   components: {
-    ScheduleAddOrEdit
+    ScheduleAddOrEdit,
+    Pagination
+  },
+  directives: {
+    // 拖拽自定义指令
+    drag(el) {
+      console.log('移动', el);
+      // 将ant-modal的position改为静态，使拖拽框按照电脑屏幕定位
+      // el.children[1].children[0].style.position = 'static';
+      // 获取到ant-modal-content元素
+      let targetEl = '';
+      if (el.children[1].children) {
+        localStorage.setItem('dragDom', el.children[1].children[0].children[1]);
+        targetEl = el.children[1].children[0].children[1];
+      } else {
+        targetEl = localStorage.getItem('dragDom');
+      }
+      // let targetEl = el.children[1].children[0].children[1];
+      // targetEl.style.top = '100px';
+      targetEl.onmousedown = function(e) {
+        // 点下鼠标的位置
+        let startX = e.pageX;
+        let startY = e.pageY;
+        // 点下鼠标的元素的位置
+        let offsetX = targetEl.offsetLeft;
+        let offsetY = targetEl.offsetTop;
+        document.onmousemove = function(e) {
+          // 计算出元素的left 和 top 值
+          let dx = offsetX + (e.pageX - startX);
+          let dy = offsetY + (e.pageY - startY);
+          // // 进行拖拽范围的限制(不能超出屏幕)
+          // dx = Math.max(0, dx);
+          // dy = Math.max(0, dy);
+          // let scrollWidth = window.innerWidth - targetEl.offsetWidth;
+          // let scrollHeight = window.innerHeight - targetEl.offsetHeight;
+          // dx = Math.min(scrollWidth, dx);
+          // dy = Math.min(scrollHeight, dy);
+          // 设置元素的left和top值，实现拖拽
+          targetEl.style.left = dx + 'px';
+          targetEl.style.top = dy + 'px';
+        };
+        // 鼠标弹起，取消鼠标移动事件
+        targetEl.onmouseup = function() {
+          document.onmousemove = null;
+        };
+      };
+    }
   },
   data() {
     return {
@@ -170,25 +146,39 @@ export default {
           isResize: true
         },
         {
-          field: 'tag',
+          field: 'tags',
           title: 'Tag',
           width: 246,
           columnAlign: 'left',
-          isResize: true
+          isResize: true,
+          formatter: rowData => {
+            const res = rowData.tags.join(',');
+            return `<span>${res}</span>`;
+          }
         },
         {
-          field: 'recurrence',
+          field: 'recurring',
           title: 'Recurrence',
           width: 246,
           columnAlign: 'left',
-          isResize: true
+          isResize: true,
+          formatter: rowData => {
+            const res = rowData.recurring
+              .map(item => item.recurrence)
+              .join(',');
+            return `<span>${res}</span>`;
+          }
         },
         {
           field: 'time',
           title: 'Time',
           width: 246,
           columnAlign: 'left',
-          isResize: true
+          isResize: true,
+          formatter: rowData => {
+            const res = rowData.recurring.map(item => item.time).join(',');
+            return `<span>${res}</span>`;
+          }
         }
       ],
       tableDataList: [],
@@ -210,6 +200,7 @@ export default {
   created() {
     this.querySchedules();
   },
+
   methods: {
     // 表格操作Table start
     search() {
@@ -222,21 +213,25 @@ export default {
       this.title = 'Edit Schedule';
       this.addOrEditWinVisible = true;
     },
+    cancelSearch() {},
     selectALL(selection) {
-      this.delScheduleList = {
-        data: []
-      };
-      for (let row of selection) {
-        this.delScheduleList.data.push(row.name);
-      }
+      console.log(selection);
+      // this.delScheduleList = {
+      //   data: []
+      // };
+      // for (let row of selection) {
+      //   this.delScheduleList.data.push(row.name);
+      // }
     },
-    selectChange(selection) {
+    selectChange(selection, rowData) {
       this.delScheduleList = {
-        data: []
+        data: ''
       };
-      for (let row of selection) {
-        this.delScheduleList.data.push(row.name);
-      }
+      console.log(rowData.name);
+      this.delScheduleList.data = rowData.name;
+      // for (let row of selection) {
+      //   this.delScheduleList.data.push(row.name);
+      // }
     },
     selectGroupChange(selection) {
       console.log('select-group-change', selection);
@@ -248,9 +243,21 @@ export default {
         offset: (this.pageIndex - 1) * this.pageSize,
         limit: this.pageSize
       });
+
       if (res.message === 'Success') {
-        this.tableDataList = res.result ? res.result : null;
+        // this.tableDataList = res.result.data ? res.result.data : null;
+        this.tableDataList = res.result.data;
+
         this.totalCount = res.totalCount;
+        console.log(this.tableDataList);
+        // this.tableDataList.forEach(item => {
+        //   console.log(item.tags);
+        //   if (item.tags == []) {
+        //     for (const i = 0; i++; i <= this.tableDataList.length) {
+        //       this.tableDataList[i].tags = '';
+        //     }
+        //   }
+        // });
       } else {
         this.tableDataList = [{}];
         this.totalCount = 0;
@@ -280,19 +287,26 @@ export default {
       if (isOK) {
         this.addOrEditLoading = true;
         let params = {
-          orgaName: this.organization,
+          orgName: this.organization,
           deviceName: this.deviceName
         };
         let res = {};
-        
+
         for (let key in this.curAddSchedule) {
           if (key.indexOf('temp') == 0) {
             delete this.curAddSchedule[key];
           }
         }
+        if (this.curAddSchedule.description === '') {
+          this.curAddSchedule.description = null;
+        }
         params.data = this.curAddSchedule;
         if (this.operType === 'add') {
           res = await ScheduleAdd(params);
+          if (res.message === 'success') {
+            this.addOrEditWinVisible = false;
+            this.$message('创建成功');
+          }
         } else {
           res = await ScheduleModify(params);
         }
@@ -300,6 +314,9 @@ export default {
         if (res.message === 'Success') {
           this.addOrEditWinVisible = false;
           this.querySchedules();
+          this.$message.success('编辑成功');
+        } else {
+          this.$message.error(res.message);
         }
       }
     },
@@ -331,10 +348,12 @@ export default {
         deviceName: this.deviceName,
         data: this.delScheduleList.data
       });
-      if (res.message === 'Success') {
+      if (res.message === 'success') {
         this.showDelWinModal = false;
         this.pageIndex = 1;
         this.querySchedules();
+      } else {
+        this.$message.error(res.message);
       }
     },
     delCancel() {
@@ -368,6 +387,12 @@ Vue.component('schedule-opration', {
 });
 </script>
 <style lang="scss" scoped>
+/deep/.ant-form-explain {
+  display: none !important;
+}
+/deep/.ant-form-item-label > label::after {
+  display: none;
+}
 .schedules {
   height: 100%;
   overflow: hidden;
@@ -397,6 +422,9 @@ Vue.component('schedule-opration', {
       }
     }
   }
+}
+/deep/.ant-modal-title {
+  font-size: 12px;
 }
 /deep/.ant-modal-content {
   max-height: 325px;

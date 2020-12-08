@@ -16,7 +16,6 @@ export const ScheduleQuery = ({ deviceName, orgName, offset, limit }) =>
     `/controller/sdwan/v1/schedules?deviceName=${deviceName}&orgName=${orgName}&offset=${offset}&pageSize=${limit}`
   );
 
-
 // 查询单个Schedule
 export const ScheduleSingleQuery = ({ deviceName, orgName, name }) =>
   $http.get(
@@ -77,8 +76,6 @@ export const TunnelRouteInsQueryByName = ({ deviceName }) =>
     `/controller/sdwan/v1/vpnprofile/getTunnelRoutingInstance?tunnelInterfaceParam=tvi(name;unit(name))&deviceName=${deviceName}`
   );
 
-// 查询Peer FQDN
-export const PeerFQDNQuery = ({ orgName, deviceName, offset, limit }) =>
-  $http.get(
-    `/controller/sdwan/v1/address?userName=${orgName}&deviceName=${deviceName}&offset=${offset}&limit=${limit}`
-  );
+// 查询地址，获取类型为FQDN
+export const PeerFQDNQuery = param =>
+  $http.get('/controller/sdwan/v1/config/addresses', param);

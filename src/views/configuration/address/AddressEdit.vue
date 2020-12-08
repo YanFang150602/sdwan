@@ -1,22 +1,24 @@
 <template>
   <div>
     <a-modal
+      v-drag
       v-model="visible"
       title="Edit Address"
       on-ok="handleOk"
       width="420px"
+      :maskClosable="false"
     >
       <template slot="footer">
-        <a-button key="submit" type="primary" @click="handleOk">Ok</a-button>
+        <a-button key="submit" type="primary" @click="handleOk" :loading="loading">Ok</a-button>
         <a-button key="back" @click="handleCancel">Cancel</a-button>
       </template>
-      <a-form-model :model="form">
+      <a-form-model :model="addressEdit" :rules="rules" ref="ruleForm">
         <div class="title">
           <a-row>
             <a-col :span="24">
               <a-form-model-item>
-                <a-form-model-item label="Name">
-                  <a-input v-model="addressEdit.name" disabled />
+                <a-form-model-item label="Name" prop="name">
+                  <a-input v-model="addressEdit.name" disabled/>
                 </a-form-model-item>
               </a-form-model-item>
             </a-col>
@@ -25,7 +27,7 @@
             <a-col :span="24">
               <a-form-model-item>
                 <a-form-model-item label="Description">
-                  <a-input v-model="addressEdit.description" />
+                  <a-input v-model="addressEdit.description"/>
                 </a-form-model-item>
               </a-form-model-item>
             </a-col>
@@ -41,44 +43,30 @@
                     :open="false"
                     style="width: 100%"
                     :token-separators="[',']"
-                  >
-                    <!-- <a-select-option
-                      v-for="i in 25"
-                      :key="(i + 9).toString(36) + i"
-                    >{{ (i + 9).toString(36) + i }}</a-select-option>-->
-                  </a-select>
+                  ></a-select>
                 </a-form-model-item>
               </a-form-model-item>
             </a-col>
           </a-row>
         </div>
         <div class="footer">
-          <!-- <div class="ForWardingClass">ForWarding Class</div> -->
           <a-row>
             <a-col :span="12">
-              <a-form-model-item label="Type">
+              <a-form-model-item label="Type" prop="type">
                 <a-select v-model="addressEdit.type">
                   <a-select-option value="Ipv4">Ipv4</a-select-option>
-                  <a-select-option value="Ipv4 Wildcard Mask"
-                    >Ipv4 Wildcard Mask</a-select-option
-                  >
-                  <a-select-option value="Ipv4-Range"
-                    >Ipv4 Range</a-select-option
-                  >
-                  <a-select-option value="Ipv6-prefix"
-                    >Ipv6 Address/Prefix</a-select-option
-                  >
+                  <a-select-option value="Ipv4 Wildcard Mask">Ipv4 Wildcard Mask</a-select-option>
+                  <a-select-option value="Ipv4-Range">Ipv4 Range</a-select-option>
+                  <a-select-option value="Ipv6-prefix">Ipv6 Address/Prefix</a-select-option>
                   <a-select-option value="fqdn">FQDN</a-select-option>
-                  <a-select-option value="dynamic-address"
-                    >Dynamic Address</a-select-option
-                  >
+                  <a-select-option value="dynamic-address">Dynamic Address</a-select-option>
                 </a-select>
               </a-form-model-item>
             </a-col>
             <a-col :span="12">
               <a-form-model-item>
-                <a-form-model-item :label="title">
-                  <a-input v-model="addressEdit.value" />
+                <a-form-model-item :label="title" prop="value">
+                  <a-input v-model="addressEdit.value"/>
                 </a-form-model-item>
               </a-form-model-item>
             </a-col>
@@ -121,7 +109,7 @@ export default {
   },
   data() {
     return {
-      // loading: false,
+      loading: false,
       visible: false,
       form: {
         name: '',
@@ -131,55 +119,135 @@ export default {
         addressPrefix: ''
       },
       formEdit: {
-        id: '',
-        deviceName: '',
-        userName: '',
-        address: {
-          name: '',
-          description: '',
-          tags: [],
-          type: '',
-          value: ''
-        }
+        description: '',
+        name: '',
+        objectName: '',
+        objectType: '',
+        orgName: '',
+        tags: [],
+        type: '',
+        value: ''
+      },
+      rules: {
+        name: [
+          {
+            required: true,
+            message: 'Please input Activity name',
+            trigger: 'blur'
+          }
+        ],
+        type: [
+          {
+            required: true,
+            message: 'Please select Activity zone',
+            trigger: 'change'
+          }
+        ],
+        value: [
+          {
+            required: true,
+            message: 'Please input Activity name',
+            trigger: 'blur'
+          }
+        ]
       }
     };
+  },
+  directives: {
+    // 拖拽自定义指令
+    drag(el) {
+      console.log('移动', el);
+      // 将ant-modal的position改为静态，使拖拽框按照电脑屏幕定位
+      // el.children[1].children[0].style.position = 'static';
+      // 获取到ant-modal-content元素
+      let targetEl = el.children[1].children[0].children[1];
+      // targetEl.style.top = '100px';
+      targetEl.onmousedown = function(e) {
+        // 点下鼠标的位置
+        let startX = e.pageX;
+        let startY = e.pageY;
+        // 点下鼠标的元素的位置
+        let offsetX = targetEl.offsetLeft;
+        let offsetY = targetEl.offsetTop;
+        document.onmousemove = function(e) {
+          // 计算出元素的left 和 top 值
+          let dx = offsetX + (e.pageX - startX);
+          let dy = offsetY + (e.pageY - startY);
+          // // 进行拖拽范围的限制(不能超出屏幕)
+          // dx = Math.max(0, dx);
+          // dy = Math.max(0, dy);
+          // let scrollWidth = window.innerWidth - targetEl.offsetWidth;
+          // let scrollHeight = window.innerHeight - targetEl.offsetHeight;
+          // dx = Math.min(scrollWidth, dx);
+          // dy = Math.min(scrollHeight, dy);
+          // 设置元素的left和top值，实现拖拽
+          targetEl.style.left = dx + 'px';
+          targetEl.style.top = dy + 'px';
+        };
+        // 鼠标弹起，取消鼠标移动事件
+        targetEl.onmouseup = function() {
+          document.onmousemove = null;
+        };
+      };
+    }
   },
   methods: {
     showModalEdit() {
       this.visible = true;
     },
-    async handleOk() {
-      // this.loading = true;
-      // setTimeout(() => {
-      //   this.visible = false;
-      //   this.loading = false;
-      // }, 3000);
-      // console.log(this.addressEdit);
-      this.formEdit.address = this.addressEdit;
-      console.log(this.formEdit.address.tags);
+    handleOk() {
+      this.loading = true;
+      setTimeout(() => {
+        this.loading = false;
+      }, 3000);
+      console.log(this.addressEdit);
+      this.formEdit = this.addressEdit;
+      console.log(this.formEdit.tags);
       console.log(this.addressEdit.tags);
-      this.formEdit.deviceName = this.deviceName;
-      this.formEdit.userName = this.organization;
-      this.formEdit.id = this.addressEdit.name;
-      const res = await addressEdit(this.addressEdit.name, this.formEdit);
-      console.log(res);
-      if (res.message === 'Success') {
-        this.visible = false;
-        this.$message.success('编辑成功');
-      }
+      // this.formEdit.objectName = this.deviceName;
+      // this.formEdit.orgName = this.organization;
+      // this.formEdit.name = this.addressEdit.name;
+      this.$refs.ruleForm.validate(async (valid, res) => {
+        console.log(res);
+        if (valid) {
+          const res = await addressEdit(this.formEdit);
+          console.log(res);
+          if (res.message === 'Success') {
+            this.visible = false;
+            this.$message.success('编辑成功');
+            this.$parent.tableForm();
+          } else {
+            this.$message.error(res.message);
+          }
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
     },
     handleCancel() {
       this.visible = false;
     }
-    // handleChange(value) {
-    //   console.log(`selected ${value}`);
-    //   console.log(value);
-    //   this.addressEdit.tags = value;
-    // }
   }
 };
 </script>
 <style lang="scss" scoped>
+// label样式
+/deep/.ant-modal-title {
+  font-size: 12px;
+  margin-left: -12px;
+}
+/deep/.ant-form label {
+  font-size: 12px;
+}
+/deep/.ant-modal-close-x {
+  line-height: 36px;
+  width: 40px;
+}
+// -----------------------
+/deep/.ant-form-explain {
+  display: none !important;
+}
 /deep/.ant-form-item-label > label::after {
   display: none;
 }
@@ -203,6 +271,7 @@ export default {
     background-color: #e9f4fc;
   }
 }
+
 .title {
   /deep/.ant-radio-wrapper {
     color: #f9f9f9;
@@ -265,6 +334,7 @@ export default {
   height: 30px;
   background-color: #a7d054;
   border: none;
+  font-size: 12px;
 }
 /deep/.ant-btn:nth-child(2) {
   width: 70px;
@@ -272,5 +342,6 @@ export default {
   background-color: #3f4a5b;
   border: none;
   color: #ffffff;
+  font-size: 12px;
 }
 </style>

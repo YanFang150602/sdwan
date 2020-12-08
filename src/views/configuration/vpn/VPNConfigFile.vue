@@ -1,79 +1,16 @@
 <template>
   <div class="vpn-cfg-file">
     <!-- 搜索框 -->
-    <a-row
-      class="table-header"
-      type="flex"
-      justify="space-between"
-      align="middle"
-    >
-      <!--搜索栏-->
-      <a-col  :style="{ width: 'calc(100%-475px)' }">
-        <a-input
-          size="small"
-          ref="searchInput"
-          v-model="keywords"
-          placeholder="Search"
-          :style="{ width: '425px' }"
-          @keyup="search"
-        >
-          <a-icon slot="prefix" type="search" />
-          <a-icon
-            @click="keywords = ''"
-            v-show="keywords != ''"
-            slot="suffix"
-            type="close"
-          />
-        </a-input>
-      </a-col>
-      <!--表格功能按钮-->
-      <a-col>
-        <a-row
-          :style="{ width: '435px' }"
-          type="flex"
-          justify="end"
-          align="middle"
-        >
-          <a-col
-            :style="{
-              fontSize: '18px',
-              cursor: 'pointer',
-              marginRight: '20px'
-            }"
-          >
-            <a-icon @click="showAddWinModal" type="plus" />
-          </a-col>
-          <a-col
-            :style="{
-              fontSize: '18px',
-              cursor: 'pointer',
-              marginRight: '20px'
-            }"
-          >
-            <a-icon @click="showDelWinModal" type="minus" />
-          </a-col>
-          <a-col
-            :style="{
-              fontSize: '18px',
-              cursor: 'pointer',
-              marginRight: '20px'
-            }"
-          >
-            <a-icon type="filter" />
-          </a-col>
-          <a-col>
-            <v-pagination
-              size="small"
-              :page-size="pageSize"
-              :total="totalCount"
-              :layout="['prev', 'jumper', 'total', 'next', 'sizer']"
-              @page-change="pageChange"
-              @page-size-change="pageSizeChange"
-            ></v-pagination>
-          </a-col>
-        </a-row>
-      </a-col>
-    </a-row>
+    <Pagination
+      :total="totalCount"
+      :page-size="pageSize"
+      @page-change="pageChange"
+      @page-size-change="pageSizeChange"
+      @create-item="showAddWinModal"
+      @delete-item="showDelWinModal"
+      @search="search"
+      @cancelSearch="cancelSearch"
+    />
     <!-- 列表 -->
     <!-- 表单主体内容 -->
     <div class="tablescroll">
@@ -86,6 +23,7 @@
         :select-change="selectChange"
         style="width:100%;"
         @on-custom-comp="customTableFunc"
+        error-content="Temporarily no data"
       ></v-table>
     </div>
     <!-- 组群弹框 -->
@@ -94,6 +32,7 @@
         v-model="delWinVisible"
         title="Confirm Decommission"
         width="430px"
+        class="delete"
       >
         <template slot="footer">
           <a-button
@@ -103,11 +42,11 @@
             @click="delOK"
             >OK</a-button
           >
-          <a-button key="back" @click="delCancel">Cancel</a-button>
+          <a-button key="back" type="danger" @click="delCancel"
+            >Cancel</a-button
+          >
         </template>
-        <span style="color:#fff;margin:12px 0;"
-          >Are you sure you want to delete the selected record(s)?</span
-        >
+        <p>Are you sure you want to delete the selected record(s)?</p>
       </a-modal>
       <a-modal
         v-model="addOrEditWinVisible"
@@ -137,6 +76,7 @@
 <script>
 import Vue from 'vue';
 import { mapState } from 'vuex';
+import Pagination from 'components/Pagination';
 import VPNCfgFileAddOrEdit from './VPNCfgFileAddOrEdit';
 import {
   VPNProfileQuery,
@@ -147,7 +87,8 @@ import {
 export default {
   name: 'VPNConfigFile',
   components: {
-    VPNCfgFileAddOrEdit
+    VPNCfgFileAddOrEdit,
+    Pagination
   },
   data() {
     return {
@@ -466,7 +407,14 @@ export default {
   },
   methods: {
     // 表格操作Table start
-    search() {
+    search(data) {
+      const keyword = data.trim().toLowerCase();
+      const list = this.tableDataList.filter(item =>
+        item.name.toLowerCase().includes(keyword)
+      );
+      this.tableDataList = list;
+    },
+    cancelSearch() {
       this.queryTableDataList();
     },
     customTableFunc(params) {
@@ -603,7 +551,7 @@ export default {
         curVPNProfile.deviceName = this.deviceName;
         Object.assign(this.vpnProfile, curVPNProfile);
         this.removeNullProperty(this.vpnProfile);
-        
+
         console.log('this.params = ', params);
         if (this.operType === 'add') {
           res = await VPNProfileCreate(params);
@@ -624,7 +572,11 @@ export default {
         if (Object.prototype.toString.call(obj[key]) === '[object Object]') {
           this.removeNullProperty(obj[key]);
         } else {
-          if (obj[key] === '' || (obj[key] && obj[key].length === 0) || obj[key] == null) {
+          if (
+            obj[key] === '' ||
+            (obj[key] && obj[key].length === 0) ||
+            obj[key] == null
+          ) {
             delete obj[key];
           }
         }
@@ -647,18 +599,22 @@ export default {
           return false;
         }
       });
-      this.$refs.vpnProfileAddOrEditRef.$refs.ikeRef.$refs.localAuthRef.validate(valid => {
-        if (!valid) {
-          isOK = false;
-          return false;
+      this.$refs.vpnProfileAddOrEditRef.$refs.ikeRef.$refs.localAuthRef.validate(
+        valid => {
+          if (!valid) {
+            isOK = false;
+            return false;
+          }
         }
-      });
-      this.$refs.vpnProfileAddOrEditRef.$refs.ikeRef.$refs.peerAuthRef.validate(valid => {
-        if (!valid) {
-          isOK = false;
-          return false;
+      );
+      this.$refs.vpnProfileAddOrEditRef.$refs.ikeRef.$refs.peerAuthRef.validate(
+        valid => {
+          if (!valid) {
+            isOK = false;
+            return false;
+          }
         }
-      });
+      );
       return isOK;
     },
     // VPN Config file Add end
@@ -675,6 +631,7 @@ export default {
         this.delWinVisible = false;
         this.pageIndex = 1;
         this.queryTableDataList();
+        this.$message.success('删除成功');
       } else {
         this.$message.error(res.message);
       }
@@ -761,6 +718,54 @@ Vue.component('vpncfgfile-opration', {
   .v-table-rightview .v-table-footer {
     overflow-x: auto !important;
     overflow-y: auto;
+  }
+}
+.delete {
+  /deep/.ant-modal-content {
+    max-height: 325px;
+    .ant-modal-header {
+      height: 36px;
+      background-color: #e9f4fc;
+      .ant-modal-title {
+        line-height: 8px;
+      }
+    }
+    .ant-modal-body {
+      padding: 3px;
+      background-color: #ffffff;
+      height: 100px;
+      p {
+        margin-left: 20px;
+        margin-top: 20px;
+      }
+    }
+    .ant-modal-footer {
+      background-color: #e9f4fc;
+      height: 50px;
+    }
+  }
+  /deep/.ant-modal-title {
+    font-size: 12px;
+    margin-left: -12px;
+  }
+  /deep/.ant-modal-close-x {
+    line-height: 36px;
+    width: 40px;
+  }
+
+  // 按钮
+  /deep/.ant-btn-primary {
+    width: 70px;
+    height: 30px;
+    background-color: #a7d054;
+    border: none;
+  }
+  /deep/.ant-btn-danger {
+    width: 70px;
+    height: 30px;
+    background-color: #3f4a5b;
+    border: none;
+    color: #ffffff;
   }
 }
 </style>

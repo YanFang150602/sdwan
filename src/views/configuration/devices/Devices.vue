@@ -1,69 +1,35 @@
 <template>
   <div class="devices">
-    <!-- 搜索框 -->
-    <a-row
-      class="table-header"
-      type="flex"
-      justify="space-between"
-      align="middle"
-    >
-      <!--搜索栏-->
-      <a-col :style="{ width: 'calc(100%-475px)' }">
-        <a-input
-          class="search-bar"
-          ref="searchInput"
-          v-model="keyworks"
-          placeholder="Search"
-          @keyup.enter="search"
-        >
-          <a-icon slot="prefix" type="search" />
-          <a-icon
-            @click="keyworks = ''"
-            v-show="keyworks != ''"
-            slot="suffix"
-            type="close"
-          />
-        </a-input>
-      </a-col>
-      <!--表格功能按钮-->
-      <a-col>
-        <a-row
-          :style="{ width: '425px' }"
-          type="flex"
-          justify="end"
-          align="middle"
-        >
-          <!-- <a-col
-            :style="{
-              fontSize: '18px',
-              cursor: 'pointer',
-              marginRight: '20px'
-            }"
-          >
-            <a-icon type="plus" />
-          </a-col>
-          <a-col
-            :style="{
-              fontSize: '18px',
-              cursor: 'pointer',
-              marginRight: '20px'
-            }"
-          >
-            <a-icon type="minus" />
-          </a-col>-->
-          <a-col>
-            <v-pagination
-              :total="deviceFrom.length"
-              size="small"
-              :page-size="pageSize"
-              :layout="['prev', 'jumper', 'total', 'next', 'sizer']"
-              @page-change="pageChange"
-              @page-size-change="pageSizeChange"
-            ></v-pagination>
-          </a-col>
-        </a-row>
-      </a-col>
-    </a-row>
+    <a-dropdown>
+      <a>
+        Templates
+        <a-icon type="down"/>
+      </a>
+      <a-menu slot="overlay" @click="onClick">
+        <a-menu-item key="Devices Templates">Devices Templates</a-menu-item>
+      </a-menu>
+    </a-dropdown>
+    <a-dropdown>
+      <a class="ant-dropdown-link">
+        Device
+        <a-icon type="down"/>
+      </a>
+      <a-menu slot="overlay" @click="onClick">
+        <a-menu-item key="Devices">Devices</a-menu-item>
+      </a-menu>
+    </a-dropdown>
+    <!--搜索栏-->
+    <Pagination
+      :total="totalCount"
+      :page-size="pageSize"
+      :flag="false"
+      @page-change="pageChange"
+      @page-size-change="pageSizeChange"
+      @create-item="showModal"
+      @delete-item="groupDel"
+      @search="search"
+      @cancelSearch="cancelSearch"
+    />
     <!-- 列表 -->
     <!-- 表单主体内容 -->
     <v-table
@@ -75,25 +41,31 @@
       :select-change="selectChange"
       :select-group-change="selectGroupChange"
       :height="350"
-      style="width:100%;"
+      style="width: 100%"
       isFrozen="true"
       @on-custom-comp="customCompFunc"
+      error-content="Temporarily no data"
     ></v-table>
   </div>
 </template>
 
 <script>
 import { mapActions, mapMutations, mapState } from 'vuex';
+import Pagination from 'components/Pagination';
 // import { CfTableForm } from 'apis/Configuration';
 
 export default {
+  components: {
+    Pagination
+  },
   data() {
     return {
       //分页
       pageIndex: 1,
       pageSize: 20,
-      totalCount: 100,
+      totalCount: 0,
       keyworks: '',
+      current: ['mail'],
       // 表格
       tableData: [],
       columns: [
@@ -195,11 +167,24 @@ export default {
       ]
     };
   },
+
   created() {
     this.$store.dispatch('getNameList');
     console.log(this.deviceFrom);
   },
   methods: {
+    onClick(params) {
+      console.log(params);
+      if (params.key === 'Devices Templates') {
+        this.saveObjectType('template');
+        this.$router.push({
+          name: 'CommonTemplate',
+          params: { name: 'ceshi001' }
+        });
+      } else if (params.key === 'Devices') {
+        this.saveObjectType('device');
+      }
+    },
     // 分页
     queryDevice() {
       this.$store.dispatch('getNameList', {
@@ -250,9 +235,11 @@ export default {
       console.log('select-group-change', selection);
     },
     customCompFunc(params) {
+      console.log(params);
       if (params.type === 'jump') {
         //记录deviceName
         this.saveDeviceName({ deviceName: params.rowData.name });
+        this.saveObjectType('device');
         // device 对于的home组织名称列表
         this.getNameListDevice(params.rowData.name);
         this.$router.push({
@@ -261,7 +248,7 @@ export default {
         });
       }
     },
-    ...mapMutations(['saveDeviceName']),
+    ...mapMutations(['saveDeviceName', 'saveObjectType']),
     ...mapActions(['getNameListDevice'])
   },
   computed: {
@@ -332,5 +319,8 @@ Vue.component('table-operation', {
   .ant-modal-footer {
     background-color: #e9f4fc;
   }
+}
+.ant-dropdown-link {
+  margin-left: 10px;
 }
 </style>

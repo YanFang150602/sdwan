@@ -1,69 +1,16 @@
 <template>
   <div class="devices">
     <!-- 搜索框 -->
-    <a-row
-      class="table-header"
-      type="flex"
-      justify="space-between"
-      align="middle"
-    >
-      <!--搜索栏-->
-      <a-col :style="{ width: 'calc(100%-475px)' }">
-        <a-input
-          class="search-bar"
-          ref="searchInput"
-          v-model="keyworks"
-          placeholder="Search"
-          @keyup.enter="search"
-        >
-          <a-icon slot="prefix" type="search" />
-          <a-icon
-            @click="keyworks = ''"
-            v-show="keyworks != ''"
-            slot="suffix"
-            type="close"
-          />
-        </a-input>
-      </a-col>
-      <!--表格功能按钮-->
-      <a-col>
-        <a-row
-          :style="{ width: '425px' }"
-          type="flex"
-          justify="end"
-          align="middle"
-        >
-          <a-col
-            :style="{
-              fontSize: '18px',
-              cursor: 'pointer',
-              marginRight: '20px'
-            }"
-          >
-            <a-icon @click="showModal" type="plus" />
-          </a-col>
-          <a-col
-            :style="{
-              fontSize: '18px',
-              cursor: 'pointer',
-              marginRight: '20px'
-            }"
-          >
-            <a-icon @click="showModalDelete" type="minus" />
-          </a-col>
-          <a-col>
-            <v-pagination
-              :total="totalCount"
-              size="small"
-              :page-size="pageSize"
-              :layout="['prev', 'jumper', 'total', 'next', 'sizer']"
-              @page-change="pageChange"
-              @page-size-change="pageSizeChange"
-            ></v-pagination>
-          </a-col>
-        </a-row>
-      </a-col>
-    </a-row>
+    <Pagination
+      :total="totalCount"
+      :page-size="pageSize"
+      @page-change="pageChange"
+      @page-size-change="pageSizeChange"
+      @create-item="showModal"
+      @delete-item="groupDel"
+      @search="search"
+      @cancelSearch="cancelSearch"
+    />
     <!-- 列表 -->
     <!-- 表单主体内容 -->
     <v-table
@@ -78,17 +25,14 @@
       style="width:100%;"
       isFrozen="true"
       @on-custom-comp="customCompFunc"
+      error-content="Temporarily no data"
     ></v-table>
     <!-- 新增弹框 -->
     <AddressAdd ref="AddressAddRef"></AddressAdd>
     <!-- 删除的弹框 -->
     <AddressDelete ref="AddressDeleteRef" :addressDele="idDele"></AddressDelete>
     <!-- 查看弹框 -->
-    <AddressEdit
-      ref="AddressEditRef"
-      :addressEdit="addressCheck"
-      :addressDele="idDele"
-    ></AddressEdit>
+    <AddressEdit ref="AddressEditRef" :addressEdit="addressCheck" :addressDele="idDele"></AddressEdit>
   </div>
 </template>
 <script>
@@ -97,13 +41,15 @@ import AddressDelete from './AddressDelete';
 import AddressEdit from './AddressEdit';
 import { addressForm } from 'apis/address';
 import { mapState } from 'vuex';
+import Pagination from 'components/Pagination';
 
 export default {
   name: 'QosProfiles',
   components: {
     AddressAdd,
     AddressDelete,
-    AddressEdit
+    AddressEdit,
+    Pagination
   },
   data() {
     return {
@@ -163,7 +109,7 @@ export default {
     this.tableForm();
   },
   computed: {
-    ...mapState(['organization', 'deviceName'])
+    ...mapState(['organization', 'deviceName', 'objectType'])
   },
   methods: {
     // 新增弹框
@@ -171,7 +117,7 @@ export default {
       this.$refs.AddressAddRef.showModalAdd();
     },
     // 删除弹框
-    showModalDelete() {
+    groupDel() {
       this.$refs.AddressDeleteRef.showModalDelete();
     },
     // 表格方法
@@ -183,14 +129,6 @@ export default {
       console.log(rowData.name);
       this.idDele = rowData.name;
       console.log(this.idDele);
-      // selection.forEach(item => {
-      //   console.log(item.deviceName);
-      //   this.dele.ids.push(item.deviceName);
-      //   // this.dele.id = item.deviceName;
-      // });
-      // const newArr = Array.from(new Set(this.dele.ids));
-      // this.dele.ids = newArr;
-      // console.log(this.dele);
     },
     selectGroupChange(selection) {
       console.log('select-group-change', selection);
@@ -207,26 +145,43 @@ export default {
     },
     async tableForm() {
       const res = await addressForm({
-        deviceName: this.deviceName,
-        userName: this.organization,
+        objectName: this.deviceName,
+        objectType: this.objectType,
+        orgName: this.organization,
         offset: 0,
-        limit: 25,
-        name: ''
+        limit: 25
       });
       console.log(res.result);
-      res.result.forEach(item => {
-        console.log(item);
-      });
-      this.tableData = res.result;
+      if (res.ruselt && res.result.length > 0) {
+        res.result.forEach(item => {
+          console.log(item);
+        });
+      }
+      this.tableData = res.result.data;
+      this.totalCount = res.result.totalCount;
     },
     // 分页
-    pageChange(pageIndex) {
+    async pageChange(pageIndex) {
       this.pageIndex = pageIndex;
-      this.$store.dispatch('Tabledevice', {
-        organization: this.organization,
-        offset: (this.pageIndex - 1) * this.pageSize,
-        limit: this.pageSize
+      // this.$store.dispatch('Tabledevice', {
+      //   organization: this.organization,
+      //   offset: (this.pageIndex - 1) * this.pageSize,
+      //   limit: this.pageSize
+      // });
+      const res = await addressForm({
+        objectName: this.deviceName,
+        objectType: this.objectType,
+        orgName: this.organization,
+        offset: 0,
+        limit: 25
       });
+      console.log(res.result);
+      if (res.ruselt && res.result.length > 0) {
+        res.result.forEach(item => {
+          console.log(item);
+        });
+      }
+      this.tableData = res.result.data;
     },
     pageSizeChange(pageSize) {
       this.pageIndex = 1;
@@ -236,11 +191,25 @@ export default {
         offset: (this.pageIndex - 1) * this.pageSize,
         limit: this.pageSize
       });
+    },
+    // 搜索框查询
+    search(data) {
+      // 转换全小写,实现模糊匹配
+      const keyword = data.trim().toLowerCase();
+      const list = this.tableData.filter(item =>
+        item.name.toLowerCase().includes(keyword)
+      );
+      this.tableData = list;
+    },
+    // 取消搜索，显示当前数据
+    cancelSearch() {
+      if (this.keyworks.trim() === '') {
+        this.tableForm();
+      }
     }
   }
 };
 import Vue from 'vue';
-// import { import } from '@babel/types';
 Vue.component('table-operationDevice', {
   props: {
     rowData: {
@@ -268,7 +237,7 @@ Vue.component('table-operationDevice', {
 
 <style lang="scss" scoped>
 .devices {
-  padding: 5px 20px 30px 15px;
+  // padding: 5px 20px 30px 15px;
   /deep/.search-bar {
     .ant-input {
       width: 700px;

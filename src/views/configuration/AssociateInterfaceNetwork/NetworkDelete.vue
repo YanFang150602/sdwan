@@ -1,15 +1,21 @@
 <template>
   <div>
-    <a-modal v-model="visible" title="Confirm Delete" on-ok="handleOk">
+    <a-modal
+      v-model="visible"
+      title="Confirm Delete"
+      on-ok="handleOk"
+      :maskClosable="false"
+    >
       <template slot="footer">
         <a-button
           key="submit"
           type="primary"
           @click="handleOk"
           style="baclGround:#a7d054"
+          :loading="loading"
           >Yes</a-button
         >
-        <a-button key="back" @click="handleCancel">No</a-button>
+        <a-button key="back" type="danger" @click="handleCancel">No</a-button>
       </template>
       <p>Are you sure want to delete the selected record(s)?</p>
     </a-modal>
@@ -21,7 +27,8 @@ export default {
   props: ['AssociateNetwork'],
   data() {
     return {
-      visible: false
+      visible: false,
+      loading: false
     };
   },
   methods: {
@@ -29,17 +36,18 @@ export default {
       this.visible = true;
     },
     async handleOk() {
-      // this.loading = true;
-      // setTimeout(() => {
-      //   this.visible = false;
-      //   this.loading = false;
-      // }, 3000);
+      this.loading = true;
+      setTimeout(() => {
+        this.loading = false;
+      }, 3000);
       const res = await AssInterfaceDelete(this.AssociateNetwork);
       console.log(res);
       if (res.message === 'success') {
         this.visible = false;
         this.$message.success('删除成功');
         this.$parent.tableForm();
+      } else {
+        this.$message.error(res.message);
       }
     },
     handleCancel() {
@@ -72,7 +80,14 @@ export default {
     height: 50px;
   }
 }
-
+/deep/.ant-modal-title {
+  font-size: 12px;
+  margin-left: -12px;
+}
+/deep/.ant-modal-close-x {
+  line-height: 36px;
+  width: 40px;
+}
 // 按钮
 /deep/.ant-btn-primary {
   width: 70px;
@@ -80,7 +95,7 @@ export default {
   background-color: #a7d054;
   border: none;
 }
-/deep/button[data-v-36f0eb6c]:nth-child(2) {
+/deep/.ant-btn-danger {
   width: 70px;
   height: 30px;
   background-color: #3f4a5b;

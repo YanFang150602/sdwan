@@ -1,14 +1,9 @@
 <template>
   <div class="qosProfiles">
     <!-- 搜索框 -->
-    <a-row
-      class="table-header"
-      type="flex"
-      justify="space-between"
-      align="middle"
-    >
-      <!--搜索栏-->
-      <a-col :style="{ width: 'calc(100%-475px)' }">
+    <!-- <a-row class="table-header" type="flex" justify="space-between" align="middle"> -->
+    <!--搜索栏-->
+    <!-- <a-col :style="{ width: 'calc(100%-475px)' }">
         <a-input
           class="search-bar"
           ref="searchInput"
@@ -16,23 +11,13 @@
           placeholder="Search"
           @keyup.enter="search"
         >
-          <a-icon slot="prefix" type="search" />
-          <a-icon
-            @click="keyworks = ''"
-            v-show="keyworks != ''"
-            slot="suffix"
-            type="close"
-          />
+          <a-icon slot="prefix" type="search"/>
+          <a-icon @click="keyworks = ''" v-show="keyworks != ''" slot="suffix" type="close"/>
         </a-input>
-      </a-col>
-      <!--表格功能按钮-->
-      <a-col>
-        <a-row
-          :style="{ width: '425px' }"
-          type="flex"
-          justify="end"
-          align="middle"
-        >
+    </a-col>-->
+    <!--表格功能按钮-->
+    <!-- <a-col>
+        <a-row :style="{ width: '425px' }" type="flex" justify="end" align="middle">
           <a-col
             :style="{
               fontSize: '18px',
@@ -40,7 +25,7 @@
               marginRight: '20px'
             }"
           >
-            <a-icon @click="showModal" type="plus" />
+            <a-icon @click="showModal" type="plus"/>
           </a-col>
           <a-col
             :style="{
@@ -49,7 +34,7 @@
               marginRight: '20px'
             }"
           >
-            <a-icon @click="showModalDelete" type="minus" />
+            <a-icon @click="showModalDelete" type="minus"/>
           </a-col>
           <a-col>
             <v-pagination
@@ -62,8 +47,18 @@
             ></v-pagination>
           </a-col>
         </a-row>
-      </a-col>
-    </a-row>
+    </a-col>-->
+    <!-- </a-row> -->
+    <Pagination
+      :total="totalCount"
+      :page-size="pageSize"
+      @page-change="pageChange"
+      @page-size-change="pageSizeChange"
+      @create-item="showModal"
+      @delete-item="groupDel"
+      @search="search"
+      @cancelSearch="cancelSearch"
+    />
     <!-- 列表 -->
     <!-- 表单主体内容 -->
     <v-table
@@ -78,6 +73,7 @@
       style="width:100%;"
       isFrozen="true"
       @on-custom-comp="customCompFunc"
+      error-content="Temporarily no data"
     ></v-table>
     <!-- 新增弹框 -->
     <QosProfilesAdd ref="QosProfilesAddRef"></QosProfilesAdd>
@@ -100,13 +96,15 @@ import QosProfilesDelete from './QosProfilesDelete';
 import QosProfilesEdit from './QosProfilesEdit';
 import { qosProfilesForm, qosProfilesCheck } from 'apis/qosProfiles';
 import { mapState } from 'vuex';
+import Pagination from 'components/Pagination';
 
 export default {
   name: 'QosProfiles',
   components: {
     QosProfilesAdd,
     QosProfilesDelete,
-    QosProfilesEdit
+    QosProfilesEdit,
+    Pagination
   },
   data() {
     return {
@@ -212,7 +210,7 @@ export default {
       this.$refs.QosProfilesAddRef.showModalAdd();
     },
     // 删除弹框
-    showModalDelete() {
+    groupDel() {
       this.$refs.QosProfilesDeleteRef.showModalDelete();
     },
     // 表格方法
@@ -257,15 +255,26 @@ export default {
         offset: 0,
         pageSize: 25
       });
-      console.log(res.result.data);
+      console.log(res.result);
       this.tableData = res.result.data;
       this.totalCount = res.result.total;
     },
-    // 搜索
-    async search() {
-      const res = await qosProfilesCheck(this.keyworks);
-      console.log(res);
+    // 搜索框设备查询
+    search(data) {
+      // 转换全小写,实现模糊匹配
+      const keyword = data.trim().toLowerCase();
+      const list = this.tableData.filter(item =>
+        item.name.toLowerCase().includes(keyword)
+      );
+      this.tableData = list;
     },
+    // 取消搜索，显示当前数据
+    cancelSearch() {
+      if (this.keyworks.trim() === '') {
+        this.tableForm();
+      }
+    },
+
     // 分页
     pageChange(pageIndex) {
       this.pageIndex = pageIndex;

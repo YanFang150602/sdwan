@@ -1,69 +1,16 @@
 <template>
   <div class="deviceGroups">
     <!-- 搜索框 -->
-    <a-row
-      class="table-header"
-      type="flex"
-      justify="space-between"
-      align="middle"
-    >
-      <!--搜索栏-->
-      <a-col :style="{ width: 'calc(100%-475px)' }">
-        <a-input
-          class="search-bar"
-          ref="searchInput"
-          v-model="keyworks"
-          placeholder="Search"
-          @keyup.enter="search"
-        >
-          <a-icon slot="prefix" type="search" />
-          <a-icon
-            @click="keyworks = ''"
-            v-show="keyworks != ''"
-            slot="suffix"
-            type="close"
-          />
-        </a-input>
-      </a-col>
-      <!--表格功能按钮-->
-      <a-col>
-        <a-row
-          :style="{ width: '425px' }"
-          type="flex"
-          justify="end"
-          align="middle"
-        >
-          <a-col
-            :style="{
-              fontSize: '18px',
-              cursor: 'pointer',
-              marginRight: '20px'
-            }"
-          >
-            <a-icon @click="showAddDeviceGroupModal" type="plus" />
-          </a-col>
-          <a-col
-            :style="{
-              fontSize: '18px',
-              cursor: 'pointer',
-              marginRight: '20px'
-            }"
-          >
-            <a-icon @click="showDelDeviceGroupModal" type="minus" />
-          </a-col>
-          <a-col>
-            <v-pagination
-              :total="deviceGroupResult.totalCount"
-              size="small"
-              :page-size="pageSize"
-              :layout="['prev', 'jumper', 'total', 'next', 'sizer']"
-              @page-change="pageChange"
-              @page-size-change="pageSizeChange"
-            ></v-pagination>
-          </a-col>
-        </a-row>
-      </a-col>
-    </a-row>
+    <Pagination
+      :total="totalCount"
+      :page-size="pageSize"
+      @page-change="pageChange"
+      @page-size-change="pageSizeChange"
+      @create-item="showAddDeviceGroupModal"
+      @delete-item="showDelDeviceGroupModal"
+      @search="search"
+      @cancelSearch="cancelSearch"
+    />
     <!-- 列表 -->
     <!-- 表单主体内容 -->
     <v-table
@@ -74,7 +21,7 @@
       :select-all="selectALL"
       :select-change="selectChange"
       :select-group-change="selectGroupChange"
-      :height="540"
+      :height="500"
       style="width:100%;"
       isFrozen="true"
       @on-custom-comp="customDGTableFunc"
@@ -86,6 +33,7 @@
         title="Confirm Decommission"
         @ok="handleOkDelete"
         width="430px"
+        :maskClosable="false"
       >
         <template slot="footer">
           <a-button
@@ -107,6 +55,7 @@
         on-ok="handleOK"
         width="940px"
         :destroyOnClose="true"
+        :maskClosable="false"
       >
         <template slot="footer">
           <a-button
@@ -134,12 +83,14 @@ import {
   DeviceGroupEdit,
   DeviceGroupDelete
 } from 'apis/workFlows';
+import Pagination from 'components/Pagination';
 import DeviceGroup from 'views/workflows/devices/DeviceGroup';
 import { mapState } from 'vuex';
 export default {
   name: 'deviceGroup',
   components: {
-    DeviceGroup
+    DeviceGroup,
+    Pagination
   },
   data() {
     return {
@@ -155,7 +106,7 @@ export default {
         {
           field: 'name',
           title: 'Name',
-          width: 246,
+          width: 253,
           columnAlign: 'left',
           isResize: true,
           componentName: 'devicegroups-opration'
@@ -163,21 +114,21 @@ export default {
         {
           field: 'organization',
           title: 'Organization',
-          width: 246,
+          width: 253,
           columnAlign: 'left',
           isResize: true
         },
         {
           field: 'poststagingTemplate',
           title: 'Post Staging Template',
-          width: 246,
+          width: 253,
           columnAlign: 'left',
           isResize: true
         },
         {
           field: 'inventoryName',
           title: 'Inventory Name',
-          width: 246,
+          width: 253,
           columnAlign: 'left',
           isResize: true
         }
@@ -206,6 +157,23 @@ export default {
     this.queryDeviceGrops();
   },
   methods: {
+    // 搜索框查询
+    search(data) {
+      // 转换全小写,实现模糊匹配
+      console.log(11);
+      const keyword = data.trim().toLowerCase();
+      console.log(this.deviceGroupResult.deviceGroups);
+      const list = this.deviceGroupResult.deviceGroups.filter(item =>
+        item.name.toLowerCase().includes(keyword)
+      );
+      this.deviceGroupResult.deviceGroups = list;
+    },
+    // 取消搜索，显示当前数据
+    cancelSearch() {
+      if (this.keyworks.trim() === '') {
+        this.queryDeviceGrops();
+      }
+    },
     queryDeviceGrops() {
       this.$store.dispatch('DeviceGroups', {
         organization: this.organization,
@@ -368,23 +336,45 @@ Vue.component('devicegroups-opration', {
 <style lang="scss" scoped>
 .deviceGroups {
   padding: 5px 20px 30px 15px;
-  /deep/.search-bar {
-    .ant-input {
-      width: 400%;
-      color: #6a6f75;
-      border: 1px solid #b0c7d5;
-      height: 20px;
-      border-radius: 4px;
-      font-size: 12px;
-      line-height: 18px;
-      &:focus {
-        box-shadow: none;
-        border-color: #b0c7d5;
-      }
+  // 搜索栏与表格主体的间隔
+  .table-header {
+    margin-bottom: 10px;
+    height: 22px;
+    // 统一搜索框这行的样式统一，不需要以下样式
+    // /deep/.search-bar {
+    //   .ant-input {
+    //     width: 700px;
+    //     color: #6a6f75;
+    //     border: 1px solid #b0c7d5;
+    //     height: 20px;
+    //     border-radius: 4px;
+    //     font-size: 12px;
+    //     line-height: 18px;
+    //     &:focus {
+    //       box-shadow: none;
+    //       border-color: #b0c7d5;
+    //     }
+    //   }
+    // }
+    // 统一分页器字体颜色
+    .pagination {
+      color: #0f2c3e;
     }
   }
 }
 
+// label样式
+/deep/.ant-modal-title {
+  font-size: 12px;
+}
+/deep/.ant-form label {
+  font-size: 12px;
+}
+/deep/.ant-modal-close-x {
+  line-height: 36px;
+  width: 40px;
+}
+// -----------------------
 /deep/.ant-modal-content {
   max-height: 325px;
   .ant-modal-header {

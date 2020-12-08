@@ -1,18 +1,18 @@
 import axios from 'axios';
 import { statusMap, axiosBaseUrl } from '@/config/index';
-import $store from '../store';
-let timeID;
-const UpdateLoading = (status = 0) => {
-  $store.commit('UpdateLoading', status);
+// import $store from '../store';
+// let timeID;
+// const UpdateLoading = (status = 0) => {
+//   $store.commit('UpdateLoading', status);
 
-  if (timeID) {
-    clearTimeout(timeID);
-    timeID = null;
-  }
-  timeID = setTimeout(() => {
-    $store.commit('UpdateLoading');
-  }, 1000 * 0.1);
-};
+//   if (timeID) {
+//     clearTimeout(timeID);
+//     timeID = null;
+//   }
+//   timeID = setTimeout(() => {
+//     $store.commit('UpdateLoading');
+//   }, 1000 * 0.1);
+// };
 
 const Axios = axios.create({
   headers: {
@@ -93,7 +93,7 @@ Axios.interceptors.request.use(
     // 阻止重复请求。当发起一个新的相同请求时，上一个请求会被阻止掉
     const params = JSON.stringify(config.params) + JSON.stringify(config.data);
     stopRepeatRequest(reqList, config.url, cancel, params);
-    UpdateLoading(1);
+    //UpdateLoading(1);
     return config;
   },
   error => {
@@ -155,7 +155,7 @@ Axios.interceptors.response.use(
       //   };
       // }
     }
-    UpdateLoading(-1);
+    //UpdateLoading(-1);
   },
   error => {
     if (error.config) {
@@ -164,7 +164,7 @@ Axios.interceptors.response.use(
         allowRequest(reqList, error.config.url);
       }, duration);
     }
-    UpdateLoading(-1);
+    //UpdateLoading(-1);
     // 对响应错误做点什么
     return Promise.reject(error.data);
   }
@@ -172,26 +172,28 @@ Axios.interceptors.response.use(
 
 const calcUrlPrefix = api => {
   let url = '';
-  if (api.includes('/login') && axiosBaseUrl.url.length) {
-    //url = axiosBaseUrl.url + '/v0-snapshot/gateway/api';
-    url = '';
-  } else {
-    url = axiosBaseUrl.url.length
-      ? axiosBaseUrl.url + '/v0-snapshot/gateway/api/openapi/sdwan'
-      : '';
+
+  if (axiosBaseUrl.url.length) {
+    switch (true) {
+      case api.includes('/login'):
+        url = axiosBaseUrl.url + '/api';
+        break;
+      case api.includes('/verification-code'):
+        url = axiosBaseUrl.url;
+        break;
+      default:
+        url = axiosBaseUrl.url.length
+          ? axiosBaseUrl.url + '/api/openapi/sdwan'
+          : '';
+    }
   }
+  // if (api.includes('/login') && axiosBaseUrl.url.length) {
+  //   url = axiosBaseUrl.url + '/api';
+  // } else {
+  //   url = axiosBaseUrl.url.length ? axiosBaseUrl.url + '/openapi/sdwan' : '';
+  // }
   return url;
 };
-
-// const calcUrlPrefix = api => {
-//   let url = axiosBaseUrl.url.length ? axiosBaseUrl.url : '';
-//   if (api.includes('/market/') && !axiosBaseUrl.delPrefix) {
-//     url += '/market';
-//   } else {
-//     url += '';
-//   }
-//   return url;
-// };
 
 const $http = {
   post(api, params, opts = {}) {

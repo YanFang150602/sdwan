@@ -91,6 +91,7 @@
           style="width:1266px;"
           isFrozen="true"
           @on-custom-comp="customTATableFunc"
+          error-content="Temporarily no data"
         ></v-table>
       </a-tab-pane>
       <a-tab-pane key="2" :tab="dTitle">
