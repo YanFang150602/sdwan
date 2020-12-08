@@ -50,7 +50,7 @@
       "children": [
         {
           "title": "VPN Profiles",
-          "key": "VPNConfigFile"
+          "key": "VPNProfile"
         },
         {
           "title": "Branch SDWAN Profile",

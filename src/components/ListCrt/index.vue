@@ -40,9 +40,9 @@
               <a-select-option
                 v-for="(item, index) in listSlt"
                 :key="index"
-                :value="item"
+                :value="item.label || item"
               >
-                {{ item }}
+                {{ item.label || item }}
               </a-select-option>
             </a-select>
             <!-- 多数据源 -->
@@ -116,7 +116,8 @@ export default {
       bodyHeight: 0,
       listSlt: this.listData,
       listGp: JSON.parse(JSON.stringify(this.listGpData)),
-      listItem: []
+      listItem: [],
+      showLabel: false
     };
   },
   computed: {
@@ -125,8 +126,20 @@ export default {
     }
   },
   created() {
+    if(this.listData && this.listData.length) {
+      this.showLabel = Object.prototype.toString.call(this.listData[0]) === '[object Object]';
+    }
     this.itemData.forEach(item => {
-      this.listItem.push({ check: false, data: item, show: false });
+      if (this.showLabel) {
+        for(let i = 0; i < this.listData.length; i++) {
+          if (this.listData[i].value === item) {
+            this.listItem.push({ check: false, data: this.listData[i].label, show: false });
+            break;
+          }
+        }
+      } else {
+        this.listItem.push({ check: false, data: item, show: false });
+      }
     });
 
     this.sltNew();
@@ -182,6 +195,7 @@ export default {
       if (this.crtType !== 'input') {
         this.sltNew();
       }
+      this.param();
     },
     reChange(data) {
       this.listItem.forEach(item => {
@@ -198,7 +212,12 @@ export default {
           this.listSlt = this.listData;
           this.listItem.forEach(item => {
             this.listSlt = this.listSlt.filter(i => {
-              return item.data !== i;
+              if (this.showLabel) {
+                return item.data !== i.label;
+              } else {
+                return item.data !== i;
+              }
+              
             });
           });
           break;
@@ -237,7 +256,17 @@ export default {
       } else {
         const data = [];
         this.listItem.forEach(item => {
-          if (item.data) data.push(item.data);
+          if (this.showLabel) {
+            for(let i = 0; i < this.listData.length; i++) {
+              if (this.listData[i].label === item.data) {
+                data.push(this.listData[i].value);
+                break;
+              }
+            }
+          }
+          else {
+            data.push(item.data);
+          }
         });
         this.$emit('subdata', data);
       }
@@ -261,7 +290,6 @@ export default {
   width: 20px;
   height: 100%;
   text-align: center;
-  border-right: 1px solid #97acbe;
   padding-top: 2px;
 }
 .listCrt {
@@ -277,9 +305,10 @@ export default {
       font-size: 12px;
       padding-left: 2px;
       text-overflow: ellipsis;
+      border-left: 1px solid #97acbe;
+      height: 100%;
     }
     .addDelBtn {
-      width: 30px;
       height: 14px;
       margin-left: auto;
       vertical-align: top;

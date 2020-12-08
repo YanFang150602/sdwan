@@ -54,11 +54,11 @@
         :destroyOnClose="true"
         width="940px"
       >
-        <VPNCfgFileAddOrEdit
+        <VPNProfileAddOrEdit
           ref="vpnProfileAddOrEditRef"
           :vpnProfile="curEditVPNProfile"
           @passChildContent="passChildContent"
-        ></VPNCfgFileAddOrEdit>
+        ></VPNProfileAddOrEdit>
         <template slot="footer">
           <a-button
             key="submit"
@@ -77,7 +77,7 @@
 import Vue from 'vue';
 import { mapState } from 'vuex';
 import Pagination from 'components/Pagination';
-import VPNCfgFileAddOrEdit from './VPNCfgFileAddOrEdit';
+import VPNProfileAddOrEdit from './VPNProfileAddOrEdit';
 import {
   VPNProfileQuery,
   VPNProfileCreate,
@@ -85,9 +85,9 @@ import {
   VPNProfileDelete
 } from 'apis/Configuration';
 export default {
-  name: 'VPNConfigFile',
+  name: 'VPNProfile',
   components: {
-    VPNCfgFileAddOrEdit,
+    VPNProfileAddOrEdit,
     Pagination
   },
   data() {
@@ -587,19 +587,20 @@ export default {
       this.addOrEditWinVisible = false;
       this.curAddVPNProfile = {};
       this.curEditVPNProfile = {};
+      this.queryTableDataList();
     },
     passChildContent(vpnProfile) {
       this.curAddVPNProfile = vpnProfile;
     },
     satisfyValidation() {
       let isOK = true;
-      this.$refs.vpnProfileAddOrEditRef.$refs.normalRef.validate(valid => {
+      this.$refs.vpnProfileAddOrEditRef.$refs && this.$refs.vpnProfileAddOrEditRef.$refs.normalRef.validate(valid => {
         if (!valid) {
           isOK = false;
           return false;
         }
       });
-      this.$refs.vpnProfileAddOrEditRef.$refs.ikeRef.$refs.localAuthRef.validate(
+      this.$refs.vpnProfileAddOrEditRef.$refs.ikeRef && this.$refs.vpnProfileAddOrEditRef.$refs.ikeRef.$refs.localAuthRef.validate(
         valid => {
           if (!valid) {
             isOK = false;
@@ -607,7 +608,7 @@ export default {
           }
         }
       );
-      this.$refs.vpnProfileAddOrEditRef.$refs.ikeRef.$refs.peerAuthRef.validate(
+      this.$refs.vpnProfileAddOrEditRef.$refs.ikeRef && this.$refs.vpnProfileAddOrEditRef.$refs.ikeRef.$refs.peerAuthRef.validate(
         valid => {
           if (!valid) {
             isOK = false;

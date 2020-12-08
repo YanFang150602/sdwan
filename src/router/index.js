@@ -173,12 +173,13 @@ const routes = [
             component: () => import('views/configuration/schedule/Schedule')
           },
           {
-            path: '/configuration/deviceConfig/VPNConfigFile',
-            name: 'VPNConfigFile',
+            // path: '/configuration/deviceConfig/VPNConfigFile',
+            path: '/configuration/deviceConfig/VPNProfile',
+            name: 'VPNProfile',
             meta: {
-              title: 'VPN Config File'
+              title: 'VPN Profile'
             },
-            component: () => import('views/configuration/vpn/VPNConfigFile')
+            component: () => import('views/configuration/vpn')
           },
           {
             path: '/configuration/deviceConfig/QosProfiles',

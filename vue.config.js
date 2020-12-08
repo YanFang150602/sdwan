@@ -63,7 +63,7 @@ module.exports = {
       //   }
       // }
       '/controller': {
-        target: 'http://sdwanmano.ft.internal.virtueit.net:81',
+        target: 'http://sdwanmano.dev.internal.virtueit.net:81',
         changeOrigin: true,
         ws: true,
         pathRewrite: {

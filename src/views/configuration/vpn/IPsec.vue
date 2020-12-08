@@ -134,34 +134,40 @@
           v-if="cVPNProfile.tempIpsecNewOrOld == 'New'"
         >
           <a-col>
-            <a-form-model-item>
-              <AddModle
+            <div class="add-modle-item">
+              <ListCrt
+                v-if="visible"
+                ref="hashRef"
+                :list-data="hashOptions"
+                :item-data="hashList"
                 :title="HashAlgorithms"
-                style="width:270px;"
                 @subdata="hashCustomFunc"
-                :listdate="hashList"
               />
-            </a-form-model-item>
+            </div>
           </a-col>
           <a-col>
-            <a-form-model-item>
-              <AddModle
+            <div class="add-modle-item">
+              <ListCrt
+                v-if="visible"
+                ref="encryListRef"
+                :list-data="encryOptions"
+                :item-data="encryList"
                 :title="EncryptionAlgorithms"
-                style="width:270px;"
                 @subdata="encryCustomFunc"
-                :listdate="encryList"
               />
-            </a-form-model-item>
+            </div>
           </a-col>
           <a-col>
-            <a-form-model-item>
-              <AddModle
+            <div class="add-modle-item">
+              <ListCrt
+                v-if="visible"
+                ref="dhGroupRef"
+                :list-data="dhOptions"
+                :item-data="dhList"
                 :title="PerfectGroup"
-                style="width:270px;"
-                @subdata="pfsCustomFunc"
-                :listdate="forwardModeList"
+                @subdata="dhCustomFunc"
               />
-            </a-form-model-item>
+            </div>
           </a-col>
         </a-row>
         <a-row
@@ -210,15 +216,16 @@
 <script>
 import Vue from 'vue';
 import { mapState, mapMutations } from 'vuex';
-import AddModle from 'components/PeerFqdnAdd';
+import ListCrt from 'components/ListCrt';
 export default {
   name: 'IPsec',
   props: ['vpnProfile'],
   components: {
-    AddModle
+    ListCrt
   },
   data() {
     return {
+      visible: true,
       cVPNProfile: {
         tempIpsecNewOrOld: 'Old'
       },
@@ -431,6 +438,68 @@ export default {
           label: 'Diffie-Hellman Group 26– 224 bit elliptic curve',
           value: 'mod26'
         }
+      ],
+      hashOptions: [
+        'md5',
+        'sha256',
+        'sha384',
+        'sha512',
+        'sha1'
+      ],
+      encryOptions: [
+        '3des',
+        'aes128',
+        'aes256'
+      ],
+      dhOptions: [
+        {
+          label: 'No PFS',
+          value: 'mod-none'
+        },
+        {
+          label: 'Diffie-Hellman Group 1 - 768-bit modulus',
+          value: 'mod1'
+        },
+        {
+          label: 'Diffie-Hellman Group 2 – 1024-bit modulus',
+          value: 'mod2'
+        },
+        {
+          label: 'Diffie-Hellman Group 5 - 1536-bit modulus',
+          value: 'mod5'
+        },
+        {
+          label: 'Diffie-Hellman Group 14 – 2048 bit modulus',
+          value: 'mod14'
+        },
+        {
+          label: 'Diffie-Hellman Group 15 – 3072 bit modulus',
+          value: 'mod15'
+        },
+        {
+          label: 'Diffie-Hellman Group 16 – 4096 bit modulus',
+          value: 'mod16'
+        },
+        {
+          label: 'Diffie-Hellman Group 19 – 256 bit elliptic curve',
+          value: 'mod19'
+        },
+        {
+          label: 'Diffie-Hellman Group 20 – 384 bit elliptic curve',
+          value: 'mod20'
+        },
+        {
+          label: 'Diffie-Hellman Group 21– 251 bit elliptic curve',
+          value: 'mod21'
+        },
+        {
+          label: 'Diffie-Hellman Group 25– 192 bit elliptic curve',
+          value: 'mod25'
+        },
+        {
+          label: 'Diffie-Hellman Group 26– 224 bit elliptic curve',
+          value: 'mod26'
+        }
       ]
     };
   },
@@ -483,24 +552,26 @@ export default {
       this.forwardModeList = [];
       this.ipsec.hashAlgorithms &&
         this.ipsec.hashAlgorithms.forEach(hash => {
-          let row = { hash };
-          this.hashList.push(row);
+          this.hashList.push(hash);
         });
       this.ipsec.encryptionAlgorithms &&
         this.ipsec.encryptionAlgorithms.forEach(encry => {
-          let row = { encry };
-          this.encryList.push(row);
+          this.encryList.push(encry);
         });
       this.ipsec.pfsGroups &&
         this.ipsec.pfsGroups.forEach(forward => {
-          let row = { forward };
-          this.forwardModeList.push(row);
+          this.forwardModeList.push(forward);
         });
     }
     this.vpnTableSelectsAll({ key: 'vpnIPsecHash' });
     this.vpnTableSelectsAll({ key: 'vpnIPsecEntry' });
     this.vpnTableSelectsAll({ key: 'vpnIPsecForward' });
     this.cVPNProfile.ipsec = this.ipsec;
+    if (this.ipsec.encryptionAlgorithms || this.ipsec.pfsGroups || this.ipsec.hashAlgorithms) {
+      this.cVPNProfile.tempIpsecNewOrOld = 'New';
+    } else {
+      this.cVPNProfile.tempIpsecNewOrOld = 'Old';
+    }
     this.$emit('passChildContent', this.cVPNProfile);
   },
   updated() {
@@ -887,5 +958,13 @@ Vue.component('forward-opration', {
     text-align: center;
     color: #fff;
   }
+}
+.add-modle-item {
+  width: 280px;
+  height: 140px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 20px;
+  background: #fff;
 }
 </style>

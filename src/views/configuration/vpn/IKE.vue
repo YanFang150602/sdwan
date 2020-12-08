@@ -108,72 +108,45 @@
           </a-row>
           <a-row
             type="flex"
-            justify="start"
+            justify="space-between"
             align="top"
             v-if="cVPNProfile.tempIkeNewOrOld == 'New'"
           >
             <a-col>
-              <!-- <v-table
-                is-horizontal-resize
-                :columns="hashColumns"
-                :table-data="hashList"
-                :select-all="selectALLHash"
-                :select-change="selectChangeHash"
-                :height="80"
-                style="width:290px;"
-                isFrozen="true"
-                :title-click="hashTitleClick"
-                :cell-merge="hashCellMerge"
-                @on-custom-comp="customFunc"
-              ></v-table>-->
-              <AddModle
-                :title="HashAlgorithms"
-                style="width:290px;"
-                @subdata="hashCustomFunc"
-                :listdate="hashList"
-              />
+              <div class="add-modle-item">
+                <ListCrt
+                  v-if="visible"
+                  ref="hashRef"
+                  :list-data="hashOptions"
+                  :item-data="hashList"
+                  :title="HashAlgorithms"
+                  @subdata="hashCustomFunc"
+                />
+              </div>
             </a-col>
             <a-col>
-              <!-- <v-table
-                is-horizontal-resize
-                :columns="entryColumns"
-                :table-data="encryList"
-                :select-all="selectALLEntry"
-                :select-change="selectChangeEntry"
-                :height="80"
-                style="width:290px;"
-                isFrozen="true"
-                :title-click="entryTitleClick"
-                :cell-merge="entryCellMerge"
-                @on-custom-comp="customFunc"
-              ></v-table>-->
-              <AddModle
-                :title="EncryptionAlgorithms"
-                style="width:290px;"
-                @subdata="encryCustomFunc"
-                :listdate="encryList"
-              />
+              <div class="add-modle-item">
+                <ListCrt
+                  v-if="visible"
+                  ref="encryListRef"
+                  :list-data="encryOptions"
+                  :item-data="encryList"
+                  :title="EncryptionAlgorithms"
+                  @subdata="encryCustomFunc"
+                />
+              </div>
             </a-col>
             <a-col>
-              <!-- <v-table
-                is-horizontal-resize
-                :columns="dhColumns"
-                :table-data="dhList"
-                :select-all="selectALLDH"
-                :select-change="selectChangeDH"
-                :height="80"
-                style="width:290px;"
-                isFrozen="true"
-                :title-click="dhTitleClick"
-                :cell-merge="dhCellMerge"
-                @on-custom-comp="customFunc"
-              ></v-table>-->
-              <AddModle
-                :title="DHGroup"
-                style="width:290px;"
-                @subdata="dhCustomFunc"
-                :listdate="dhList"
-              />
+              <div class="add-modle-item">
+                <ListCrt
+                  v-if="visible"
+                  ref="dhGroupRef"
+                  :list-data="dhOptions"
+                  :item-data="dhList"
+                  :title="DHGroup"
+                  @subdata="dhCustomFunc"
+                />
+              </div>
             </a-col>
           </a-row>
           <a-row
@@ -530,15 +503,16 @@
 <script>
 import Vue from 'vue';
 import { mapState, mapMutations } from 'vuex';
-import AddModle from 'components/PeerFqdnAdd';
+import ListCrt from 'components/ListCrt';
 export default {
   name: 'IKE',
   props: ['vpnProfile', 'conSDWAN'],
   components: {
-    AddModle
+    ListCrt
   },
   data() {
     return {
+      visible: true,
       cVPNProfile: {
         tempIkeNewOrOld: 'Old'
       },
@@ -677,6 +651,18 @@ export default {
         { label: 'aes256-sha384' },
         { label: 'aes128-sha512' },
         { label: 'aes256-sha512' }
+      ],
+      hashOptions: [
+        'md5',
+        'sha256',
+        'sha384',
+        'sha512',
+        'sha1'
+      ],
+      encryOptions: [
+        '3des',
+        'aes128',
+        'aes256'
       ],
       dhOptions: [
         {
@@ -943,16 +929,9 @@ export default {
     };
   },
   created() {
-    console.log(this.vpnProfile.ike, 7789);
-    console.log(this.hashColumns, 999);
     this.getMultipleList();
-    // this.customFunc();
-    // if (!this.vpnProfile.ike.encryptionAlgorithms) {
-    // }
+    
   },
-  // computed: {
-  //   ...mapState(['vpnTableSelects'])
-  // },
   computed: {
     ...mapState(['vpnTableSelects']),
     hashColumns() {
@@ -1022,28 +1001,26 @@ export default {
       this.dhList = [];
       this.ike.hashAlgorithms &&
         this.ike.hashAlgorithms.forEach(hash => {
-          let row = { hash };
-          console.log(row, '修改');
-          this.hashList.push(row);
+          this.hashList.push(hash);
         });
       this.ike.encryptionAlgorithms &&
         this.ike.encryptionAlgorithms.forEach(encry => {
-          let row = { encry };
-          this.encryList.push(row);
+          this.encryList.push(encry);
         });
       this.ike.groups &&
         this.ike.groups.forEach(dh => {
-          let row = { dh };
-          this.dhList.push(row);
+          this.dhList.push(dh);
         });
     }
-    this.vpnTableSelectsAll({ key: 'vpnIKEHash' });
-    this.vpnTableSelectsAll({ key: 'vpnIKEEntry' });
-    this.vpnTableSelectsAll({ key: 'vpnIKEDH' });
     this.cVPNProfile.localAuthInfo = this.localAuthInfo;
     this.cVPNProfile.peerAuthInfo = this.peerAuthInfo;
     this.cVPNProfile.ike = this.ike;
     this.changePeerIdType(this.peerAuthInfo.idType);
+    if (this.ike.encryptionAlgorithms || this.ike.groups || this.ike.hashAlgorithms) {
+      this.cVPNProfile.tempIkeNewOrOld = 'New';
+    } else {
+      this.cVPNProfile.tempIkeNewOrOld = 'Old';
+    }
     this.$emit('passChildContent', this.cVPNProfile);
   },
   updated() {
@@ -1066,6 +1043,9 @@ export default {
         this.ike.hashAlgorithms = [];
         this.ike.encryptionAlgorithms = [];
         this.ike.groups = [];
+        this.hashList = [];
+        this.encryList = [];
+        this.dhList = [];
         this.ike.transform = 'aes128-sha1';
         this.ike.group = 'mod2';
       }
@@ -1639,5 +1619,14 @@ Vue.component('pskoper-opration', {
       width: 800px !important;
     }
   }
+}
+
+.add-modle-item {
+  width: 290px;
+  height: 140px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 20px;
+  background: #fff;
 }
 </style>

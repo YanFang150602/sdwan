@@ -143,8 +143,8 @@
               </a-row>
               <div class="box-cls">
                 <div class="box-icon">Peer</div>
-                <a-row type="flex" justify="start" align="top">
-                  <a-col>
+                <a-row type="flex" justify="space-between" align="top">
+                  <a-col style="width:250px">
                     <a-form-model-item>
                       <a-radio-group
                         v-model="peerFQDNChecked"
@@ -154,30 +154,20 @@
                       />
                     </a-form-model-item>
                     <a-form-model-item>
-                      <!-- <v-table
-                        is-horizontal-resize
-                        :columns="fqdnColumns"
-                        :table-data="peerFQDNList"
-                        :select-all="selectALLFQDN"
-                        :select-change="selectChangeFQDN"
-                        :height="80"
-                        style="width:250px;"
-                        isFrozen="true"
-                        :title-click="peerFQDNTitleClick"
-                        :cell-merge="peerFQDNCellMerge"
-                        @on-custom-comp="customFQDNFunc"
-                      ></v-table>-->
-                      <AddModle
-                        :title="PeerFQDN"
-                        style="width:250px;"
-                        @subdata="customFQDNFunc"
-                        :listdate="FqdnList"
-                        :list="FqdnData"
-                        :disabled="disablePeerFQDN"
-                      />
+                      <div class="add-modle-item">
+                        <ListCrt
+                          v-if="visible"
+                          ref="peerFQDNRef"
+                          crt-type="input"
+                          :item-data="FQDNData"
+                          :title="PeerFQDN"
+                          @subdata="customFQDNFunc"
+                        />
+                        <div v-show="disablePeerFQDN" class="disabled-component"></div>
+                      </div>
                     </a-form-model-item>
                   </a-col>
-                  <a-col>
+                  <a-col style="width:250px">
                     <a-form-model-item>
                       <a-radio-group
                         v-model="peerIPChecked"
@@ -187,29 +177,17 @@
                       />
                     </a-form-model-item>
                     <a-form-model-item>
-                      <!-- <v-table
-                        is-horizontal-resize
-                        column-width-drag
-                        :columns="ipColumns"
-                        :table-data="peerIPList"
-                        :select-all="selectALLIP"
-                        :select-change="selectChangeIP"
-                        :height="80"
-                        style="width:250px;"
-                        isFrozen="true"
-                        :title-click="peerIPTitleClick"
-                        :cell-merge="peerIPCellMerge"
-                        @on-custom-comp="customIPFunc"
-                        @onblur="customIPFunc"
-                      ></v-table>-->
-                      <AddModle
-                        :title="PeerIP"
-                        style="width:250px;"
-                        @subdata="peerIpFQDNFunc"
-                        :listdate="FqdnList"
-                        :input="true"
-                        :disabled="disablePeerIP"
-                      ></AddModle>
+                      <div  class="add-modle-item">
+                        <ListCrt
+                          v-if="visible"
+                          ref="peerIPRef"
+                          crt-type="input"
+                          :item-data="IPData"
+                          :title="PeerIP"
+                          @subdata="customIPFunc"
+                        />
+                        <div v-show="disablePeerIP" class="disabled-component"></div>
+                      </div>
                     </a-form-model-item>
                   </a-col>
                   <a-col>
@@ -576,7 +554,7 @@
           </a-tabs>
         </a-form-model>
       </div>
-      <div v-show="showTabObj.secondTabRef" class="tabpan-common-cls">
+      <div v-if="showTabObj.secondTabRef" class="tabpan-common-cls">
         <IKE
           ref="ikeRef"
           :vpnProfile="cVPNProfile"
@@ -584,7 +562,7 @@
           @passChildContent="ikePassContent"
         ></IKE>
       </div>
-      <div v-show="showTabObj.thirdTabRef" class="tabpan-common-cls">
+      <div v-if="showTabObj.thirdTabRef" class="tabpan-common-cls">
         <IPsec
           ref="ipsecRef"
           :vpnProfile="cVPNProfile"
@@ -644,7 +622,7 @@ import Vue from 'vue';
 import IKE from './IKE';
 import IPsec from './IPsec';
 import { name } from '@/validate/common';
-import AddModle from 'components/PeerFqdnAdd';
+import ListCrt from 'components/ListCrt';
 import StrategyAddOrEdit from './StrategyAddOrEdit';
 import { mapState, mapMutations } from 'vuex';
 import common from '@/mixins/common';
@@ -663,12 +641,12 @@ export default {
     IKE,
     IPsec,
     StrategyAddOrEdit,
-    AddModle
+    ListCrt
   },
   data() {
     return {
       disablePeerIP: false,
-      disablePeerFQDN: false,
+      disablePeerFQDN: true,
       tabs: [
         {
           title: 'General',
@@ -969,7 +947,8 @@ export default {
       },
       peerFQDNList: [{}],
       FqdnList: [],
-      FqdnData: [],
+      FQDNData: [],
+      IPData: [],
       peerIPList: [{ _disabled: true }],
       delPeerFQDNList: [],
       delPeerIPList: [],
@@ -1039,7 +1018,8 @@ export default {
           value: ''
         }
       ],
-      tunnelInfcIsRequired: true
+      tunnelInfcIsRequired: true,
+      visible: true
     };
   },
   computed: {
@@ -1101,7 +1081,6 @@ export default {
     ...mapState(['organization', 'deviceName', 'objectType'])
   },
   created() {
-    console.log('addoredit created...', this.vpnProfile);
     if (this.vpnProfile.name) {
       this.cVPNProfile = { ...this.vpnProfile };
       this.peerFQDNList = [];
@@ -1109,14 +1088,13 @@ export default {
       this.cVPNProfile.peer.peerFqdnList &&
         this.cVPNProfile.peer.peerFqdnList.forEach(peerFqdn => {
           let row = { peerFqdn };
-          console.log(peerFqdn, 554);
+          this.FQDNData.push(row.peerIp);
           this.peerFQDNList.push(row);
         });
       this.cVPNProfile.peer.address &&
         this.cVPNProfile.peer.address.forEach(peerIp => {
           let row = { peerIp };
-          console.log(row, 554);
-          this.FqdnData.push(row.peerIp);
+          this.IPData.push(row.peerIp);
           this.peerIPList.push(row);
         });
       this.cVPNProfile.tempAlarms = [];
@@ -1127,9 +1105,8 @@ export default {
             : '';
         }
       }
-    } else {
-      this.vpnTableSelectsAll({ key: 'vpnPeerFQDN' });
-      this.vpnTableSelectsAll({ key: 'vpnNetwork' });
+      let targetValue = this.vpnProfile.local.address ? '4' : this.vpnProfile.local.interfaceName ? '5' : '6';
+      this.changeRadio({ target: { value: targetValue} });
     }
     // 设置VPN Type
     this.changeVPNType(this.cVPNProfile.vpnType);
@@ -1143,7 +1120,6 @@ export default {
     if (this.showBaseStrategy) {
       this.cVPNProfile.precedence = Number(this.cVPNProfile.precedence) || 0;
     }
-    console.log('updated cvpnprofile = ', this.cVPNProfile);
     this.$emit('passChildContent', this.cVPNProfile);
   },
   methods: {
@@ -1253,9 +1229,7 @@ export default {
       }
     },
     changeTunnelRouteIns(value) {
-      console.log(value);
       this.cVPNProfile.tunnelInterface = '';
-      // tunnelInterfaceOptions
       if (value) {
         this.allTunnelRouteInsNames.forEach(item => {
           if (item.name === value) {
@@ -1264,41 +1238,8 @@ export default {
           }
         });
       } else {
-        console.log('无数据');
         this.tunnelInterfaceOptions = [];
       }
-
-      // if (this.existInterfaceRoute.get(value)) {
-      //   this.tunnelInterfaceOptions = [...this.existInterfaceRoute.get(value)];
-      //   this.tunnelInterfaceOptions = this.tunnelInterfaceOptions.filter(
-      //     item => {
-      //       return item.label.indexOf('tvi') === 0;
-      //     }
-      //   );
-      // } else {
-      //   let networks = this.nExistInterfaceRoute.get(value);
-      //   this.tunnelInterfaceOptions = [];
-      //   networks.forEach(item => {
-      //     for (let i = 0; i < this.allLocalInterfaceList.length; i++) {
-      //       if (item === this.allLocalInterfaceList[i].name) {
-      //         this.allLocalInterfaceList[i].interfaces.forEach(item2 => {
-      //           let option = {
-      //             label: item2,
-      //             value: item2
-      //           };
-      //           item2.indexOf('tvi') === 0
-      //             ? this.tunnelInterfaceOptions.push(option)
-      //             : 0;
-      //         });
-      //         break;
-      //       }
-      //     }
-      //   });
-      // }
-      // this.tunnelInterfaceOptions.unshift({
-      //   label: this.$t('SelectNull'),
-      //   value: ''
-      // });
     },
     changeRouteIns(value) {
       if (this.existInterfaceRoute.get(value)) {
@@ -1349,186 +1290,6 @@ export default {
     changeCheckBox(e) {
       console.log('changeCheckBox e.target.checked = ', e.target.checked);
     },
-    peerFQDNTitleClick(title) {
-      if (this.peerFQDNChecked == '1' && !this.disablePeerInfo) {
-        if (/class="plus"/.test(title)) {
-          this.peerFQDNList.push({});
-        } else if (/class="minus"/.test(title)) {
-          // 删除选中的
-          if (this.delPeerFQDNList.length) {
-            this.peerFQDNList = this.peerFQDNList.filter(item => {
-              let filter = true;
-              for (let i = 0; i < this.delPeerFQDNList.length; i++) {
-                if (item['peerFqdn'] === this.delPeerFQDNList[i]) {
-                  this.vpnTableSelectsPlus({
-                    key: 'vpnPeerFQDN',
-                    label: item['peerFqdn']
-                  });
-                  filter = false;
-                  break;
-                }
-              }
-              return filter;
-            });
-          } else {
-            this.$message.info('请至少选中一条记录！');
-          }
-          this.delPeerFQDNList = [];
-        }
-      }
-    },
-    peerIPTitleClick(title) {
-      if (this.peerIPChecked == '2' && !this.disablePeerInfo) {
-        if (/class="plus"/.test(title)) {
-          this.peerIPList.push({});
-        } else if (/class="minus"/.test(title)) {
-          // 删除选中的
-          if (this.delPeerIPList.length) {
-            this.peerIPList = this.peerIPList.filter(item => {
-              let filter = true;
-              for (let i = 0; i < this.delPeerIPList.length; i++) {
-                if (item['peerIp'] === this.delPeerIPList[i]) {
-                  filter = false;
-                  break;
-                }
-              }
-              return filter;
-            });
-          } else {
-            this.$message.info('请至少选中一条记录！');
-          }
-          this.delPeerIPList = [];
-        }
-      }
-    },
-    peerFQDNCellMerge(rowIndex, rowData, field) {
-      if (field === 'peer-fqdn') {
-        return {
-          colSpan: 3,
-          rowSpan: 1,
-          content: '',
-          componentName: 'peerfqdn-opration'
-        };
-      }
-    },
-    peerIPCellMerge(rowIndex, rowData, field) {
-      if (field === 'peer-ip') {
-        return {
-          colSpan: 3,
-          rowSpan: 1,
-          content: '',
-          componentName: 'peerip-opration'
-        };
-      }
-    },
-    networkTitleClick(title) {
-      if (/class="plus"/.test(title)) {
-        this.networkList.push({});
-      } else if (/class="minus"/.test(title)) {
-        // 删除选中的
-        if (this.delNetworkList.length) {
-          this.networkList = this.networkList.filter(item => {
-            let filter = true;
-            for (let i = 0; i < this.delNetworkList.length; i++) {
-              if (item['network'] === this.delNetworkList[i]) {
-                this.vpnTableSelectsPlus({
-                  key: 'vpnNetwork',
-                  label: item['network']
-                });
-                filter = false;
-                break;
-              }
-            }
-            return filter;
-          });
-        } else {
-          this.$message.info('请至少选中一条记录！');
-        }
-        this.delNetworkList = [];
-      }
-    },
-    networkCellMerge(rowIndex, rowData, field) {
-      if (field === 'network') {
-        return {
-          colSpan: 3,
-          rowSpan: 1,
-          content: '',
-          componentName: 'network-opration'
-        };
-      }
-    },
-    serverTitleClick(title) {
-      if (/class="plus"/.test(title)) {
-        this.serverList.push({});
-      } else if (/class="minus"/.test(title)) {
-        // 删除选中的
-        if (this.delServerList.length) {
-          this.serverList = this.serverList.filter(item => {
-            let filter = true;
-            for (let i = 0; i < this.delServerList.length; i++) {
-              if (item['server'] === this.delServerList[i]) {
-                this.vpnTableSelectsPlus({
-                  key: 'vpnServer',
-                  label: item['server']
-                });
-                filter = false;
-                break;
-              }
-            }
-            return filter;
-          });
-        } else {
-          this.$message.info('请至少选中一条记录！');
-        }
-        this.delServerList = [];
-      }
-    },
-    serverCellMerge(rowIndex, rowData, field) {
-      if (field === 'server') {
-        return {
-          colSpan: 3,
-          rowSpan: 1,
-          content: '',
-          componentName: 'server-opration'
-        };
-      }
-    },
-    domainTitleClick(title) {
-      if (/class="plus"/.test(title)) {
-        this.domainList.push({});
-      } else if (/class="minus"/.test(title)) {
-        // 删除选中的
-        if (this.delDomainList.length) {
-          this.domainList = this.domainList.filter(item => {
-            let filter = true;
-            for (let i = 0; i < this.delDomainList.length; i++) {
-              if (item['domain'] === this.delDomainList[i]) {
-                this.vpnTableSelectsPlus({
-                  key: 'vpnDomain',
-                  label: item['domain']
-                });
-                filter = false;
-                break;
-              }
-            }
-            return filter;
-          });
-        } else {
-          this.$message.info('请至少选中一条记录！');
-        }
-        this.delDomainList = [];
-      }
-    },
-    domainCellMerge(rowIndex, rowData, field) {
-      if (field === 'domain') {
-        return {
-          colSpan: 3,
-          rowSpan: 1,
-          content: '',
-          componentName: 'domain-opration'
-        };
-      }
-    },
     tabClick(ref) {
       this.changeTab(ref);
     },
@@ -1537,19 +1298,6 @@ export default {
         if (ref === curRef) {
           this.showTabObj[ref] = true;
           this.$refs[ref][0].style.backgroundColor = '#aac0d5';
-          if (curRef == 'secondTabRef') {
-            if (!this.secondClickCount) {
-              this.secondClickCount = 1;
-              this.$refs.ikeRef.cVPNProfile.tempIkeNewOrOld = 'New';
-              this.$refs.ikeRef.peerAuthInfo.authType = 'psk';
-              this.$refs.ikeRef.changeConPeerAuthType('psk');
-            }
-          } else if (curRef == 'thirdTabRef') {
-            if (!this.thirdClickCount) {
-              this.thirdClickCount = 1;
-              this.$refs.ipsecRef.cVPNProfile.tempIpsecNewOrOld = 'New';
-            }
-          }
         } else {
           this.showTabObj[ref] = false;
           this.$refs[ref][0].style.backgroundColor = '#8d9fb3';
@@ -1639,10 +1387,7 @@ export default {
       this.disablePeerFQDNRadio = disabled;
       this.disablePeerIPRadio = disabled;
       this.disablePeerHostsRadio = disabled;
-      if (disabled) {
-        this.loopListEnableOrDisable('peerFQDNList', disabled);
-        this.loopListEnableOrDisable('peerIPList', disabled);
-      } else {
+      if (!disabled) {
         let checked = this.peerFQDNChecked
           ? this.peerFQDNChecked
           : this.peerIPChecked
@@ -1658,35 +1403,33 @@ export default {
           this.peerFQDNChecked = '1';
           this.peerIPChecked = '';
           this.peerHostChecked = '';
-          this.loopListEnableOrDisable('peerFQDNList', false);
-          this.loopListEnableOrDisable('peerIPList', true);
-          this.disablePeerHost = true;
           this.cVPNProfile.peer.address = [];
           this.cVPNProfile.peer.hostname = '';
           this.disablePeerFQDN = false;
           this.disablePeerIP = true;
+          this.disablePeerHost = true;
           break;
         // 对等IP
         case '2':
           this.peerFQDNChecked = '';
           this.peerIPChecked = '2';
           this.peerHostChecked = '';
-          this.loopListEnableOrDisable('peerFQDNList', true);
-          this.loopListEnableOrDisable('peerIPList', false);
-          this.disablePeerHost = true;
           this.cVPNProfile.peer.peerFqdnList = [];
           this.cVPNProfile.peer.hostname = '';
+          this.disablePeerFQDN = true;
+          this.disablePeerIP = false;
+          this.disablePeerHost = true;
           break;
         // 对等Host
         case '3':
           this.peerFQDNChecked = '';
           this.peerIPChecked = '';
           this.peerHostChecked = '3';
-          this.loopListEnableOrDisable('peerFQDNList', true);
-          this.loopListEnableOrDisable('peerIPList', true);
-          this.disablePeerHost = false;
           this.cVPNProfile.peer.peerFqdnList = [];
           this.cVPNProfile.peer.address = [];
+          this.disablePeerFQDN = true;
+          this.disablePeerIP = true;
+          this.disablePeerHost = false;
           break;
         // 本地IP
         case '4':
@@ -1742,27 +1485,7 @@ export default {
           break;
       }
     },
-    loopListEnableOrDisable(listName, disabled) {
-      this[listName] = this[listName].map(item => {
-        item['_disabled'] = disabled;
-        return item;
-      });
-      console.log(listName, this[listName]);
-    },
-    selectALLFQDN(checkdList) {
-      this.delPeerFQDNList = [];
-      checkdList.forEach(item => {
-        this.delPeerFQDNList.push(item['peerFqdn']);
-      });
-    },
-    selectChangeFQDN(checked) {
-      this.delPeerFQDNList = [];
-      checked.forEach(item => {
-        this.delPeerFQDNList.push(item['peerFqdn']);
-      });
-    },
-    peerIpFQDNFunc(params) {
-      console.log(params, '返回的数据');
+    customIPFunc(params) {
       if (params.length > 1) {
         this.cVPNProfile.peer.address = params;
         this.cVPNProfile.peer.inet = params.pop();
@@ -1771,47 +1494,9 @@ export default {
       }
     },
     customFQDNFunc(params) {
-      console.log(params, 999);
       if (params) {
         this.cVPNProfile.peer.peerFqdnList = params;
       }
-      // this.peerFQDNList[params.index]['peerFqdn'] = params.label;
-      // // 通过刷新表格数据，实现对子组件刷新
-      // this.peerFQDNList = [...this.peerFQDNList];
-      // this.cVPNProfile.peer.peerFqdnList = [];
-      // this.peerFQDNList.forEach(obj => {
-      //   this.cVPNProfile.peer.peerFqdnList.push(obj.peerFqdn);
-      // });
-      // // 隐藏store里下拉框已被使用的option
-      // this.vpnTableSelectsMinus({
-      //   key: 'vpnPeerFQDN',
-      //   label: params.label
-      // });
-    },
-    selectALLIP(checkdList) {
-      this.delPeerIPList = [];
-      checkdList.forEach(item => {
-        this.delPeerIPList.push(item['peerIp']);
-      });
-    },
-    selectChangeIP(checked) {
-      this.delPeerIPList = [];
-      checked.forEach(item => {
-        this.delPeerIPList.push(item['peerIp']);
-      });
-    },
-    customIPFunc(params) {
-      console.log(params, 33);
-      this.peerIPList[params.index]['peerIp'] = params.label;
-      // 通过刷新表格数据，实现对子组件刷新
-      this.peerIPList = [...this.peerIPList];
-      this.cVPNProfile.peer.address = [];
-      this.peerIPList.forEach(obj => {
-        this.cVPNProfile.peer.address.push(obj.peerIp);
-      });
-      this.cVPNProfile.peer.inet = this.peerIPList.length
-        ? this.peerIPList[this.peerIPList.length - 1].peerIp
-        : '';
     },
     selectAllNetwork(checkdList) {
       this.delNetworkList = [];
@@ -1824,6 +1509,12 @@ export default {
       checked.forEach(item => {
         this.delNetworkList.push(item['network']);
       });
+    },
+    networkTitleClick() {
+
+    },
+    networkCellMerge() {
+
     },
     customNetworkFunc(params) {
       this.networkList[params.index]['network'] = params.label;
@@ -1847,6 +1538,12 @@ export default {
         this.delServerList.push(item['server']);
       });
     },
+    serverTitleClick() {
+
+    },
+    serverCellMerge() {
+
+    },
     customServerFunc(params) {
       this.serverList[params.index]['server'] = params.label;
       // 通过刷新表格数据，实现对子组件刷新
@@ -1868,6 +1565,12 @@ export default {
       checked.forEach(item => {
         this.delDomainList.push(item['server']);
       });
+    },
+    domainTitleClick() {
+
+    },
+    domainCellMerge() {
+
     },
     customDomainFunc(params) {
       this.domainList[params.index]['server'] = params.label;
@@ -2249,6 +1952,24 @@ Vue.component('strategy-opration', {
   }
   .devcfg-tab-default {
     background-color: #8d9fb3;
+  }
+  .add-modle-item {
+    width: 300px;
+    height: 140px;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 20px;
+    background: #fff;
+    .disabled-component {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: #8fa7b7;
+      cursor: not-allowed;
+      opacity: 0.5;
+      top: 0;
+      left: 0;
+    }
   }
 }
 .mandatory {
