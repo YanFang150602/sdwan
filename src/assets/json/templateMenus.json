@@ -1,0 +1,50 @@
+{
+  "firstMenus": [
+    {
+      "title": "Zones",
+      "key": "ZonesTem"
+    },
+    {
+      "title": "Zone Protection Profiles",
+      "key": "ZonesPPTem"
+    }
+  ],
+  "secondMenus": [
+    {
+      "title": "Objects",
+      "key": "Objects",
+      "children": [
+        {
+          "title": "address",
+          "key": "TemplateAddress"
+        },
+        {
+          "title": "Custom Objects",
+          "key": "Custom Objects",
+          "children": [
+            {
+              "title": "Applications",
+              "key": "TemplateApplications"
+            },
+            {
+              "title": "Application Filters",
+              "key": "TemplateApplicationFilters"
+            },
+            {
+              "title": "Url Categories",
+              "key": "TemplateUrlCategories"
+            },
+            {
+              "title": "Application Groups",
+              "key": "TemplateApplicationGroups"
+            },
+            {
+              "title": "Services",
+              "key": "TemplateService"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
