@@ -35,7 +35,7 @@
             <a-tab-pane key="1" :tab="$t('VPNGeneral')">
               <a-row type="flex" justify="start" align="top">
                 <a-col>
-                  <a-form-model-item :label="$t('VPNType')" prop="vpnType">
+                  <a-form-model-item :label="$t('VPNType')" class="mandatory" prop="vpnType">
                     <a-select
                       v-model="cVPNProfile.vpnType"
                       style="width:250px;"
@@ -108,6 +108,7 @@
                   </a-form-model-item>
                   <a-form-model-item
                     :label="$t('VPNRouteInstance')"
+                    class="mandatory"
                     prop="routingInstance"
                   >
                     <a-select
@@ -158,7 +159,7 @@
                         <ListCrt
                           v-if="visible"
                           ref="peerFQDNRef"
-                          crt-type="input"
+                          :list-data="FQDNList"
                           :item-data="FQDNData"
                           :title="PeerFQDN"
                           @subdata="customFQDNFunc"
@@ -313,7 +314,7 @@
                     <a-form-model-item
                       :label="$t('VPNTunnelInterface')"
                       prop="tunnelInterface"
-                      :required="tunnelInfcIsRequired"
+                      class="mandatory" 
                     >
                       <a-select
                         v-model="cVPNProfile.tunnelInterface"
@@ -353,13 +354,12 @@
                     </a-form-model-item>
                   </a-col>
                   <a-col>
-                    <a-form-model-item :label="$t('VPNBasePriority')">
-                      <a-input-number
+                    <a-form-model-item :label="$t('VPNBasePriority')" prop="precedence">
+                      <a-input
                         size="small"
-                        :min="0"
-                        :max="10000"
-                        v-model="cVPNProfile.precedence"
+                        placeholder="Input a number"
                         style="width:250px;"
+                        v-model="cVPNProfile.precedence"
                       />
                     </a-form-model-item>
                   </a-col>
@@ -390,7 +390,6 @@
                               }"
                               class="nav-item"
                             >
-                              <!-- <a-icon @click="showAddWinModal" type="plus"/> -->
                               <img
                                 @click="showAddWinModal"
                                 width="100%"
@@ -407,7 +406,6 @@
                               }"
                               class="nav-item"
                             >
-                              <!-- <a-icon @click="showDelWinModal" type="minus"/> -->
                               <img
                                 width="100%"
                                 @click="showDelWinModal"
@@ -415,22 +413,6 @@
                                 alt
                               />
                             </a-col>
-                            <!-- <a-col>
-                              <v-pagination
-                                size="small"
-                                :total="totalCount"
-                                :page-size="pageSize"
-                                :layout="[
-                                  'prev',
-                                  'jumper',
-                                  'total',
-                                  'next',
-                                  'sizer'
-                                ]"
-                                @page-change="pageChange"
-                                @page-size-change="pageSizeChange"
-                              ></v-pagination>
-                            </a-col>-->
                           </a-row>
                         </a-col>
                       </a-row>
@@ -460,6 +442,7 @@
                 <a-col>
                   <a-form-model-item
                     :label="$t('VPNAddressFrom')"
+                    class="mandatory"
                     prop="addressFrom"
                   >
                     <a-input
@@ -470,6 +453,7 @@
                   </a-form-model-item>
                   <a-form-model-item
                     :label="$t('VPNAddressTo')"
+                    class="mandatory"
                     prop="addressTo"
                   >
                     <a-input
@@ -488,19 +472,15 @@
                 </a-col>
                 <a-col>
                   <a-form-model-item>
-                    <v-table
-                      is-horizontal-resize
-                      :columns="networkColumns"
-                      :table-data="networkList"
-                      :select-all="selectAllNetwork"
-                      :select-change="selectChangeNetwork"
-                      :height="150"
-                      style="width:275px;"
-                      isFrozen="true"
-                      :title-click="networkTitleClick"
-                      :cell-merge="networkCellMerge"
-                      @on-custom-comp="customNetworkFunc"
-                    ></v-table>
+                    <div class="add-modle-item">
+                      <ListCrt
+                        v-if="visible"
+                        :list-data="networkList"
+                        :item-data="networkData"
+                        :title="$t('VPNAvailbaleNetwork')"
+                        @subdata="customNetworkFunc"
+                      />
+                    </div>
                   </a-form-model-item>
                 </a-col>
               </a-row>
@@ -605,6 +585,7 @@
         <StrategyAddOrEdit
           ref="strategyAddOrEditRef"
           :strategy="curEditStrategy"
+          :name-list="strategyNameList"
           @passChildContent="passChildContent"
         ></StrategyAddOrEdit>
         <template slot="footer">
@@ -625,7 +606,7 @@
 import Vue from 'vue';
 import IKE from './IKE';
 import IPsec from './IPsec';
-import { name } from '@/validate/common';
+import { name, required, number } from '@/validate/common';
 import ListCrt from 'components/ListCrt';
 import StrategyAddOrEdit from './StrategyAddOrEdit';
 import { mapState, mapMutations } from 'vuex';
@@ -638,7 +619,6 @@ import {
   LocalInterfaceQuery
 } from 'apis/Configuration';
 export default {
-  // name: 'VPNCfgFileAddOrEdit',
   mixins: [common],
   props: ['vpnProfile'],
   components: {
@@ -817,6 +797,7 @@ export default {
       disablePeerFQDNRadio: false,
       disablePeerIPRadio: false,
       disablePeerHostsRadio: false,
+      peer: '2',
       peerFQDNChecked: '',
       peerIPChecked: '2',
       peerHostChecked: '',
@@ -840,6 +821,7 @@ export default {
           }
         ]
       ],
+      local: '4',
       localIP: '4',
       localInterface: '',
       localHost: '',
@@ -867,6 +849,7 @@ export default {
       disableLocalInterface: true,
       disableLocalHost: true,
       baseOptionVal: '7',
+      base: '7',
       baseOptions: [
         {
           label: this.$t('VPNBaseRoute'),
@@ -889,16 +872,8 @@ export default {
       showP2PStrategy: false,
       rules: {
         name: [{ validator: name }],
-        vpnType: [
-          { required: true, message: 'VPN Type is required', trigger: 'blur' }
-        ],
-        routingInstance: [
-          {
-            required: true,
-            message: `${this.$t('VPNRouteInstance')} is required`,
-            trigger: 'change'
-          }
-        ],
+        vpnType: [{ validator: required }],
+        routingInstance: [{ validator: required }],
         local: {
           address: [
             {
@@ -909,23 +884,10 @@ export default {
             }
           ]
         },
-        tunnelInterface: [
-          { validator: this.validateTunnelInterface, trigger: 'blur' }
-        ],
-        addressFrom: [
-          {
-            required: true,
-            message: `${this.$t('VPNAddressFrom')} is required`,
-            trigger: 'blur'
-          }
-        ],
-        addressTo: [
-          {
-            required: true,
-            message: `${this.$t('VPNAddressTo')} is required`,
-            trigger: 'blur'
-          }
-        ]
+        tunnelInterface: [{ validator: required }],
+        precedence: [{ validator: number }],
+        addressFrom: [{ validator: required }],
+        addressTo: [{ validator: required }]
       },
       disablePeerInfo: false,
       selection: {
@@ -949,13 +911,9 @@ export default {
         columnAlign: 'left',
         isResize: true
       },
-      peerFQDNList: [{}],
-      FqdnList: [],
+      FQDNList: [],
       FQDNData: [],
       IPData: [],
-      peerIPList: [{ _disabled: true }],
-      delPeerFQDNList: [],
-      delPeerIPList: [],
       showBaseRoute: true,
       showBaseStrategy: false,
       totalCount: 0,
@@ -1004,11 +962,13 @@ export default {
           isResize: true
         }
       ],
+      strategyNameList: [],
       strategyList: [{}],
       delStrategyList: [],
       curEditStrategy: {},
       curAddStrategy: {},
-      networkList: [{}],
+      networkList: [],
+      networkData: [],
       delNetworkList: [],
       serverList: [{}],
       delServerList: [],
@@ -1022,46 +982,12 @@ export default {
           value: ''
         }
       ],
-      tunnelInfcIsRequired: true,
       visible: true,
       ikeKey: 'firstIke',
       ipsecKey: 'firstIpsec'
     };
   },
   computed: {
-    fqdnColumns() {
-      let column = {
-        field: 'peer-fqdn',
-        title: this.$t('VPNPeerFQDN'),
-        width: 120,
-        columnAlign: 'left',
-        isResize: true,
-        componentName: 'peerfqdn-opration'
-      };
-      return [this.selection, column, this.plus, this.minus];
-    },
-    ipColumns() {
-      let column = {
-        field: 'peer-ip',
-        title: this.$t('VPNPeerIP'),
-        width: 120,
-        columnAlign: 'left',
-        isResize: true,
-        componentName: 'peerip-opration'
-      };
-      return [this.selection, column, this.plus, this.minus];
-    },
-    networkColumns() {
-      let column = {
-        field: 'network',
-        title: this.$t('VPNAvailbaleNetwork'),
-        width: 120,
-        columnAlign: 'left',
-        isResize: true,
-        componentName: 'network-opration'
-      };
-      return [this.selection, column, this.plus, this.minus];
-    },
     serverColumns() {
       let column = {
         field: 'server',
@@ -1089,19 +1015,13 @@ export default {
   created() {
     if (this.vpnProfile.name) {
       this.cVPNProfile = { ...this.vpnProfile };
-      this.peerFQDNList = [];
-      this.peerIPList = [];
       this.cVPNProfile.peer.peerFqdnList &&
         this.cVPNProfile.peer.peerFqdnList.forEach(peerFqdn => {
-          let row = { peerFqdn };
-          this.FQDNData.push(row.peerIp);
-          this.peerFQDNList.push(row);
+          this.FQDNData.push(peerFqdn);
         });
       this.cVPNProfile.peer.address &&
         this.cVPNProfile.peer.address.forEach(peerIp => {
-          let row = { peerIp };
-          this.IPData.push(row.peerIp);
-          this.peerIPList.push(row);
+          this.IPData.push(peerIp);
         });
       this.cVPNProfile.tempAlarms = [];
       if (this.cVPNProfile.alarms) {
@@ -1122,20 +1042,53 @@ export default {
     this.queryLocalInterfaceOptions();
     this.queryTunnelInterfaceOptions();
   },
-  updated() {
-    this.$emit('passChildContent', this.cVPNProfile);
-  },
   methods: {
     ...mapMutations([
-      'vpnTableSelectsPlus',
       'vpnTableSelectsMinus',
-      'vpnTableSelectsAll',
-      'savePeerFQDNOptions'
+      'vpnTableSelectsAll'
     ]),
-    validateTunnelInterface(rule, value, callback) {
-      if (this.tunnelInfcIsRequired && !value) {
-        return callback(new Error('Tunnel Interface is required'));
+    getData() {
+      this.$refs.ikeRef.getData();
+      console.log('ike: ', this.cVPNProfile);
+      this.$refs.ipsecRef.getData();
+      console.log('ipsec: ', this.cVPNProfile);
+      let data = {...this.cVPNProfile};
+      switch(this.peer) {
+        case '1':
+          delete data.peer.address;
+          delete data.peer.hostname;
+          break;
+        case '2':
+          delete data.peer.peerFqdnList;
+          delete data.peer.hostname;
+          break;
+        default:
+          delete data.peer.peerFqdnList;
+          delete data.peer.address;
       }
+      switch(this.local) {
+        case '4':
+          delete data.local.interfaceName;
+          delete data.local.hostname;
+          break;
+        case '5':
+          delete data.local.address;
+          delete data.local.hostname;
+          break;
+        default:
+          delete data.local.address;
+          delete data.local.interfaceName;
+      }
+      switch(this.base) {
+        case '7':
+          delete data.precedence;
+          delete data.rule;
+          break;
+        default:
+          !this.showP2PStrategy ? delete data.tunnelRoutingInstance : null;
+      }
+      console.log('getdata:', data);
+      this.$emit('passChildContent', data);
     },
     async queryRouteInsOptions() {
       const res = await RouteInstanceQuery({ deviceName: this.deviceName });
@@ -1175,26 +1128,11 @@ export default {
       });
       if (res.message === 'Success') {
         let addressList = res.result.data;
-        console.log('address = ', addressList);
-        let peerFQDNOptions = [];
-        let duFqdn = new Map();
         addressList.forEach(item => {
           if (item.type === 'fqdn') {
-            this.FqdnList.push(item.name);
-          }
-          if (item['fqdn']) {
-            let option = {
-              label: item['fqdn'],
-              used: false
-            };
-            if (!duFqdn.get(item['fqdn'])) {
-              duFqdn.set(item['fqdn'], option);
-              peerFQDNOptions.push(option);
-            }
+            this.FQDNList.push(item.name);
           }
         });
-        console.log(this.FqdnList, 998);
-        this.savePeerFQDNOptions({ peerFQDNOptions });
       }
     },
     // 查询隧道路由实例接口
@@ -1411,85 +1349,77 @@ export default {
       switch (e.target.value) {
         // 对等FQDN
         case '1':
+          this.peer = '1';
           this.peerFQDNChecked = '1';
           this.peerIPChecked = '';
           this.peerHostChecked = '';
-          this.cVPNProfile.peer.address = [];
-          this.cVPNProfile.peer.hostname = '';
           this.disablePeerFQDN = false;
           this.disablePeerIP = true;
           this.disablePeerHost = true;
           break;
         // 对等IP
         case '2':
+          this.peer = '2';
           this.peerFQDNChecked = '';
           this.peerIPChecked = '2';
           this.peerHostChecked = '';
-          this.cVPNProfile.peer.peerFqdnList = [];
-          this.cVPNProfile.peer.hostname = '';
           this.disablePeerFQDN = true;
           this.disablePeerIP = false;
           this.disablePeerHost = true;
           break;
         // 对等Host
         case '3':
+          this.peer = '3';
           this.peerFQDNChecked = '';
           this.peerIPChecked = '';
           this.peerHostChecked = '3';
-          this.cVPNProfile.peer.peerFqdnList = [];
-          this.cVPNProfile.peer.address = [];
           this.disablePeerFQDN = true;
           this.disablePeerIP = true;
           this.disablePeerHost = false;
           break;
         // 本地IP
         case '4':
+          this.local = '4';
           this.localIP = '4';
           this.localInterface = '';
           this.localHost = '';
           this.disableLocalIP = false;
           this.disableLocalInterface = true;
           this.disableLocalHost = true;
-          this.cVPNProfile.local.interfaceName = '';
-          this.cVPNProfile.local.hostname = '';
           break;
         case '5':
+          this.local = '5';
           this.localIP = '';
           this.localInterface = '5';
           this.localHost = '';
           this.disableLocalIP = true;
           this.disableLocalInterface = false;
           this.disableLocalHost = true;
-          this.cVPNProfile.local.address = '';
-          this.cVPNProfile.local.hostname = '';
           break;
         case '6':
+          this.local = '6';
           this.localIP = '';
           this.localInterface = '';
           this.localHost = '6';
           this.disableLocalIP = true;
           this.disableLocalInterface = true;
           this.disableLocalHost = false;
-          this.cVPNProfile.local.address = '';
-          this.cVPNProfile.local.interfaceName = '';
           break;
         // 基于路由
         case '7':
-          this.tunnelInfcIsRequired = true;
+          this.base = '7';
           this.showBaseRoute = true;
           this.showBaseStrategy = false;
-          delete this.cVPNProfile.precedence;
-          delete this.cVPNProfile.rule;
           break;
         // 基于策略
         case '8':
-          this.tunnelInfcIsRequired = false;
+          this.base = '8';
           this.showBaseRoute = false;
           this.showBaseStrategy = true;
-          this.strategyList = this.cVPNProfile.rule
-            ? this.cVPNProfile.rule
-            : [];
-          this.cVPNProfile.precedence = this.cVPNProfile.precedence || 0;
+          this.strategyList = this.cVPNProfile.rule ? this.cVPNProfile.rule : [];
+          this.strategyList.length && this.strategyList.forEach(strategy => {
+            this.strategyNameList.push(strategy.name);
+          });
           break;
         default:
           break;
@@ -1508,33 +1438,8 @@ export default {
         this.cVPNProfile.peer.peerFqdnList = params;
       }
     },
-    selectAllNetwork(checkdList) {
-      this.delNetworkList = [];
-      checkdList.forEach(item => {
-        this.delNetworkList.push(item['network']);
-      });
-    },
-    selectChangeNetwork(checked) {
-      this.delNetworkList = [];
-      checked.forEach(item => {
-        this.delNetworkList.push(item['network']);
-      });
-    },
-    networkTitleClick() {
-
-    },
-    networkCellMerge() {
-
-    },
     customNetworkFunc(params) {
-      this.networkList[params.index]['network'] = params.label;
-      // 通过刷新表格数据，实现对子组件刷新
-      this.networkList = [...this.networkList];
-      // 隐藏store里下拉框已被使用的option
-      this.vpnTableSelectsMinus({
-        key: 'vpnNetwork',
-        label: params.label
-      });
+      this.networkData = params;
     },
     selectAllServer(checkdList) {
       this.delServerList = [];
@@ -1607,13 +1512,14 @@ export default {
     },
     async delOK() {
       this.delWinVisible = false;
-
       this.delStrategyList.forEach(item => {
         for (let i = 0; i < this.strategyList.length; i++) {
           if (item === this.strategyList[i].name) {
             this.strategyList.splice(i, 1);
           }
         }
+        let nameIndex = this.strategyNameList.indexOf(item);
+        nameIndex > -1 ? this.strategyNameList.splice(nameIndex, 1) : null;
       });
       this.cVPNProfile.rule = this.strategyList;
     },
@@ -1629,6 +1535,7 @@ export default {
         this.addOrEditLoading = false;
         this.addOrEditWinVisible = false;
         this.strategyList.push(params);
+        this.strategyNameList.push(params.name);
         this.cVPNProfile.rule = this.strategyList;
       }
     },
@@ -1694,67 +1601,6 @@ let props = {
     type: Number
   }
 };
-Vue.component('peerfqdn-opration', {
-  template: `<span>
-      <a-select
-        v-if="!rowData['peerFqdn']"
-        placeholder="--Select--"
-        :disabled="rowData['_disabled']"
-        size="small"
-        @change="change"
-      >
-        <a-select-option
-          :value="item.label"
-          v-for="(item, index) in vpnTableSelects.vpnPeerFQDN"
-          v-if="!item.used"
-          :key="index"
-        >
-          {{ item.label }}
-        </a-select-option>
-      </a-select>
-      <label>{{ rowData['peerFqdn'] }} </label>
-    </span>`,
-  props,
-  computed: {
-    ...mapState(['vpnTableSelects'])
-  },
-  methods: {
-    change(label) {
-      // 参数根据业务场景随意构造
-      let params = {
-        type: 'peerFqdn',
-        index: this.index,
-        rowData: this.rowData,
-        label
-      };
-      this.$emit('on-custom-comp', params);
-    }
-  }
-});
-Vue.component('peerip-opration', {
-  template: `<span>
-      <a-input
-        v-if="!rowData['peerIp']"
-        size="small"
-        :disabled="rowData['_disabled']"
-        @pressEnter="pressEnter"
-      />
-      <label>{{ rowData['peerIp']}} </label>
-    </span>`,
-  props,
-  methods: {
-    pressEnter(e) {
-      // 参数根据业务场景随意构造
-      let params = {
-        type: 'peerIp',
-        index: this.index,
-        rowData: this.rowData,
-        label: e.target.value
-      };
-      this.$emit('on-custom-comp', params);
-    }
-  }
-});
 Vue.component('network-opration', {
   template: `<span>
       <a-select

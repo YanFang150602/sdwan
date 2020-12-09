@@ -123,7 +123,6 @@
             <a-radio-group
               v-model="cVPNProfile.tempIpsecNewOrOld"
               :options="newOrOldOptions"
-              @change="changeRadio"
             />
           </a-col>
         </a-row>
@@ -162,7 +161,7 @@
               <ListCrt
                 v-if="visible"
                 ref="dhGroupRef"
-                :list-data="dhOptions"
+                :list-data="forwardModeOptions"
                 :item-data="forwardModeList"
                 :title="PerfectGroup"
                 @subdata="pfsCustomFunc"
@@ -214,8 +213,6 @@
   </div>
 </template>
 <script>
-import Vue from 'vue';
-import { mapState, mapMutations } from 'vuex';
 import ListCrt from 'components/ListCrt';
 export default {
   name: 'IPsec',
@@ -232,8 +229,8 @@ export default {
       ipsec: {
         forceNatT: 'disable',
         fragmentation: 'pre-fragmentation',
-        transform: '',
-        pfsGroup: '',
+        transform: 'esp-aes128-sha1',
+        pfsGroup: 'mod-none',
         mode: 'tunnel',
         pfsGroups: [],
         hashAlgorithms: [],
@@ -327,33 +324,9 @@ export default {
           value: 'Old'
         }
       ],
-      selection: {
-        field: 'custom',
-        width: 30,
-        columnAlign: 'center',
-        titleAlign: 'center',
-        type: 'selection'
-      },
-      plus: {
-        field: 'plus',
-        title: `<span><button class="plus" style="width:30px">+</button></span>`,
-        width: 37,
-        columnAlign: 'left',
-        isResize: true
-      },
-      minus: {
-        field: 'minus',
-        title: `<span><button class="minus" style="width:28px">-</button></span>`,
-        width: 40,
-        columnAlign: 'left',
-        isResize: true
-      },
       hashList: [],
       encryList: [],
       forwardModeList: [],
-      delHashList: [],
-      delEncryList: [],
-      delFModeList: [],
       changeOptions: [
         {
           label: 'esp-aes128-sha1'
@@ -450,99 +423,8 @@ export default {
         '3des',
         'aes128',
         'aes256'
-      ],
-      dhOptions: [
-        {
-          label: 'No PFS',
-          value: 'mod-none'
-        },
-        {
-          label: 'Diffie-Hellman Group 1 - 768-bit modulus',
-          value: 'mod1'
-        },
-        {
-          label: 'Diffie-Hellman Group 2 – 1024-bit modulus',
-          value: 'mod2'
-        },
-        {
-          label: 'Diffie-Hellman Group 5 - 1536-bit modulus',
-          value: 'mod5'
-        },
-        {
-          label: 'Diffie-Hellman Group 14 – 2048 bit modulus',
-          value: 'mod14'
-        },
-        {
-          label: 'Diffie-Hellman Group 15 – 3072 bit modulus',
-          value: 'mod15'
-        },
-        {
-          label: 'Diffie-Hellman Group 16 – 4096 bit modulus',
-          value: 'mod16'
-        },
-        {
-          label: 'Diffie-Hellman Group 19 – 256 bit elliptic curve',
-          value: 'mod19'
-        },
-        {
-          label: 'Diffie-Hellman Group 20 – 384 bit elliptic curve',
-          value: 'mod20'
-        },
-        {
-          label: 'Diffie-Hellman Group 21– 251 bit elliptic curve',
-          value: 'mod21'
-        },
-        {
-          label: 'Diffie-Hellman Group 25– 192 bit elliptic curve',
-          value: 'mod25'
-        },
-        {
-          label: 'Diffie-Hellman Group 26– 224 bit elliptic curve',
-          value: 'mod26'
-        }
       ]
     };
-  },
-  created() {
-    console.log(this.vpnProfile.ike, 7789);
-    console.log(this.hashColumns, 999);
-    this.getMultipleList();
-  },
-  computed: {
-    ...mapState(['vpnTableSelects']),
-    hashColumns() {
-      let column = {
-        field: 't-hash',
-        title: this.$t('VPNIKEHash'),
-        width: 140,
-        columnAlign: 'left',
-        isResize: true,
-        componentName: 'hash-opration'
-      };
-      return [this.selection, column, this.plus, this.minus];
-    },
-    encryColumns() {
-      let column = {
-        field: 't-encry',
-        title: this.$t('VPNIKEEntry'),
-        width: 140,
-        columnAlign: 'left',
-        isResize: true,
-        componentName: 'encry-opration'
-      };
-      return [this.selection, column, this.plus, this.minus];
-    },
-    forwardModeColumns() {
-      let column = {
-        field: 't-forward',
-        title: this.$t('VPNIPsecForwardSecretMode'),
-        width: 140,
-        columnAlign: 'left',
-        isResize: true,
-        componentName: 'forward-opration'
-      };
-      return [this.selection, column, this.plus, this.minus];
-    }
   },
   mounted() {
     if (this.vpnProfile.ipsec) {
@@ -563,381 +445,43 @@ export default {
           this.forwardModeList.push(forward);
         });
     }
-    this.vpnTableSelectsAll({ key: 'vpnIPsecHash' });
-    this.vpnTableSelectsAll({ key: 'vpnIPsecEntry' });
-    this.vpnTableSelectsAll({ key: 'vpnIPsecForward' });
-    this.cVPNProfile.ipsec = this.ipsec;
     if (this.ipsec.encryptionAlgorithms || this.ipsec.pfsGroups || this.ipsec.hashAlgorithms) {
       this.cVPNProfile.tempIpsecNewOrOld = 'New';
     } else {
       this.cVPNProfile.tempIpsecNewOrOld = 'Old';
     }
-    this.$emit('passChildContent', this.cVPNProfile);
-  },
-  updated() {
-    this.cVPNProfile.ipsec = this.ipsec;
-    this.$emit('passChildContent', this.cVPNProfile);
   },
   methods: {
-    ...mapMutations([
-      'vpnTableSelectsPlus',
-      'vpnTableSelectsMinus',
-      'vpnTableSelectsAll'
-    ]),
-    changeRadio(e) {
-      if (e.target.value === 'New') {
-        this.ipsec.transform = '';
-        this.ipsec.pfsGroup = '';
+    getData() {
+      this.$refs.hashRef && this.$refs.hashRef.param();
+      this.$refs.encryListRef && this.$refs.encryListRef.param();
+      this.$refs.dhGroupRef && this.$refs.dhGroupRef.param();
+      this.cVPNProfile.ipsec = this.ipsec;
+      let data = {...this.cVPNProfile};
+      if (this.cVPNProfile.tempIpsecNewOrOld === 'New') {
+        delete data.ipsec.transform;
+        delete data.ipsec.group;
       } else {
-        this.ipsec.hashAlgorithms = [];
-        this.ipsec.encryptionAlgorithms = [];
-        this.ipsec.pfsGroups = [];
-        this.ipsec.transform = 'esp-aes128-sha1';
-        this.ipsec.pfsGroup = 'mod-none';
+        delete data.ipsec.hashAlgorithms;
+        delete data.ipsec.encryptionAlgorithms;
+        delete data.ipsec.pfsGroups;
       }
-    },
-    // 获取选择框的数据
-    getMultipleList() {
-      const list = this.vpnTableSelects;
-      console.log(this.vpnTableSelects, 1122);
-      list.vpnIKEHash.forEach(item => {
-        this.hashList.push(item.label);
-      });
-      list.vpnIPsecEntry.forEach(item => {
-        this.encryList.push(item.label);
-      });
-      list.vpnIPsecForward.forEach(item => {
-        this.forwardModeList.push(item.label);
-      });
-    },
-    hashTitleClick(title) {
-      if (/class="plus"/.test(title)) {
-        this.hashList.push({});
-      } else if (/class="minus"/.test(title)) {
-        // 删除选中的
-        if (this.delHashList.length) {
-          this.hashList = this.hashList.filter(item => {
-            let filter = true;
-            for (let i = 0; i < this.delHashList.length; i++) {
-              if (item['hash'] === this.delHashList[i]) {
-                this.vpnTableSelectsPlus({
-                  key: 'vpnIPsecHash',
-                  label: item['hash'],
-                  value: item['hash']
-                });
-                filter = false;
-                break;
-              }
-            }
-            return filter;
-          });
-        } else {
-          this.$message.info('请至少选中一条记录！');
-        }
-        this.delHashList = [];
-      }
-    },
-    hashCellMerge(rowIndex, rowData, field) {
-      if (field === 't-hash') {
-        return {
-          colSpan: 3,
-          rowSpan: 1,
-          content: '',
-          componentName: 'hash-opration'
-        };
-      }
-    },
-    encryTitleClick(title) {
-      if (/class="plus"/.test(title)) {
-        this.encryList.push({});
-      } else if (/class="minus"/.test(title)) {
-        // 删除选中的
-        if (this.delEncryList.length) {
-          this.encryList = this.encryList.filter(item => {
-            let filter = true;
-            for (let i = 0; i < this.delEncryList.length; i++) {
-              if (item['encry'] === this.delEncryList[i]) {
-                this.vpnTableSelectsPlus({
-                  key: 'vpnIPsecEntry',
-                  label: item['encry']
-                });
-                filter = false;
-                break;
-              }
-            }
-            return filter;
-          });
-        } else {
-          this.$message.info('请至少选中一条记录！');
-        }
-        this.delEncryList = [];
-      }
-    },
-    encryCellMerge(rowIndex, rowData, field) {
-      if (field === 't-encry') {
-        return {
-          colSpan: 3,
-          rowSpan: 1,
-          content: '',
-          componentName: 'encry-opration'
-        };
-      }
-    },
-    fModeTitleClick(title) {
-      if (/class="plus"/.test(title)) {
-        this.forwardModeList.push({});
-      } else if (/class="minus"/.test(title)) {
-        // 删除选中的
-        if (this.delFModeList.length) {
-          this.forwardModeList = this.forwardModeList.filter(item => {
-            let filter = true;
-            for (let i = 0; i < this.delFModeList.length; i++) {
-              if (item['forward'] === this.delFModeList[i]) {
-                this.vpnTableSelectsPlus({
-                  key: 'vpnIPsecForward',
-                  label: item['forward'],
-                  value: item['forward']
-                });
-                filter = false;
-                break;
-              }
-            }
-            return filter;
-          });
-        } else {
-          this.$message.info('请至少选中一条记录！');
-        }
-        this.delFModeList = [];
-      }
-    },
-    fModeCellMerge(rowIndex, rowData, field) {
-      if (field === 't-forward') {
-        return {
-          colSpan: 3,
-          rowSpan: 1,
-          content: '',
-          componentName: 'forward-opration'
-        };
-      }
-    },
-    selectALLHash(checkdList) {
-      this.delHashList = [];
-      checkdList.forEach(item => {
-        this.delHashList.push(item['hash']);
-      });
-    },
-    selectChangeHash(checked) {
-      this.delHashList = [];
-      checked.forEach(item => {
-        this.delHashList.push(item['hash']);
-      });
-    },
-    selectALLEncry(checkdList) {
-      this.delEncryList = [];
-      checkdList.forEach(item => {
-        this.delEncryList.push(item['encry']);
-      });
-    },
-    selectChangeEncry(checked) {
-      this.delEncryList = [];
-      checked.forEach(item => {
-        this.delEncryList.push(item['encry']);
-      });
-    },
-    selectALLFMode(checkdList) {
-      this.delFModeList = [];
-      checkdList.forEach(item => {
-        this.delFModeList.push(item['forward']);
-      });
-    },
-    selectChangeFMode(checked) {
-      this.delFModeList = [];
-      checked.forEach(item => {
-        this.delFModeList.push(item['forward']);
-      });
+      this.$emit('passChildContent', this.cVPNProfile);
     },
     hashCustomFunc(data) {
       this.ipsec.hashAlgorithms = data;
+      this.hashList = data;
     },
     encryCustomFunc(data) {
       this.ipsec.encryptionAlgorithms = data;
+      this.encryList = data;
     },
     pfsCustomFunc(data) {
       this.ipsec.pfsGroups = data;
-    },
-    customFunc(params) {
-      switch (params.type) {
-        case 'hash':
-          this.hashList[params.index]['hash'] = params.label;
-          this.hashList = [...this.hashList];
-          this.ipsec.hashAlgorithms = [];
-          this.hashList.forEach(obj => {
-            this.ipsec.hashAlgorithms.push(obj.hash);
-          });
-          this.vpnTableSelectsMinus({
-            key: 'vpnIPsecHash',
-            label: params.label
-          });
-          break;
-        case 'encry':
-          this.encryList[params.index]['encry'] = params.label;
-          this.encryList = [...this.encryList];
-          this.ipsec.encryptionAlgorithms = [];
-          this.encryList.forEach(obj => {
-            this.ipsec.encryptionAlgorithms.push(obj.encry);
-          });
-          this.vpnTableSelectsMinus({
-            key: 'vpnIPsecEntry',
-            label: params.label
-          });
-          break;
-        default:
-          this.forwardModeList[params.index]['forward'] = params.label;
-          this.forwardModeList = [...this.forwardModeList];
-          this.ipsec.pfsGroups = [];
-          this.forwardModeList.forEach(obj => {
-            this.ipsec.pfsGroups.push(obj.forward);
-          });
-          this.vpnTableSelectsMinus({
-            key: 'vpnIPsecForward',
-            label: params.label,
-            value: params.label
-          });
-          break;
-      }
+      this.forwardModeList = data;
     }
   }
 };
-let props = {
-  rowData: {
-    type: Object
-  },
-  field: {
-    type: String
-  },
-  index: {
-    type: Number
-  }
-};
-Vue.component('hash-opration', {
-  template: `<span>
-     <a-select
-        v-if="!rowData['hash']"
-        placeholder="--Select--"
-        size="small"
-        @change="change"
-      >
-        <a-select-option
-          :value="item.label"
-          v-for="(item, index) in vpnTableSelects.vpnIPsecHash"
-          v-if="!item.used"
-          :key="index"
-        >
-          {{ item.label }}
-        </a-select-option>
-      </a-select>
-      <label>{{ rowData['hash'] }} </label>
-    </span>`,
-  props,
-  computed: {
-    ...mapState(['vpnTableSelects'])
-  },
-  methods: {
-    change(label) {
-      // 参数根据业务场景随意构造
-      let params = {
-        type: 'hash',
-        index: this.index,
-        rowData: this.rowData,
-        label
-      };
-      this.$emit('on-custom-comp', params);
-    }
-  }
-});
-Vue.component('encry-opration', {
-  template: `<span>
-     <a-select
-        v-if="!rowData['encry']"
-        placeholder="--Select--"
-        size="small"
-        @change="change"
-      >
-        <a-select-option
-          :value="item.label"
-          v-for="(item, index) in vpnTableSelects.vpnIPsecEntry"
-          v-if="!item.used"
-          :key="index"
-        >
-          {{ item.label }}
-        </a-select-option>
-      </a-select>
-      <label>{{ rowData['encry'] }} </label>
-    </span>`,
-  props,
-  computed: {
-    ...mapState(['vpnTableSelects'])
-  },
-  methods: {
-    change(label) {
-      // 参数根据业务场景随意构造
-      let params = {
-        type: 'encry',
-        index: this.index,
-        rowData: this.rowData,
-        label
-      };
-      this.$emit('on-custom-comp', params);
-    }
-  }
-});
-Vue.component('forward-opration', {
-  template: `<span>
-     <a-select
-        v-if="!rowData['forward']"
-        placeholder="--Select--"
-        size="small"
-        @change="change"
-      >
-        <a-select-option
-          :value="item.value"
-          v-for="(item, index) in vpnTableSelects.vpnIPsecForward"
-          v-if="!item.used"
-          :key="index"
-        >
-          {{ item.label }}
-        </a-select-option>
-      </a-select>
-      <label>{{ showValue }} </label>
-    </span>`,
-  props,
-  computed: {
-    ...mapState(['vpnTableSelects']),
-    showValue() {
-      for (let i = 0; i < this.vpnTableSelects.vpnIPsecForward.length; i++) {
-        if (
-          this.rowData['forward'] ==
-          this.vpnTableSelects.vpnIPsecForward[i].value
-        ) {
-          return this.vpnTableSelects.vpnIPsecForward[i].label;
-        }
-      }
-      return '';
-    }
-  },
-  methods: {
-    change(label) {
-      // 参数根据业务场景随意构造
-      let params = {
-        type: 'forward',
-        index: this.index,
-        rowData: this.rowData,
-        label
-      };
-      this.$emit('on-custom-comp', params);
-    }
-  }
-});
 </script>
 <style lang="scss" scoped>
 .change-cls {

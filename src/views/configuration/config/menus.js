@@ -1,8 +1,14 @@
-{
+import interSrc from 'assets/images/icon/interfaces.png';
+import ipsecSrc from 'assets/images/icon/IPsec.png';
+import vpnSrc from 'assets/images/icon/vpnprofile.png';
+import brsdwanSrc from 'assets/images/icon/BRSDWAN.png';
+
+export default {
   "firstMenus": [
     {
       "title": "Interfaces",
-      "key": "Interfaces"
+      "key": "Interfaces",
+      "icon": interSrc
     },
     {
       "title": "Zones",
@@ -47,14 +53,17 @@
     {
       "title": "IPSec",
       "key": "IPSec",
+      "icon": ipsecSrc,
       "children": [
         {
           "title": "VPN Profiles",
-          "key": "VPNProfile"
+          "key": "VPNProfile",
+          "icon": vpnSrc
         },
         {
           "title": "Branch SDWAN Profile",
-          "key": "BranchSDWANProfile"
+          "key": "BranchSDWANProfile",
+          "icon": brsdwanSrc
         }
       ]
     }
@@ -101,4 +110,4 @@
       ]
     }
   ]
-}
+};

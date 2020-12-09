@@ -538,9 +538,10 @@ export default {
     async addOrEditOK() {
       let isOK = this.satisfyValidation();
       if (isOK) {
+        this.$refs.vpnProfileAddOrEditRef.getData();
+        console.log('ending....', this.curAddVPNProfile);
         this.addOrEditLoading = true;
         let params = { vpnProfile: this.vpnProfile };
-        let res = {};
         let curVPNProfile = {};
         for (let key in this.curAddVPNProfile) {
           if (!(key.indexOf('temp') == 0)) {
@@ -552,7 +553,7 @@ export default {
         Object.assign(this.vpnProfile, curVPNProfile);
         this.removeNullProperty(this.vpnProfile);
 
-        console.log('this.params = ', params);
+        let res = {};
         if (this.operType === 'add') {
           res = await VPNProfileCreate(params);
         } else {
@@ -591,6 +592,7 @@ export default {
     },
     passChildContent(vpnProfile) {
       this.curAddVPNProfile = vpnProfile;
+      console.log('passChildContent : ', this.curAddVPNProfile);
     },
     satisfyValidation() {
       let isOK = true;

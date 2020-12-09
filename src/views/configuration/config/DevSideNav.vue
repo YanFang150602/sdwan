@@ -22,7 +22,7 @@
       >
         <template v-for="item in menus.firstMenus">
           <a-menu-item v-if="!item.children" :key="item.key">
-            <a-icon type="area-chart"/>
+            <span v-show="item.icon"><img :src="item.icon" style="width:20px;height:20px"/></span>
             <span>{{ item.title }}</span>
           </a-menu-item>
           <sub-menu v-else :key="item.key" :menu-info="item"/>
@@ -39,7 +39,7 @@
       >
         <template v-for="item in menus.secondMenus">
           <a-menu-item v-if="!item.children" :key="item.key">
-            <a-icon type="fund"/>
+            <span v-show="item.icon"><img :src="item.icon" style="width:20px;height:20px"/></span>
             <span>{{ item.title }}</span>
           </a-menu-item>
           <sub-menu v-else :key="item.key" :menu-info="item"/>
@@ -56,7 +56,7 @@
       >
         <template v-for="item in menus.thirdMenus">
           <a-menu-item v-if="!item.children" :key="item.key">
-            <a-icon type="heat-map"/>
+            <span v-show="item.icon"><img :src="item.icon" style="width:20px;height:20px"/></span>
             <span>{{ item.title }}</span>
           </a-menu-item>
           <sub-menu v-else :key="item.key" :menu-info="item"/>
@@ -73,7 +73,7 @@
       >
         <template v-for="item in menus.fourthMenus">
           <a-menu-item v-if="!item.children" :key="item.key">
-            <a-icon type="radar-chart"/>
+            <span v-show="item.icon"><img :src="item.icon" style="width:20px;height:20px"/></span>
             <span>{{ item.title }}</span>
           </a-menu-item>
           <sub-menu v-else :key="item.key" :menu-info="item"/>
@@ -83,17 +83,18 @@
   </a-layout-sider>
 </template>
 <script>
-import menus from '@/assets/json/menus.json';
+import menus from './menus';
 import { Menu } from 'ant-design-vue';
 const SubMenu = {
   template: `
       <a-sub-menu :key="menuInfo.key" v-bind="$props" v-on="$listeners">
         <span slot="title">
-          <a-icon type="mail" /><span>{{ menuInfo.title }}</span>
+          <span v-show="menuInfo.icon"><img :src="menuInfo.icon" style="width:20px;height:20px"/></span>
+          <span>{{ menuInfo.title }}</span>
         </span>
         <template v-for="item in menuInfo.children">
           <a-menu-item v-if="!item.children" :key="item.key">
-            <a-icon type="pie-chart" />
+            <span v-show="item.icon"><img :src="item.icon" style="width:20px;height:20px"/></span>
             <span>{{ item.title }}</span>
           </a-menu-item>
           <sub-menu v-else :key="item.key" :menu-info="item" />

@@ -13,11 +13,10 @@
           @mouseleave="leave"
           @mousemove="updateXY"
         >
-          <a-form-model-item :label="$t('VPNStrategyName')" prop="name">
+          <a-form-model-item :label="$t('VPNStrategyName')" class="mandatory" prop="name">
             <a-input
               size="small"
               v-model="cStrategy.name"
-              prop="name"
               style="width:250px;"
               :disabled="cStrategy.disabledName"
             />
@@ -50,7 +49,6 @@
                 size="small"
                 style="width:250px;"
                 default-value="ipv4"
-                @change="change"
               >
                 <a-select-option
                   :value="item.value"
@@ -63,12 +61,11 @@
             </a-form-model-item>
           </a-col>
           <a-col>
-            <a-form-model-item :label="$t('VPNStrategeFront')" prop="src.inet">
+            <a-form-model-item :label="$t('VPNStrategeFront')" class="mandatory" prop="src.inet">
               <a-input
                 size="small"
                 v-model="cStrategy.src.inet"
                 placeholder="0.0.0.0/0"
-                prop="name"
                 style="width:250px;"
               />
             </a-form-model-item>
@@ -78,7 +75,6 @@
               <a-input
                 size="small"
                 v-model="cStrategy.src.port"
-                prop="name"
                 style="width:250px;"
               />
             </a-form-model-item>
@@ -94,7 +90,6 @@
                 size="small"
                 style="width:250px;"
                 default-value="ipv4"
-                @change="change"
               >
                 <a-select-option
                   :value="item.value"
@@ -107,12 +102,11 @@
             </a-form-model-item>
           </a-col>
           <a-col>
-            <a-form-model-item :label="$t('VPNStrategeFront')" prop="dst.inet">
+            <a-form-model-item :label="$t('VPNStrategeFront')" class="mandatory" prop="dst.inet">
               <a-input
                 size="small"
                 v-model="cStrategy.dst.inet"
                 placeholder="0.0.0.0/0"
-                prop="name"
                 style="width:250px;"
               />
             </a-form-model-item>
@@ -134,14 +128,24 @@
 </template>
 <script>
 import common from '@/mixins/common';
+import { required } from '@/validate/common';
 export default {
   name: 'StrategyAddOrEdit',
-  props: ['strategy'],
+  props: ['strategy','nameList'],
   mixins: [common],
   data() {
     return {
       cStrategy: {
-        protocol: 'any'
+        name: '',
+        protocol: 'any',
+        src: {
+          inet: '',
+          port: ''
+        },
+        dst: {
+          inet: '',
+          port: ''
+        }
       },
       optionList: [
         {
@@ -169,37 +173,41 @@ export default {
       ],
       rules: {
         name: [
-          { required: true, message: 'Name is required', trigger: 'blur' }
+          { validator: this.validName, trigger: 'blur' }
         ],
-        'source.address': [
-          { required: true, message: 'Name is required', trigger: 'blur' }
-        ],
-        'dest.address': [
-          { required: true, message: 'Name is required', trigger: 'blur' }
-        ]
+        src: {
+          inet: [{ validator: required }]
+        },
+        dst: {
+          inet: [{ validator: required }]
+        }
       }
     };
   },
   mounted() {
     if (this.strategy.name) {
       this.cStrategy = { ...this.strategy };
-    } else {
-      this.cStrategy = {
-        name: '',
-        protocol: '',
-        src: {
-          inet: '',
-          port: ''
-        },
-        dst: {
-          inet: '',
-          port: ''
-        }
-      };
     }
   },
   updated() {
     this.$emit('passChildContent', this.cStrategy);
+  },
+  methods: {
+    validName(rule, value, callback) {
+      if (!value) {
+        callback('Field required');
+      } else if (value.length > 50) {
+        callback('Length must not be greater than 50.');
+      } else if (!/^[A-Za-z0-9_-]{1,}$/.test(value)) {
+        callback(
+          'Name cannot contain special characters or spaces except "_","-","."'
+        );
+      } else if (this.nameList.indexOf(value) > -1) {
+        callback('Duplicate name');
+      }else {
+        callback();
+      }
+    }
   }
 };
 </script>
@@ -230,6 +238,28 @@ export default {
   /deep/.ant-form-vertical .ant-form-item {
     padding: 0;
     margin: 0;
+  }
+}
+
+.mandatory {
+  color: #ee6978;
+  font-size: 11px;
+  padding-left: 1px;
+  vertical-align: top;
+}
+/deep/.mandatory.ant-form-item {
+  .ant-form-item-label {
+    label {
+      &::after {
+        content: '*';
+        color: #ee6978;
+        position: absolute;
+        right: -17px;
+        font-size: 14px;
+        padding-left: 1px;
+        display: block !important;
+      }
+    }
   }
 }
 </style>

@@ -195,7 +195,7 @@
         >
           <a-row type="flex" justify="start" align="top">
             <a-col>
-              <a-form-model-item :label="$t('VPNIKEAuthType')" prop="authType">
+              <a-form-model-item :label="$t('VPNIKEAuthType')" class="mandatory" prop="authType">
                 <a-select
                   v-model="localAuthInfo.authType"
                   style="width:200px"
@@ -215,6 +215,7 @@
               <a-form-model-item
                 :label="$t('VPNIKECertName')"
                 prop="certName"
+                class="mandatory"
                 v-show="showCert"
               >
                 <a-select
@@ -234,6 +235,7 @@
               <a-form-model-item
                 :label="$t('VPNIKEPass')"
                 prop="key"
+                class="mandatory"
                 v-show="showPsk"
               >
                 <a-input
@@ -247,6 +249,7 @@
               <a-form-model-item
                 :label="$t('VPNIKECA')"
                 prop="caChain"
+                class="mandatory"
                 v-show="showCert"
               >
                 <a-select
@@ -266,6 +269,7 @@
               <a-form-model-item
                 :label="$t('VPNIKEIdType')"
                 prop="idType"
+                class="mandatory"
                 v-show="showPsk"
               >
                 <a-select
@@ -306,6 +310,7 @@
               <a-form-model-item
                 :label="$t('VPNIKEId')"
                 prop="idString"
+                class="mandatory"
                 v-show="showPsk"
               >
                 <a-input
@@ -357,7 +362,7 @@
             v-show="!showCertAuthTable"
           >
             <a-col>
-              <a-form-model-item :label="$t('VPNIKEAuthType')" prop="authType">
+              <a-form-model-item :label="$t('VPNIKEAuthType')" class="mandatory" prop="authType">
                 <a-select
                   v-model="peerAuthInfo.authType"
                   style="width:200px"
@@ -377,6 +382,7 @@
               <a-form-model-item
                 :label="$t('VPNIKECA')"
                 prop="caChain"
+                class="mandatory"
                 v-show="showPeerCert"
               >
                 <a-select
@@ -396,6 +402,7 @@
               <a-form-model-item
                 :label="$t('VPNIKEPass')"
                 prop="key"
+                class="mandatory"
                 v-show="showPeerPsk"
               >
                 <a-input
@@ -409,6 +416,7 @@
               <a-form-model-item
                 :label="$t('VPNIKEIdType')"
                 prop="idType"
+                class="mandatory"
                 v-show="showPeerPsk"
               >
                 <a-select
@@ -430,6 +438,7 @@
               <a-form-model-item
                 :label="$t('VPNIKEId')"
                 prop="idString"
+                class="mandatory"
                 v-show="showPeerPsk"
               >
                 <a-input
@@ -448,7 +457,7 @@
             v-show="showCertAuthTable"
           >
             <a-col>
-              <a-form-model-item :label="$t('VPNIKEAuthType')" prop="authType">
+              <a-form-model-item :label="$t('VPNIKEAuthType')" class="mandatory" prop="authType">
                 <a-select
                   v-model="peerAuthInfo.authType"
                   placeholder="--Select--"
@@ -504,6 +513,7 @@
 import Vue from 'vue';
 import { mapState, mapMutations } from 'vuex';
 import ListCrt from 'components/ListCrt';
+import { required } from '@/validate/common';
 export default {
   name: 'IKE',
   props: ['vpnProfile', 'conSDWAN'],
@@ -513,6 +523,7 @@ export default {
   data() {
     return {
       visible: true,
+      renderM: 'firstRender',
       cVPNProfile: {
         tempIkeNewOrOld: 'Old'
       },
@@ -610,34 +621,9 @@ export default {
           value: 'Old'
         }
       ],
-      selection: {
-        field: 'custom',
-        width: 30,
-        columnAlign: 'center',
-        titleAlign: 'center',
-        type: 'selection'
-      },
-      plus: {
-        field: 'plus',
-        title: `<span><button class="plus" style="width:30px">+</button></span>`,
-        width: 20,
-        columnAlign: 'left',
-        titleCellClassName: 'no-border',
-        isResize: true
-      },
-      minus: {
-        field: 'minus',
-        title: `<span><button class="minus" style="width:30px">-</button></span>`,
-        width: 20,
-        columnAlign: 'left',
-        isResize: true
-      },
       hashList: [],
       encryList: [],
       dhList: [],
-      delHashList: [],
-      deleEncryList: [],
-      delDHList: [],
       changeOptions: [
         { label: '3des-md5' },
         { label: '3des-sha1' },
@@ -837,13 +823,7 @@ export default {
       ],
       pskList: [{ type: 'psk' }],
       localRules: {
-        authType: [
-          {
-            required: true,
-            message: `${this.$t('VPNIKEAuthType')} is required`,
-            trigger: 'blur'
-          }
-        ],
+        authType: [{ validator: required }],
         /* certName: [
           {
             required: true,
@@ -858,121 +838,31 @@ export default {
             trigger: 'blur'
           }
         ], */
-        key: [
-          {
-            required: true,
-            message: `${this.$t('VPNIKEPass')} is required`,
-            trigger: 'blur'
-          }
-        ],
-        idType: [
-          {
-            required: true,
-            message: `${this.$t('VPNIKEIdType')} is required`,
-            trigger: 'blur'
-          }
-        ],
-        idString: [
-          {
-            required: true,
-            message: `${this.$t('VPNIKEId')} is required`,
-            trigger: 'blur'
-          }
-        ]
+        key: [{ validator: required }],
+        idType: [{ validator: required }],
+        idString: [{ validator: required }]
       },
       peerRules: {
-        authType: [
-          {
-            required: true,
-            message: `${this.$t('VPNIKEAuthType')} is required`,
-            trigger: 'blur'
-          }
-        ],
-        /* ca: [
-          {
-            required: true,
-            message: `${this.$t('VPNIKECA')} is required`,
-            trigger: 'blur'
-          }
-        ],
-        caChain: [
-          {
-            required: true,
-            message: `${this.$t('VPNIKECA')} is required`,
-            trigger: 'blur'
-          }
-        ],*/
-        key: [
-          {
-            required: true,
-            message: `${this.$t('VPNIKEPass')} is required`,
-            trigger: 'blur'
-          }
-        ],
-        idType: [
-          {
-            required: true,
-            message: `${this.$t('VPNIKEIdType')} is required`,
-            trigger: 'blur'
-          }
-        ],
-        idString: [
-          {
-            required: true,
-            message: `${this.$t('VPNIKEId')} is required`,
-            trigger: 'blur'
-          }
-        ]
+        authType: [{ validator: required }],
+        /*
+        ca: [{ validator: required }],
+        caChain: [{ validator: required }],
+        */
+        key: [{ validator: required }],
+        idType: [{ validator: required }],
+        idString: [{ validator: required }]
       },
       showConPsk: false,
       showConCert: false
     };
   },
-  created() {
-    this.getMultipleList();
-    
-  },
   computed: {
     ...mapState(['vpnTableSelects']),
-    hashColumns() {
-      let column = {
-        field: 't-hash',
-        title: this.$t('VPNIKEHash'),
-        width: 140,
-        columnAlign: 'left',
-        isResize: true,
-        componentName: 'peerfqdn-opration'
-      };
-      return [this.selection, column, this.plus, this.minus];
-    },
-    entryColumns() {
-      let column = {
-        field: 't-encry',
-        title: this.$t('VPNIKEEntry'),
-        width: 140,
-        columnAlign: 'left',
-        isResize: true,
-        componentName: 'peerfqdn-opration'
-      };
-      return [this.selection, column, this.plus, this.minus];
-    },
-    dhColumns() {
-      let column = {
-        field: 't-dh',
-        title: this.$t('VPNIKEDHGroup'),
-        width: 140,
-        columnAlign: 'left',
-        isResize: true,
-        componentName: 'peerfqdn-opration'
-      };
-      return [this.selection, column, this.plus, this.minus];
-    },
     showCertAuthTable() {
       return this.conSDWAN;
     }
   },
   mounted() {
-    console.log('ike mounted...', this.vpnProfile);
     this.localAuthInfo = this.vpnProfile.localAuthInfo
       ? this.vpnProfile.localAuthInfo
       : {
@@ -1023,45 +913,34 @@ export default {
     }
     this.$emit('passChildContent', this.cVPNProfile);
   },
-  updated() {
-    this.cVPNProfile.localAuthInfo = this.localAuthInfo;
-    this.cVPNProfile.peerAuthInfo = this.peerAuthInfo;
-    this.cVPNProfile.ike = this.ike;
-    this.$emit('passChildContent', this.cVPNProfile);
-  },
   methods: {
     ...mapMutations([
       'vpnTableSelectsPlus',
       'vpnTableSelectsMinus',
       'vpnTableSelectsAll'
     ]),
+    getData() {
+      this.$refs.hashRef && this.$refs.hashRef.param();
+      this.$refs.encryListRef && this.$refs.encryListRef.param();
+      this.$refs.dhGroupRef && this.$refs.dhGroupRef.param();
+      this.cVPNProfile.localAuthInfo = this.localAuthInfo;
+      this.cVPNProfile.peerAuthInfo = this.peerAuthInfo;
+      this.cVPNProfile.ike = this.ike;
+      let data = {...this.cVPNProfile};
+      if (this.cVPNProfile.tempIkeNewOrOld === 'New') {
+        delete data.ike.transform;
+        delete data.ike.group;
+      } else {
+        delete data.ike.hashAlgorithms;
+        delete data.ike.encryptionAlgorithms;
+        delete data.ike.groups;
+      }
+      this.$emit('passChildContent', data);
+    },
     changeRadio(e) {
       if (e.target.value === 'New') {
-        this.ike.transform = '';
-        this.ike.group = '';
-      } else {
-        this.ike.hashAlgorithms = [];
-        this.ike.encryptionAlgorithms = [];
-        this.ike.groups = [];
-        this.hashList = [];
-        this.encryList = [];
-        this.dhList = [];
-        this.ike.transform = 'aes128-sha1';
-        this.ike.group = 'mod2';
+        console.log(this.hashList);
       }
-    },
-    getMultipleList() {
-      const list = this.vpnTableSelects;
-      list.vpnIKEHash.forEach(item => {
-        this.hashList.push(item.label);
-      });
-      list.vpnIPsecEntry.forEach(item => {
-        this.encryList.push(item.label);
-      });
-      list.vpnIPsecForward.forEach(item => {
-        this.dhList.push(item.label);
-      });
-      console.log(this.vpnTableSelects, 1122);
     },
     changeLocalIdType(value) {
       if (value === 'email') {
@@ -1111,185 +990,22 @@ export default {
         console.log(value);
       }
     },
-    hashTitleClick(title) {
-      if (/class="plus"/.test(title)) {
-        this.hashList.push({});
-      } else if (/class="minus"/.test(title)) {
-        // 删除选中的
-        if (this.delHashList.length) {
-          this.hashList = this.hashList.filter(item => {
-            let filter = true;
-            for (let i = 0; i < this.delHashList.length; i++) {
-              if (item['hash'] === this.delHashList[i]) {
-                this.vpnTableSelectsPlus({
-                  key: 'vpnIKEHash',
-                  label: item['hash']
-                });
-                filter = false;
-                break;
-              }
-            }
-            return filter;
-          });
-        } else {
-          this.$message.info('请至少选中一条记录！');
-        }
-        this.delHashList = [];
-      }
-    },
-    hashCellMerge(rowIndex, rowData, field) {
-      if (field === 't-hash') {
-        return {
-          colSpan: 3,
-          rowSpan: 1,
-          content: '',
-          componentName: 'ikehash-opration'
-        };
-      }
-    },
-    entryTitleClick(title) {
-      if (/class="plus"/.test(title)) {
-        this.encryList.push({});
-      } else if (/class="minus"/.test(title)) {
-        // 删除选中的
-        if (this.deleEncryList.length) {
-          this.encryList = this.encryList.filter(item => {
-            let filter = true;
-            for (let i = 0; i < this.deleEncryList.length; i++) {
-              if (item['encry'] === this.deleEncryList[i]) {
-                this.vpnTableSelectsPlus({
-                  key: 'vpnIKEEntry',
-                  label: item['encry']
-                });
-                filter = false;
-                break;
-              }
-            }
-            return filter;
-          });
-        } else {
-          this.$message.info('请至少选中一条记录！');
-        }
-        this.deleEncryList = [];
-      }
-    },
-    entryCellMerge(rowIndex, rowData, field) {
-      if (field === 't-encry') {
-        return {
-          colSpan: 3,
-          rowSpan: 1,
-          content: '',
-          componentName: 'ikeencry-opration'
-        };
-      }
-    },
-    dhTitleClick(title) {
-      if (/class="plus"/.test(title)) {
-        this.dhList.push({});
-      } else if (/class="minus"/.test(title)) {
-        // 删除选中的
-        if (this.delDHList.length) {
-          this.dhList = this.dhList.filter(item => {
-            let filter = true;
-            for (let i = 0; i < this.delDHList.length; i++) {
-              if (item['dh'] === this.delDHList[i]) {
-                this.vpnTableSelectsPlus({
-                  key: 'vpnIKEDH',
-                  label: item['dh'],
-                  value: item['dh']
-                });
-                filter = false;
-                break;
-              }
-            }
-            return filter;
-          });
-        } else {
-          this.$message.info('请至少选中一条记录！');
-        }
-        this.delDHList = [];
-      }
-    },
-    dhCellMerge(rowIndex, rowData, field) {
-      if (field === 't-dh') {
-        return {
-          colSpan: 3,
-          rowSpan: 1,
-          content: '',
-          componentName: 'dh-opration'
-        };
-      }
-    },
-    selectALLHash(checkdList) {
-      this.delHashList = [];
-      checkdList.forEach(item => {
-        this.delHashList.push(item['hash']);
-      });
-    },
-    selectChangeHash(checked) {
-      this.delHashList = [];
-      checked.forEach(item => {
-        this.delHashList.push(item['hash']);
-      });
-    },
-    selectALLEntry(checkdList) {
-      this.deleEncryList = [];
-      checkdList.forEach(item => {
-        this.deleEncryList.push(item['encry']);
-      });
-    },
-    selectChangeEntry(checked) {
-      this.deleEncryList = [];
-      checked.forEach(item => {
-        this.deleEncryList.push(item['encry']);
-      });
-    },
-    selectALLDH(checkdList) {
-      this.delDHList = [];
-      checkdList.forEach(item => {
-        this.delDHList.push(item['dh']);
-      });
-    },
-    selectChangeDH(checked) {
-      this.delDHList = [];
-      checked.forEach(item => {
-        this.delDHList.push(item['dh']);
-      });
-    },
     hashCustomFunc(data) {
       this.ike.hashAlgorithms = data;
+      this.hashList = data;
     },
     encryCustomFunc(data) {
       this.ike.encryptionAlgorithms = data;
+      this.encryList = data;
     },
     dhCustomFunc(data) {
       this.ike.groups = data;
+      this.dhList = data;
     },
     customFunc(params) {
       console.log(params, 8876);
       console.log(this.vpnTableSelects, 7788);
       switch (params.type) {
-        case 'hash':
-          this.hashList[params.index]['hash'] = params.label;
-          this.hashList = [...this.hashList];
-          this.ike.hashAlgorithms = [];
-          this.hashList.forEach(obj => {
-            this.ike.hashAlgorithms.push(obj.hash);
-          });
-          this.vpnTableSelectsMinus({ key: 'vpnIKEHash', label: params.label });
-          break;
-        case 'encry':
-          this.encryList[params.index]['encry'] = params.label;
-          this.encryList = [...this.encryList];
-          this.ike.encryptionAlgorithms = [];
-          this.encryList.forEach(obj => {
-            this.ike.encryptionAlgorithms.push(obj.encry);
-          });
-          this.vpnTableSelectsMinus({
-            key: 'vpnIKEEntry',
-            label: params.label
-          });
-          break;
         case 'idType':
           params.rowData.type === 'certificate'
             ? (this.certAuthList[params.index]['idType'] = params.label)
@@ -1307,22 +1023,8 @@ export default {
         case 'cert_plus':
           this.certAuthList.push({ type: 'certificate' });
           break;
-        case 'psk_plus':
-          this.pskList.push({ type: 'psk' });
-          break;
         default:
-          this.dhList[params.index]['dh'] = params.label;
-          this.dhList = [...this.dhList];
-
-          this.ike.groups = [];
-          this.dhList.forEach(obj => {
-            this.ike.groups.push(obj.dh);
-          });
-          this.vpnTableSelectsMinus({
-            key: 'vpnIKEDH',
-            label: params.label,
-            value: params.label
-          });
+          this.pskList.push({ type: 'psk' });
           break;
       }
     },
@@ -1375,122 +1077,6 @@ let props = {
     type: Number
   }
 };
-Vue.component('ikehash-opration', {
-  template: `<span>
-     <a-select
-        v-if="!rowData['hash']"
-        placeholder="--Select--"
-        size="small"
-        @change="change"
-      >
-        <a-select-option
-          :value="item.label"
-          v-for="(item, index) in vpnTableSelects.vpnIKEHash"
-          v-if="!item.used"
-          :key="index"
-        >
-          {{ item.label }}
-        </a-select-option>
-      </a-select>
-      <label>{{ rowData['hash'] }} </label>
-    </span>`,
-  props,
-  computed: {
-    ...mapState(['vpnTableSelects'])
-  },
-  methods: {
-    change(label) {
-      // 参数根据业务场景随意构造
-      let params = {
-        type: 'hash',
-        index: this.index,
-        rowData: this.rowData,
-        label
-      };
-      this.$emit('on-custom-comp', params);
-    }
-  }
-});
-Vue.component('ikeencry-opration', {
-  template: `<span>
-     <a-select
-        v-if="!rowData['encry']"
-        placeholder="--Select--"
-        size="small"
-        @change="change"
-      >
-        <a-select-option
-          :value="item.label"
-          v-for="(item, index) in vpnTableSelects.vpnIKEEntry"
-          v-if="!item.used"
-          :key="index"
-        >
-          {{ item.label }}
-        </a-select-option>
-      </a-select>
-      <label>{{ rowData['encry'] }} </label>
-    </span>`,
-  props,
-  computed: {
-    ...mapState(['vpnTableSelects'])
-  },
-  methods: {
-    change(label) {
-      // 参数根据业务场景随意构造
-      let params = {
-        type: 'encry',
-        index: this.index,
-        rowData: this.rowData,
-        label
-      };
-      this.$emit('on-custom-comp', params);
-    }
-  }
-});
-Vue.component('dh-opration', {
-  template: `<span>
-     <a-select
-        v-if="!rowData['dh']"
-        placeholder="--Select--"
-        size="small"
-        @change="change"
-      >
-        <a-select-option
-          :value="item.value"
-          v-for="(item, index) in vpnTableSelects.vpnIKEDH"
-          v-if="!item.used"
-          :key="index"
-        >
-          {{ item.label }}
-        </a-select-option>
-      </a-select>
-      <label>{{ showValue }} </label>
-    </span>`,
-  props,
-  computed: {
-    ...mapState(['vpnTableSelects']),
-    showValue() {
-      for (let i = 0; i < this.vpnTableSelects.vpnIKEDH.length; i++) {
-        if (this.rowData['dh'] == this.vpnTableSelects.vpnIKEDH[i].value) {
-          return this.vpnTableSelects.vpnIKEDH[i].label;
-        }
-      }
-      return '';
-    }
-  },
-  methods: {
-    change(label) {
-      // 参数根据业务场景随意构造
-      let params = {
-        type: 'dh',
-        index: this.index,
-        rowData: this.rowData,
-        label
-      };
-      this.$emit('on-custom-comp', params);
-    }
-  }
-});
 Vue.component('idtype-opration', {
   template: `<span>
      <a-select
@@ -1609,6 +1195,27 @@ Vue.component('pskoper-opration', {
 });
 </script>
 <style lang="scss" scoped>
+.mandatory {
+  color: #ee6978;
+  font-size: 11px;
+  padding-left: 1px;
+  vertical-align: top;
+}
+/deep/.mandatory.ant-form-item {
+  .ant-form-item-label {
+    label {
+      &::after {
+        content: '*';
+        color: #ee6978;
+        position: absolute;
+        right: -17px;
+        font-size: 14px;
+        padding-left: 1px;
+        display: block !important;
+      }
+    }
+  }
+}
 .peerAuthInfo {
   /deep/.v-table-rightview {
     width: 800px !important;

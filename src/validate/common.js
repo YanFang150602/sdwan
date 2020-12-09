@@ -59,3 +59,18 @@ export const email = (rule, value, callback) => {
     callback();
   }
 };
+export const required = (rule, value, callback) => {
+  if (!value) {
+    callback('Field required');
+  } else {
+    callback();
+  }
+};
+export const number = (rule, value, callback) => {
+  const reg = /^\d+$/;
+  if (value && !reg.test(value)) {
+    callback('Input number');
+  } else {
+    callback();
+  }
+};
