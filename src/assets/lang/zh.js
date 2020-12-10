@@ -61,6 +61,8 @@ module.exports = {
   VPNAvailbaleNetwork: '可访问子网',
   VPNServer: 'Server',
   VPNDomain: 'Domain',
+  VPNRuleNameError: '重名',
+  VPNRuleSourceError1: '源地址不能为0.0.0.0/0',
   VPNIKEVersion: '版本',
   VPNIKEAuth: '鉴权域',
   VPNIKETimeout: 'DPD超时',

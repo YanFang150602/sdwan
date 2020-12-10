@@ -7,7 +7,7 @@
       :style="{ paddingRight: '14px' }"
     >
       <!-- 搜索栏 -->
-      <a-col class="pull-left" :span="16">
+      <a-col class="pull-left" :span="16" v-if="searchFlag">
         <a-input
           ref="searchInput"
           v-model="keyworks"
@@ -129,6 +129,10 @@ export default {
       default: 20
     },
     flag: {
+      type: Boolean,
+      default: true
+    },
+    searchFlag: {
       type: Boolean,
       default: true
     }

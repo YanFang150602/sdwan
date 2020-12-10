@@ -62,6 +62,8 @@ module.exports = {
   VPNAvailbaleNetwork: '可访问子网',
   VPNServer: 'Server',
   VPNDomain: 'Domain',
+  VPNRuleNameError: 'Duplicate name',
+  VPNRuleSourceError1: 'The source address cannot be 0.0.0.0/0',
   VPNIKEAuth: 'Auth Domain',
   VPNIKETimeout: 'DPD Timeout',
   VPNIKETime: 'Rekey Time',
@@ -103,5 +105,6 @@ module.exports = {
   VPNIPsecRestatVolumne: 'IIPsec Rekey Volume',
   VPNIPsecForwardSecretMode: 'Perfect Forward Secrecy Group',
   IKE_ERROR: 'Input error',
-  IKE_IDTYPE_EMAIL: ''
+  IKE_IDTYPE_EMAIL: '',
+  FieldRequired: 'Field required'
 };

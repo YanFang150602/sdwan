@@ -139,12 +139,12 @@ export default {
         name: '',
         protocol: 'any',
         src: {
-          inet: '',
-          port: ''
+          inet: '0.0.0.0/0',
+          port: '0'
         },
         dst: {
-          inet: '',
-          port: ''
+          inet: '0.0.0.0/0',
+          port: '0'
         }
       },
       optionList: [
@@ -176,7 +176,7 @@ export default {
           { validator: this.validName, trigger: 'blur' }
         ],
         src: {
-          inet: [{ validator: required }]
+          inet: [{ validator: this.validSourceInet }]
         },
         dst: {
           inet: [{ validator: required }]
@@ -195,7 +195,7 @@ export default {
   methods: {
     validName(rule, value, callback) {
       if (!value) {
-        callback('Field required');
+        callback(this.$t('FieldRequired'));
       } else if (value.length > 50) {
         callback('Length must not be greater than 50.');
       } else if (!/^[A-Za-z0-9_-]{1,}$/.test(value)) {
@@ -203,8 +203,17 @@ export default {
           'Name cannot contain special characters or spaces except "_","-","."'
         );
       } else if (this.nameList.indexOf(value) > -1) {
-        callback('Duplicate name');
+        callback(this.$t('VPNRuleNameError'));
       }else {
+        callback();
+      }
+    },
+    validSourceInet(rule, value, callback) {
+      if (!value) {
+        callback(this.$t('FieldRequired'));
+      } else if (value === '0.0.0.0/0') {
+        callback(this.$t('VPNRuleSourceError1'));
+      } else {
         callback();
       }
     }

@@ -375,7 +375,7 @@
                       <a-row type="flex" justify="end" align="middle">
                         <!--表格功能按钮-->
                         <a-col>
-                          <a-row
+                          <!-- <a-row
                             :style="{ width: '425px' }"
                             type="flex"
                             justify="end"
@@ -413,14 +413,25 @@
                                 alt
                               />
                             </a-col>
-                          </a-row>
+                          </a-row> -->
+                          <Pagination
+                            :total="totalCount"
+                            :page-size="pageSize"
+                            :search-flag="false"
+                            @page-change="pageChange"
+                            @page-size-change="pageSizeChange"
+                            @create-item="showAddWinModal"
+                            @delete-item="showDelWinModal"
+                            @search="search"
+                            @cancelSearch="cancelSearch"
+                          />
                         </a-col>
                       </a-row>
                       <v-table
                         is-horizontal-resize
                         column-width-drag
                         :columns="strategyColumns"
-                        :table-data="strategyList"
+                        :table-data="tableDatas"
                         :select-all="selectALLStrategy"
                         :select-change="selectChangeStrategy"
                         :height="250"
@@ -884,7 +895,7 @@ export default {
             }
           ]
         },
-        tunnelInterface: [{ validator: required }],
+        tunnelInterface: [{ validator: this.validateTunnelInterface }],
         precedence: [{ validator: number }],
         addressFrom: [{ validator: required }],
         addressTo: [{ validator: required }]
@@ -918,7 +929,7 @@ export default {
       showBaseStrategy: false,
       totalCount: 0,
       pageIndex: 1,
-      pageSize: 10,
+      pageSize: 20,
       delLoading: false,
       addOrEditLoading: false,
       addOrEditWinVisible: false,
@@ -964,6 +975,7 @@ export default {
       ],
       strategyNameList: [],
       strategyList: [{}],
+      tableDatas: [{}],
       delStrategyList: [],
       curEditStrategy: {},
       curAddStrategy: {},
@@ -982,6 +994,7 @@ export default {
           value: ''
         }
       ],
+      tunnelInfcIsRequired: true,
       visible: true,
       ikeKey: 'firstIke',
       ipsecKey: 'firstIpsec'
@@ -1032,6 +1045,8 @@ export default {
         }
       }
       let targetValue = this.vpnProfile.local.address ? '4' : this.vpnProfile.local.interfaceName ? '5' : '6';
+      this.changeRadio({ target: { value: targetValue} });
+      targetValue = this.vpnProfile.tunnelRoutingInstance ? '7' : '8';
       this.changeRadio({ target: { value: targetValue} });
     }
     // 设置VPN Type
@@ -1089,6 +1104,11 @@ export default {
       }
       console.log('getdata:', data);
       this.$emit('passChildContent', data);
+    },
+    validateTunnelInterface(rule, value, callback) {
+      if (this.tunnelInfcIsRequired && !value) {
+        return callback(new Error('Tunnel Interface is required'));
+      }
     },
     async queryRouteInsOptions() {
       const res = await RouteInstanceQuery({ deviceName: this.deviceName });
@@ -1408,15 +1428,21 @@ export default {
         // 基于路由
         case '7':
           this.base = '7';
+          this.baseOptionVal = '7';
+	  this.tunnelInfcIsRequired = true;
           this.showBaseRoute = true;
           this.showBaseStrategy = false;
           break;
         // 基于策略
         case '8':
           this.base = '8';
+          this.baseOptionVal = '8';
+	  this.tunnelInfcIsRequired = false;
           this.showBaseRoute = false;
           this.showBaseStrategy = true;
           this.strategyList = this.cVPNProfile.rule ? this.cVPNProfile.rule : [];
+          this.totalCount = this.strategyList.length;
+          this.queryStrategyList();
           this.strategyList.length && this.strategyList.forEach(strategy => {
             this.strategyNameList.push(strategy.name);
           });
@@ -1522,6 +1548,8 @@ export default {
         nameIndex > -1 ? this.strategyNameList.splice(nameIndex, 1) : null;
       });
       this.cVPNProfile.rule = this.strategyList;
+      this.pageIndex = 1;
+      this.queryStrategyList();
     },
     delCancel() {
       this.delWinVisible = false;
@@ -1537,6 +1565,8 @@ export default {
         this.strategyList.push(params);
         this.strategyNameList.push(params.name);
         this.cVPNProfile.rule = this.strategyList;
+        this.pageIndex = 1;
+        this.queryStrategyList();
       }
     },
     satisfyValidation() {
@@ -1551,8 +1581,8 @@ export default {
     },
     addOrEditCancel() {
       this.addOrEditWinVisible = false;
-      this.curAddVPNCfgFile = {};
-      this.curEditVPNCfgFile = {};
+      this.curEditStrategy = {};
+      this.curAddStrategy = {};
     },
     pageChange(pageIndex) {
       this.pageIndex = pageIndex;
@@ -1562,7 +1592,29 @@ export default {
       this.pageSize = pageSize;
       this.queryStrategyList();
     },
-    queryStrategyList() {},
+    queryStrategyList() {
+      let tableDatas = [];
+      if (this.strategyList.length && this.strategyList.length > this.pageSize) {
+        let start = (this.pageIndex - 1) * this.pageSize;
+        let end = start + this.pageSize;
+        tableDatas = this.strategyList.slice(start, end);
+      } else {
+        tableDatas = this.strategyList;
+      }
+      
+      this.tableDatas = [];
+      if (tableDatas.length) {
+        this.tableDatas = tableDatas.map(row => {
+          let newRow = {};
+          newRow.src = row.src.inet;
+          newRow.dst = row.dst.inet;
+          newRow.name = row.name;
+          newRow.protocol = row.protocol;
+          return newRow;
+        });
+      }
+      this.totalCount = this.strategyList.length;
+    },
     selectALLStrategy(checkdList) {
       this.delStrategyList = [];
       checkdList.forEach(item => {
