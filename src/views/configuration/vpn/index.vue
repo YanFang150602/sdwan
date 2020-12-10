@@ -13,19 +13,18 @@
     />
     <!-- 列表 -->
     <!-- 表单主体内容 -->
-    <div class="tablescroll">
-      <v-table
-        is-horizontal-resize
-        column-width-drag
-        :columns="columns"
-        :table-data="tableDataList"
-        :select-all="selectALL"
-        :select-change="selectChange"
-        style="width:100%;"
-        @on-custom-comp="customTableFunc"
-        error-content="Temporarily no data"
-      ></v-table>
-    </div>
+    <v-table
+      is-horizontal-resize
+      column-width-drag
+      :columns="columns"
+      :title-rows="titleRows"
+      :table-data="tableDataList"
+      :select-all="selectALL"
+      :select-change="selectChange"
+      style="width:100%;"
+      @on-custom-comp="customTableFunc"
+      error-content="Temporarily no data"
+    ></v-table>
     <!-- 组群弹框 -->
     <div>
       <a-modal
@@ -78,6 +77,7 @@ import Vue from 'vue';
 import { mapState } from 'vuex';
 import Pagination from 'components/Pagination';
 import VPNProfileAddOrEdit from './VPNProfileAddOrEdit';
+import { columns, titleRows} from './table';
 import {
   VPNProfileQuery,
   VPNProfileCreate,
@@ -93,293 +93,8 @@ export default {
   data() {
     return {
       keywords: '',
-      columns: [
-        {
-          field: 'custome',
-          width: 36,
-          columnAlign: 'center',
-          titleAlign: 'center',
-          type: 'selection'
-        },
-        {
-          field: 'name',
-          title: 'VPN Profile',
-          width: 120,
-          columnAlign: 'left',
-          isResize: true,
-          componentName: 'vpncfgfile-opration'
-        },
-        {
-          field: 'vpnType',
-          title: 'VPN Type',
-          width: 100,
-          columnAlign: 'left',
-          isResize: true
-        },
-        {
-          field: 'local-aih',
-          title: 'Local IP/Interface/Hostname',
-          width: 220,
-          columnAlign: 'left',
-          isResize: true
-        },
-        {
-          field: 'peer-ifh',
-          title: 'Peer IP/FQDN/Hostname',
-          width: 160,
-          columnAlign: 'left',
-          isResize: true
-        },
-        {
-          field: 'localAuthInfo-authType',
-          title: 'Local Auth Info - Auth Type',
-          width: 220,
-          columnAlign: 'left',
-          isResize: true
-        },
-        {
-          field: 'localAuthInfo-authInfo',
-          title: 'Local Auth Info - Auth Info',
-          width: 220,
-          columnAlign: 'left',
-          isResize: true
-        },
-        {
-          field: 'peerAuthInfo-authType',
-          title: 'Peer Auth Info - Auth Type',
-          width: 220,
-          columnAlign: 'left',
-          isResize: true
-        },
-        {
-          field: 'peerAuthInfo-authInfo',
-          title: 'Peer Auth Info - Auth Info',
-          width: 220,
-          columnAlign: 'left',
-          isResize: true
-        },
-        {
-          field: 'pskAuthClients',
-          title: 'Peer Auth Info - Psk Auth Clients',
-          width: 220,
-          columnAlign: 'left',
-          isResize: true
-        },
-        {
-          field: 'rules',
-          title: 'Rules',
-          width: 220,
-          columnAlign: 'left',
-          isResize: true
-        },
-        {
-          field: 'routing-instance',
-          title: 'Routing Instance',
-          width: 220,
-          columnAlign: 'left',
-          isResize: true
-        },
-        {
-          field: 'tunnel-interface',
-          title: 'Tunnel Interface',
-          width: 220,
-          columnAlign: 'left',
-          isResize: true
-        },
-        {
-          field: 'tunnel-initiate',
-          title: 'Tunnel Initiate',
-          width: 220,
-          columnAlign: 'left',
-          isResize: true
-        },
-        {
-          field: 'ipsec-fragmentation',
-          title: 'IPSec Fragmentation',
-          width: 220,
-          columnAlign: 'left',
-          isResize: true
-        },
-        {
-          field: 'ipsec-forceNatT',
-          title: 'IP Sec - Force NAT-T Configuration',
-          width: 220,
-          columnAlign: 'left',
-          isResize: true
-        },
-        {
-          field: 'ipsec-algorithm',
-          title: 'IP Sec - Encryption and Hashing Algorithm',
-          width: 220,
-          columnAlign: 'left',
-          isResize: true
-        },
-        {
-          field: 'ipsec-mode',
-          title: 'IPSec Mode',
-          width: 80,
-          columnAlign: 'left',
-          isResize: true
-        },
-        {
-          field: 'ipsec-pfsGroup',
-          title: 'IP Sec - Forward Secrecy Mode',
-          width: 220,
-          columnAlign: 'left',
-          isResize: true
-        },
-        {
-          field: 'ipsec-antiReplay',
-          title: 'IP Sec - Anti Replay',
-          width: 100,
-          columnAlign: 'left',
-          isResize: true
-        },
-        {
-          field: 'ike-version',
-          title: 'IKE - IKE Version',
-          width: 80,
-          columnAlign: 'left',
-          isResize: true
-        },
-        {
-          field: 'ike-mode',
-          title: 'IKE - DH Mode',
-          width: 80,
-          columnAlign: 'left',
-          isResize: true
-        },
-        {
-          field: 'ike-algorithm',
-          title: 'IKE - Encryption and Hashing Algorithm',
-          width: 220,
-          columnAlign: 'left',
-          isResize: true
-        }
-      ],
-      titleRows: [
-        [
-          {
-            fields: ['custome'],
-            titleAlign: 'center',
-            type: 'selection',
-            rowspan: 2
-          },
-          {
-            field: 'name',
-            title: 'VPN Profile',
-            componentName: 'vpncfgfile-opration',
-            rowspan: 2
-          },
-          {
-            field: 'vpnType',
-            title: 'VPN Type',
-            isResize: true,
-            rowspan: 2
-          },
-          {
-            field: 'local-ip-interface-host',
-            title: 'Local IP/Interface/Hostname',
-            isResize: true,
-            rowspan: 2
-          },
-          {
-            field: 'peer-ip-fqdn-host',
-            title: 'Peer IP/FQDN/Hostname',
-            isResize: true,
-            rowspan: 2
-          },
-          {
-            fields: ['local-auth-type', 'local-auth-info'],
-            title: 'Local Auth Info',
-            titleAlign: 'center',
-            colspan: 2
-          },
-          {
-            fields: ['peer-auth-type', 'peer-auth-type', 'peer-psk-auth'],
-            title: 'Peer Auth Info',
-            titleAlign: 'center',
-            colspan: 3
-          },
-          {
-            fields: [
-              'ipsec-frag',
-              'ipsec-nat',
-              'ipsec-algorithm',
-              'ipsec-mode',
-              'ipsec-forward',
-              'ipsec-replay'
-            ],
-            title: 'IPSec',
-            titleAlign: 'center',
-            colspan: 6
-          },
-          {
-            fields: ['ike-version', 'ike-mode', 'ike-algorithm'],
-            title: 'IKE',
-            titleAlign: 'center',
-            colspan: 3
-          }
-        ],
-        [
-          {
-            field: 'local-auth-type',
-            title: 'Auth Type'
-          },
-          {
-            field: 'local-auth-info',
-            title: 'Auth Info'
-          },
-          {
-            field: 'peer-auth-type',
-            title: 'Auth Type'
-          },
-          {
-            field: 'peer-auth-type',
-            title: 'Auth Info'
-          },
-          {
-            field: 'peer-psk-auth',
-            title: 'Psk Auth Clients'
-          },
-          {
-            field: 'ipsec-frag',
-            title: 'IP Sec Fragmentation'
-          },
-          {
-            field: 'ipsec-nat',
-            title: 'Force NAT-T Configuration'
-          },
-          {
-            field: 'ipsec-algorithm',
-            title: 'Encryption and Hashing Algorithm'
-          },
-          {
-            field: 'ipsec-mode',
-            title: 'Mode'
-          },
-          {
-            field: 'ipsec-forward',
-            title: 'Forward Secrecy Mode'
-          },
-          {
-            field: 'ipsec-replay',
-            title: 'Anti Replay'
-          },
-          {
-            field: 'ike-version',
-            title: 'IKE Version'
-          },
-          {
-            field: 'ike-mode',
-            title: 'DH Mode'
-          },
-          {
-            field: 'ike-algorithm',
-            title: 'Encryption and Hashing Algorithm'
-          }
-        ]
-      ],
+      columns,
+      titleRows,
       tableDataList: [],
       totalCount: 0,
       pageIndex: 1,
@@ -686,13 +401,13 @@ Vue.component('vpncfgfile-opration', {
     background-color: #e9f4fc;
   }
 }
-.tablescroll {
-  /deep/.v-table-rightview .v-table-body,
-  .v-table-rightview .v-table-footer {
-    overflow-x: auto !important;
-    overflow-y: auto;
-  }
+
+/deep/.v-table-rightview .v-table-body,
+.v-table-rightview .v-table-footer {
+  overflow-x: auto !important;
+  overflow-y: auto;
 }
+
 .delete {
   /deep/.ant-modal-content {
     max-height: 325px;
