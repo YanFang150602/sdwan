@@ -22,25 +22,42 @@
             <!-- 头部右侧导航区 -->
             <a-col :span="20">
               <a-row class="pull-right" type="flex" justify="end" align="top">
-                <a-col :style="{ width: '18px' }" class="task-iconbtn" title="Tasks">
-                  <img width="100%" src="@/assets/images/icon/task.png" alt>
+                <a-col
+                  :style="{ width: '18px' }"
+                  class="task-iconbtn"
+                  title="Tasks"
+                >
+                  <img width="100%" src="@/assets/images/icon/task.png" alt />
                 </a-col>
                 <!-- 导航下拉组件内容 -->
                 <a-col :style="{ marginLeft: '20px' }">
                   <a-dropdown>
-                    <a class="ant-dropdown-link" @click="e => e.preventDefault()">
+                    <a
+                      class="ant-dropdown-link"
+                      @click="e => e.preventDefault()"
+                    >
                       {{
-                      userInfo.username ? userInfo.username.toUpperCase() : ''
+                        userInfo.username ? userInfo.username.toUpperCase() : ''
                       }}
                       ( {{ userInfo.orgId }} )
-                      <a-icon type="down"/>
+                      <a-icon type="down" />
                     </a>
                     <a-menu slot="overlay">
-                      <a-menu-item @click="visible = true">Change Password</a-menu-item>
+                      <a-menu-item @click="visible = true"
+                        >Change Password</a-menu-item
+                      >
 
                       <a-sub-menu title="Language">
-                        <a-menu-item class="change-btn" @click="changeLanguage('en')">English</a-menu-item>
-                        <a-menu-item class="change-btn" @click="changeLanguage('zh')">Chinese</a-menu-item>
+                        <a-menu-item
+                          class="change-btn"
+                          @click="changeLanguage('en')"
+                          >English</a-menu-item
+                        >
+                        <a-menu-item
+                          class="change-btn"
+                          @click="changeLanguage('zh')"
+                          >Chinese</a-menu-item
+                        >
                       </a-sub-menu>
                       <a-menu-item @click="logOut()">Logout</a-menu-item>
                     </a-menu>
@@ -50,33 +67,52 @@
             </a-col>
           </a-row>
           <!-- 头部bottom -->
-          <a-row class="nav-bottom" type="flex" justify="space-between" align="middle">
+          <a-row
+            class="nav-bottom"
+            type="flex"
+            justify="space-between"
+            align="middle"
+          >
             <a-col class="nav-bottom-item">
               <router-link class="link-btn" to="/configuration">
-                {{
-                $t('Configuration')
-                }}
+                {{ $t('Configuration') }}
               </router-link>
               <router-link
                 v-if="!(userInfo.level === 3)"
                 class="link-btn"
                 to="/workflows"
-              >{{ $t('Workflows') }}</router-link>
+                >{{ $t('Workflows') }}</router-link
+              >
               <router-link
                 v-if="!(userInfo.level === 3)"
                 class="link-btn"
                 to="/administration"
-              >{{ $t('Administration') }}</router-link>
+                >{{ $t('Administration') }}</router-link
+              >
             </a-col>
             <a-col class="commit-btn">{{ $t('CommitTemplate') }}</a-col>
           </a-row>
         </a-layout-header>
         <!-- 加载条 -->
-        <a-row class="reload" type="flex" justify="space-between" align="middle">
+        <a-row
+          class="reload"
+          type="flex"
+          justify="space-between"
+          align="middle"
+        >
           <a-col>
             <a-row type="flex" justify="start" align="middle">
-              <a-col v-show="showDevcieConfig" style="margin-right:5px;font-size:14px">
-                <a-button size="small" key="back_device" type="primary" @click="backDevicePage">Home</a-button>
+              <a-col
+                v-show="showDevcieConfig"
+                style="margin-right:5px;font-size:14px"
+              >
+                <a-button
+                  size="small"
+                  key="back_device"
+                  type="primary"
+                  @click="backDevicePage"
+                  >Home</a-button
+                >
               </a-col>
               <!-- v-model="curDeviceName" -->
               <a-col
@@ -97,12 +133,17 @@
                     {{ deviceName }}
                   </a-select-option>
                 </a-select>-->
-                <a-input v-model="curDeviceName" size="small" style="width:200px"/>
+                <a-input
+                  v-model="curDeviceName"
+                  size="small"
+                  style="width:200px"
+                />
               </a-col>
               <a-col
                 v-show="organShow"
                 style="color: #626c82; margin-right: 5px;font-size:14px"
-              >Organization:</a-col>
+                >Organization:</a-col
+              >
               <a-col v-show="organShow">
                 <a-select
                   size="small"
@@ -116,21 +157,25 @@
                     :value="item"
                     v-for="(item, index) in admNameList"
                     :key="index"
-                  >{{ item }}</a-select-option>
+                    >{{ item }}</a-select-option
+                  >
                 </a-select>
               </a-col>
             </a-row>
           </a-col>
           <a-col :style="{ marginLeft: 'auto' }">
-            <a-icon @click="key = Math.random()" type="redo"/>
+            <a-icon @click="key = Math.random()" type="redo" />
           </a-col>
         </a-row>
         <!-- 主体区域 -->
-        <a-layout-content :style="{ height: screenHeight + 'px' }" style="overflow-y:auto">
+        <a-layout-content
+          :style="{ height: screenHeight + 'px' }"
+          style="overflow-y:auto"
+        >
           <router-view ref="main" :key="key"></router-view>
         </a-layout-content>
         <!-- 底部信息 -->
-        <a-layout-footer
+        <!-- <a-layout-footer
           :style="{
             height: '18px',
             padding: '0',
@@ -147,7 +192,7 @@
               117.186.242.158
             </a-col>
           </a-row>
-        </a-layout-footer>
+        </a-layout-footer> -->
       </a-layout>
       <!-- 修改密码弹窗 -->
       <a-modal
@@ -164,14 +209,15 @@
         :afterClose="cleanData"
       >
         <a-form-model
+          class="mandatory"
           ref="passWordChange"
           :model="passWordData"
           :rules="rules"
           layout="vertical"
           @validate="validate"
         >
-          <a-form-model-item>
-            <a-input size="small" type="hidden" v-model="passWordData.userId"/>
+          <a-form-model-item class="mandatory">
+            <a-input size="small" type="hidden" v-model="passWordData.userId" />
           </a-form-model-item>
           <a-form-model-item label="Current Password" prop="oldPassword">
             <a-input-password
@@ -183,7 +229,11 @@
               @mousemove="updateXY"
             />
           </a-form-model-item>
-          <a-form-model-item label="New Password" prop="newPassword">
+          <a-form-model-item
+            class="mandatory"
+            label="New Password"
+            prop="newPassword"
+          >
             <a-input-password
               size="small"
               type="password"
@@ -204,7 +254,11 @@
             />
           </a-form-model-item>
           <a-form-model-item>
-            <a-input size="small" type="hidden" v-model="passWordData.systemId"/>
+            <a-input
+              size="small"
+              type="hidden"
+              v-model="passWordData.systemId"
+            />
           </a-form-model-item>
         </a-form-model>
       </a-modal>
@@ -213,7 +267,9 @@
         v-show="formTips.flag"
         class="form-tips"
         :style="formTips.positionStyle"
-      >{{ formTips.tipText }}</div>
+      >
+        {{ formTips.tipText }}
+      </div>
     </div>
   </div>
 </template>
@@ -273,7 +329,7 @@ export default {
       // 弹框开关
       visible: false,
       // 主体区域高度自适应屏幕
-      screenHeight: document.body.clientHeight - 111,
+      screenHeight: document.body.clientHeight - 93,
       // 修改密码提交字段
       passWordData: {
         userId: '',
@@ -342,7 +398,7 @@ export default {
     window.onresize = () => {
       return (() => {
         window.screenHeight = document.body.clientHeight;
-        that.screenHeight = window.screenHeight - 111;
+        that.screenHeight = window.screenHeight - 93;
       })();
     };
     if (this.$route.name === 'Home') {
@@ -420,13 +476,6 @@ export default {
         case 'DeviceGroup': // 下拉组织对于DeviceGroup列表zwj
           this.DeviceGroups({
             organization: name,
-            offset: 0,
-            limit: 100
-          });
-          break;
-        case 'SpokeGroups':
-          this.SPTableForm({
-            orgname: name,
             offset: 0,
             limit: 100
           });
@@ -521,9 +570,6 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-/deep/.ant-form-explain {
-  display: none !important;
-}
 .nav-wrap {
   background-color: #36536b;
   .change-btn {

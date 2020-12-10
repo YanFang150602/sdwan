@@ -294,11 +294,11 @@ export const schedules = param =>
  * @param {Object}
  */
 export const applicationList = param =>
-  $http.get('/controller/sdwan/v1/policies/getApplications', param);
+  $http.get('/controller/sdwan/v1/config/query/qos-app-name-all', param);
 
 /**
  * @desc 查询urlCategoryList
  * @param {Object}
  */
 export const urlCategoryList = param =>
-  $http.get('/controller/sdwan/v1/policies/getURLCategoryList', param);
+  $http.get('/controller/sdwan/v1/config/query/url-categories-name-all', param);

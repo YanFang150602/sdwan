@@ -43,11 +43,11 @@ export const ServiceSelect = param =>
   $http.get('/controller/sdwan/v1/config/query/services-name', param);
 // 左侧五个下拉框
 export const LeftSelectAll = param =>
-  $http.get('/controller/sdwan/v1/template/template/app-predefined', param);
+  $http.get('/controller/sdwan/v1/config/query/predefined-app-name-all', param);
 
 // Source Address下拉框接口
 export const SourceAddressSelect = param =>
-  $http.get('/controller/sdwan/v1/template/template/device-address', param);
+  $http.get('/controller/sdwan/v1/config/query/addresses-name', param);
 
 // 四个方框的数据
 export const BoxInformationList = param =>

@@ -4,106 +4,106 @@ import vpnSrc from 'assets/images/icon/vpnprofile.png';
 import brsdwanSrc from 'assets/images/icon/BRSDWAN.png';
 
 export default {
-  "firstMenus": [
+  firstMenus: [
     {
-      "title": "Interfaces",
-      "key": "Interfaces",
-      "icon": interSrc
+      title: 'Interfaces',
+      key: 'Interfaces',
+      icon: interSrc
     },
     {
-      "title": "Zones",
-      "key": "Zones"
+      title: 'Zones',
+      key: 'Zones'
     },
     {
-      "title": "Class of Service",
-      "key": "Class of Service",
-      "children": [
+      title: 'Class of Service',
+      key: 'Class of Service',
+      children: [
         {
-          "title": "Qos Profiles",
-          "key": "QosProfiles"
+          title: 'Qos Profiles',
+          key: 'QosProfiles'
         },
         {
-          "title": "Qos Policies",
-          "key": "QosPolicies"
+          title: 'Qos Policies',
+          key: 'QosPolicies'
         },
         {
-          "title": "App Qos Policies",
-          "key": "AppQosPolicies"
+          title: 'App Qos Policies',
+          key: 'AppQosPolicies'
         },
         {
-          "title": "Drop Profile",
-          "key": "dropProfile"
+          title: 'Drop Profile',
+          key: 'dropProfile'
         },
         {
-          "title": "Scheduler",
-          "key": "Scheduler"
+          title: 'Scheduler',
+          key: 'Scheduler'
         },
         {
-          "title": "Scheduler Maps",
-          "key": "SchedulerMaps"
+          title: 'Scheduler Maps',
+          key: 'SchedulerMaps'
         },
         {
-          "title": "Associate Interface/Network",
-          "key": "AssociateInterfaceNetwork"
+          title: 'Associate Interface/Network',
+          key: 'AssociateInterfaceNetwork'
         }
       ]
     }
   ],
-  "secondMenus": [
+  secondMenus: [
     {
-      "title": "IPSec",
-      "key": "IPSec",
-      "icon": ipsecSrc,
-      "children": [
+      title: 'IPSec',
+      key: 'IPSec',
+      icon: ipsecSrc,
+      children: [
         {
-          "title": "VPN Profiles",
-          "key": "VPNProfile",
-          "icon": vpnSrc
+          title: 'VPN Profiles',
+          key: 'VPNProfile',
+          icon: vpnSrc
         },
         {
-          "title": "Branch SDWAN Profile",
-          "key": "BranchSDWANProfile",
-          "icon": brsdwanSrc
+          title: 'Branch SDWAN Profile',
+          key: 'BranchSDWANProfile',
+          icon: brsdwanSrc
         }
       ]
     }
   ],
-  "thirdMenus": [
+  thirdMenus: [
     {
-      "title": "Objects",
-      "key": "Objects",
-      "children": [
+      title: 'Objects',
+      key: 'Objects',
+      children: [
         {
-          "title": "Address",
-          "key": "Address"
+          title: 'Address',
+          key: 'Address'
         },
         {
-          "title": "Schedules",
-          "key": "Schedules"
+          title: 'Schedules',
+          key: 'Schedules'
         },
         {
-          "title": "Custom Objects",
-          "key": "CustomObjects",
-          "children": [
+          title: 'Custom Objects',
+          key: 'CustomObjects',
+          children: [
             {
-              "title": "Applications",
-              "key": "Applications"
+              title: 'Applications',
+              key: 'Applications'
             },
             {
-              "title": "Application Filters",
-              "key": "ApplicationFilters"
+              title: 'Application Filters',
+              key: 'ApplicationFilters'
             },
             {
-              "title": "URL Categories",
-              "key": "URLCategories"
+              title: 'URL Categories',
+              key: 'URLCategories'
             },
             {
-              "title": "Application Groups",
-              "key": "ApplicationGroups"
+              title: 'Application Groups',
+              key: 'ApplicationGroups'
             },
             {
-              "title": "Services",
-              "key": "Service"
+              title: 'Services',
+              key: 'Service'
             }
           ]
         }

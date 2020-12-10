@@ -16,7 +16,7 @@ export const adminNameLists = () =>
 export const adminList = param =>
   $http.get('/controller/sdwan/v1/organizations', param);
 
-  /**
+/**
  * @desc 获取组织导航树信息
  * @param {Object}
  */
@@ -241,14 +241,6 @@ export const TraDomain = () =>
 
 export const profile = param =>
   $http.get('/controller/sdwan/v1/template/template/dhcpProfile', param);
-
-/**
- * @desc 模板interface zones 下拉内容
- * @param {Object} 父组织名
- */
-
-export const zones = param =>
-  $http.get('/controller/sdwan/v1/template/template/zones', param);
 
 /**
  * @desc 租户密码修改

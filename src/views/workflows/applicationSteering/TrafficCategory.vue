@@ -6,9 +6,12 @@
       on-ok="handleOk"
       width="865px"
       :maskClosable="false"
+      v-drag
     >
       <template slot="footer">
-        <a-button key="submit" type="primary" @click="handleOk">Create</a-button>
+        <a-button key="submit" type="primary" @click="handleOk"
+          >Create</a-button
+        >
         <a-button key="back" @click="handleCancel">Cancel</a-button>
       </template>
       <a-form-model :model="form" ref="ruleForm" :rules="rulesT">
@@ -17,7 +20,7 @@
             <a-col :span="24">
               <a-form-model-item>
                 <a-form-model-item label="Name" prop="categoryName">
-                  <a-input v-model="form.categoryName"/>
+                  <a-input v-model="form.categoryName" />
                 </a-form-model-item>
               </a-form-model-item>
             </a-col>
@@ -25,13 +28,17 @@
           <a-row>
             <a-col :span="24">
               <a-form-model-item>
-                <a-form-model-item label="Forwarding Class" prop="forwardingClass">
+                <a-form-model-item
+                  label="Forwarding Class"
+                  prop="forwardingClass"
+                >
                   <a-select v-model="form.forwardingClass">
                     <a-select-option
                       :value="item.name"
-                      v-for="(item,index) in forClassList"
+                      v-for="(item, index) in forClassList"
                       :key="index"
-                    >{{item.lable}}</a-select-option>
+                      >{{ item.lable }}</a-select-option
+                    >
                   </a-select>
                 </a-form-model-item>
               </a-form-model-item>
@@ -44,9 +51,10 @@
                   <a-select v-model="form.transform">
                     <a-select-option
                       :value="item"
-                      v-for="(item,index) in transList"
+                      v-for="(item, index) in transList"
                       :key="index"
-                    >{{item}}</a-select-option>
+                      >{{ item }}</a-select-option
+                    >
                   </a-select>
                 </a-form-model-item>
               </a-form-model-item>
@@ -58,19 +66,25 @@
           <a-row>
             <a-col :span="8">
               <a-form-model-item>
-                <a-checkbox name="type" v-model="selectForm.fec">FEC</a-checkbox>
+                <a-checkbox name="type" v-model="selectForm.fec"
+                  >FEC</a-checkbox
+                >
               </a-form-model-item>
             </a-col>
             <a-col :span="8">
               <a-form-model-item>
-                <a-checkbox name="type" v-model="selectForm.replication">Replication</a-checkbox>
+                <a-checkbox name="type" v-model="selectForm.replication"
+                  >Replication</a-checkbox
+                >
               </a-form-model-item>
             </a-col>
             <a-col :span="8">
               <a-form-model-item label="Load Balance">
                 <a-select v-model="selectForm.per">
                   <a-select-option value="Per_Flow">Per Flow</a-select-option>
-                  <a-select-option value="Per_Packet">Per Packet</a-select-option>
+                  <a-select-option value="Per_Packet"
+                    >Per Packet</a-select-option
+                  >
                 </a-select>
               </a-form-model-item>
             </a-col>
@@ -81,20 +95,31 @@
           <a-row>
             <a-col :span="8">
               <a-form-model-item>
-                <a-checkbox name="type" v-model="selectForm.lowLatency">Low Latency</a-checkbox>
+                <a-checkbox name="type" v-model="selectForm.lowLatency"
+                  >Low Latency</a-checkbox
+                >
               </a-form-model-item>
             </a-col>
             <a-col :span="8">
               <a-form-model-item>
-                <a-checkbox name="type" v-model="selectForm.lowPacketLoss">Low Packet Loss</a-checkbox>
+                <a-checkbox name="type" v-model="selectForm.lowPacketLoss"
+                  >Low Packet Loss</a-checkbox
+                >
               </a-form-model-item>
             </a-col>
             <a-col :span="8">
               <a-form-model-item>
-                <a-checkbox name="type" v-model="selectForm.lowDelayVariation">Low Delay Variation</a-checkbox>
+                <a-checkbox name="type" v-model="selectForm.lowDelayVariation"
+                  >Low Delay Variation</a-checkbox
+                >
               </a-form-model-item>
             </a-col>
-            <AddModleDouble :title="Priority" :titleSecond="WANCircuit" style="width:800px;"/>
+            <AddModleDouble
+              :title="Priority"
+              :listdate="wanNetworkGroups"
+              v-model="wanNetworkGroupsRes"
+              style="width:800px;"
+            />
           </a-row>
         </div>
       </a-form-model>
@@ -104,7 +129,9 @@
       v-show="formTips.flag"
       class="form-tips"
       :style="formTips.positionStyle"
-    >{{ formTips.tipText }}</div>
+    >
+      {{ formTips.tipText }}
+    </div>
   </div>
 </template>
 <script>
@@ -112,6 +139,7 @@ import tip from '@/mixins/tip';
 import AddModleDouble from 'components/TrafficDouble/AddModle';
 
 export default {
+  props: ['wanNetworkGroups'],
   mixins: [tip],
   created() {},
   components: {
@@ -174,10 +202,53 @@ export default {
         lowPacketLoss: false,
         lowDelayVariation: false,
         per: ''
-      }
+      },
+      wanNetworkGroupsRes: {}
     };
   },
+
+  directives: {
+    // 拖拽自定义指令
+    drag(el) {
+      console.log('移动', el);
+      // 将ant-modal的position改为静态，使拖拽框按照电脑屏幕定位
+      // el.children[1].children[0].style.position = 'static';
+      // 获取到ant-modal-content元素
+      let targetEl = el.children[1].children[0].children[1];
+      // targetEl.style.top = '100px';
+      targetEl.onmousedown = function(e) {
+        // 点下鼠标的位置
+        let startX = e.pageX;
+        let startY = e.pageY;
+        // 点下鼠标的元素的位置
+        let offsetX = targetEl.offsetLeft;
+        let offsetY = targetEl.offsetTop;
+        document.onmousemove = function(e) {
+          // 计算出元素的left 和 top 值
+          let dx = offsetX + (e.pageX - startX);
+          let dy = offsetY + (e.pageY - startY);
+          // // 进行拖拽范围的限制(不能超出屏幕)
+          // dx = Math.max(0, dx);
+          // dy = Math.max(0, dy);
+          // let scrollWidth = window.innerWidth - targetEl.offsetWidth;
+          // let scrollHeight = window.innerHeight - targetEl.offsetHeight;
+          // dx = Math.min(scrollWidth, dx);
+          // dy = Math.min(scrollHeight, dy);
+          // 设置元素的left和top值，实现拖拽
+          targetEl.style.left = dx + 'px';
+          targetEl.style.top = dy + 'px';
+        };
+        // 鼠标弹起，取消鼠标移动事件
+        targetEl.onmouseup = function() {
+          document.onmousemove = null;
+        };
+      };
+    }
+  },
   watch: {
+    wanNetworkGroupsRes(newVal) {
+      console.log(newVal);
+    },
     'selectForm.fec'(value) {
       if (value) return this.form.defaultActions.push('FEC');
     },
@@ -205,10 +276,15 @@ export default {
       this.visible = true;
     },
     handleOk() {
+      console.log(this.wanNetworkGroupsRes);
+      this.form.defaultPathPriorities = this.wanNetworkGroupsRes;
+      console.log(this.form);
+
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
           this.visible = false;
           this.$emit('table', this.form);
+          this.form = {};
         } else {
           console.log('error submit!!');
           return false;
@@ -262,7 +338,7 @@ export default {
 }
 // 弹框的样式
 /deep/.ant-modal-content {
-  max-height: 1000px;
+  // max-height: 1000px;
   .ant-modal-header {
     height: 31px;
     background-color: #e9f4fc;
@@ -271,7 +347,7 @@ export default {
     }
   }
   .ant-modal-body {
-    height: 475px;
+    // height: 475px;
     padding: 3px;
     background-color: #36536b;
     padding-left: 3px;

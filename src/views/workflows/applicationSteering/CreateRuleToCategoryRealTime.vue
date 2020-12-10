@@ -2,13 +2,20 @@
   <div>
     <a-modal
       v-model="visible"
-      title="Create Rule to category Real Time"
+      :title="titleName"
       on-ok="handleOk"
       width="865px"
       :maskClosable="false"
+      v-drag
     >
       <template slot="footer">
-        <a-button key="submit" type="primary" @click="handleOk" :loading="loading">Ok</a-button>
+        <a-button
+          key="submit"
+          type="primary"
+          @click="handleOk"
+          :loading="loading"
+          >Ok</a-button
+        >
         <a-button key="back" @click="handleCancel">Cancel</a-button>
       </template>
       <a-form-model ref="ruleForm" :model="form">
@@ -20,7 +27,7 @@
                 <a-col :span="24">
                   <a-form-model-item>
                     <a-form-model-item label="Name" prop="name">
-                      <a-input v-model="form.name"/>
+                      <a-input v-model="form.name" />
                     </a-form-model-item>
                   </a-form-model-item>
                 </a-col>
@@ -29,7 +36,7 @@
                 <a-col :span="24">
                   <a-form-model-item>
                     <a-form-model-item label="Description">
-                      <a-input v-model="form.description"/>
+                      <a-input v-model="form.description" />
                     </a-form-model-item>
                   </a-form-model-item>
                 </a-col>
@@ -45,8 +52,8 @@
                     <AddModle
                       title="Source Address"
                       style="width:405px;margin-left:15px"
-                      :listdate="addressSource"
-                      @subdata="(val)=>subit(val,'SourceAddress')"
+                      :listdate="address"
+                      @subdata="val => (currentEdit.destinationAddress = val)"
                     />
                   </a-form-model-item>
                 </p>
@@ -58,7 +65,7 @@
                       title="Destination Address"
                       style="width:405px;margin-left:15px"
                       :listdate="address"
-                      @subdata="(val)=> currentEdit.destinationAddress = val"
+                      @subdata="val => (currentEdit.destinationAddress = val)"
                     />
                   </a-form-model-item>
                 </p>
@@ -68,16 +75,16 @@
               <AddModle
                 title="Source Zones"
                 style="width:405px;margin-left:15px"
-                :listdate="sourceList"
-                @subdata="(val)=>subit(val,'SourceZones')"
+                :listdate="FZones"
+                @subdata="val => subit(val, 'SourceZones')"
               />
             </a-form-model-item>
             <a-form-model-item style="float:right">
               <AddModle
                 title="Destination Zones"
                 style="width:405px;margin-left:15px"
-                :listdate="EditRuleTo.sourceSelect"
-                @subdata="(val)=>subit(val,'DestinationZones')"
+                :listdate="FZones"
+                @subdata="val => subit(val, 'DestinationZones')"
               />
             </a-form-model-item>
           </a-tab-pane>
@@ -88,6 +95,7 @@
                 class="item"
                 :title="item.title"
                 :key="item.valKey"
+                ref="addModleRef"
                 v-for="item in seleArr"
                 :listdate="selects[item.valKey]"
                 v-model="currentEdit[item.valKey]"
@@ -117,8 +125,12 @@
                   <p class="height-120">
                     <a-form-model-item label="Load Balance">
                       <a-select>
-                        <a-select-option value="PER_FLOW">Per Flow</a-select-option>
-                        <a-select-option value="PER_PACKET">Per Packet</a-select-option>
+                        <a-select-option value="PER_FLOW"
+                          >Per Flow</a-select-option
+                        >
+                        <a-select-option value="PER_PACKET"
+                          >Per Packet</a-select-option
+                        >
                       </a-select>
                     </a-form-model-item>
                   </p>
@@ -138,19 +150,28 @@
                 <a-col :span="4">
                   <p class="height-50">
                     <a-form-model-item>
-                      <a-checkbox value="1" name="type">Low Packet Loss</a-checkbox>
+                      <a-checkbox value="1" name="type"
+                        >Low Packet Loss</a-checkbox
+                      >
                     </a-form-model-item>
                   </p>
                 </a-col>
                 <a-col :span="8">
                   <p class="height-120">
                     <a-form-model-item>
-                      <a-checkbox value="1" name="type">Low Delay Variation</a-checkbox>
+                      <a-checkbox value="1" name="type"
+                        >Low Delay Variation</a-checkbox
+                      >
                     </a-form-model-item>
                   </p>
                 </a-col>
               </a-row>
-              <AddModleDouble style="width:806px;margin-left:15px" :title="Priority"></AddModleDouble>
+              <AddModleDouble
+                :listdate="wanNetworkGroups"
+                style="width:806px;margin-left:15px"
+                :title="Priority"
+                v-model="wanNetworkGroupsRes"
+              ></AddModleDouble>
             </div>
           </a-tab-pane>
         </a-tabs>
@@ -161,7 +182,9 @@
       v-show="formTips.flag"
       class="form-tips"
       :style="formTips.positionStyle"
-    >{{ formTips.tipText }}</div>
+    >
+      {{ formTips.tipText }}
+    </div>
   </div>
 </template>
 <script>
@@ -169,7 +192,13 @@ import tip from '@/mixins/tip';
 import AddModle from 'components/Traffic/AddModle';
 import AddModleDouble from 'components/TrafficDouble/AddModle';
 export default {
-  props: ['EditRuleTo', 'EditRuleToline', 'selects', 'rule'],
+  props: [
+    'EditRuleTo',
+    'EditRuleToline',
+    'selects',
+    'rule',
+    'wanNetworkGroups'
+  ],
   mixins: [tip],
   created() {},
   components: {
@@ -178,6 +207,7 @@ export default {
   },
   data() {
     return {
+      titleName: '',
       seleArr: [
         { title: 'Predefined Applications', valKey: 'preDefinedApplications' },
         { title: 'Custom Applications', valKey: 'customApplications' },
@@ -210,6 +240,7 @@ export default {
       allListpredefinedFilters: [],
       allListservices: [],
       address: [],
+      FZones: [],
       form: {
         name: '',
         description: '',
@@ -230,8 +261,52 @@ export default {
         srcAddresses: [],
         srcZones: []
       },
-      currentEdit: {}
+      currentEdit: {},
+      wanNetworkGroupsRes: {}
     };
+  },
+  watch: {
+    wanNetworkGroupsRes(newVal) {
+      console.log(newVal);
+    }
+  },
+  directives: {
+    // 拖拽自定义指令
+    drag(el) {
+      console.log('移动', el);
+      // 将ant-modal的position改为静态，使拖拽框按照电脑屏幕定位
+      // el.children[1].children[0].style.position = 'static';
+      // 获取到ant-modal-content元素
+      let targetEl = el.children[1].children[0].children[1];
+      // targetEl.style.top = '100px';
+      targetEl.onmousedown = function(e) {
+        // 点下鼠标的位置
+        let startX = e.pageX;
+        let startY = e.pageY;
+        // 点下鼠标的元素的位置
+        let offsetX = targetEl.offsetLeft;
+        let offsetY = targetEl.offsetTop;
+        document.onmousemove = function(e) {
+          // 计算出元素的left 和 top 值
+          let dx = offsetX + (e.pageX - startX);
+          let dy = offsetY + (e.pageY - startY);
+          // // 进行拖拽范围的限制(不能超出屏幕)
+          // dx = Math.max(0, dx);
+          // dy = Math.max(0, dy);
+          // let scrollWidth = window.innerWidth - targetEl.offsetWidth;
+          // let scrollHeight = window.innerHeight - targetEl.offsetHeight;
+          // dx = Math.min(scrollWidth, dx);
+          // dy = Math.min(scrollHeight, dy);
+          // 设置元素的left和top值，实现拖拽
+          targetEl.style.left = dx + 'px';
+          targetEl.style.top = dy + 'px';
+        };
+        // 鼠标弹起，取消鼠标移动事件
+        targetEl.onmouseup = function() {
+          document.onmousemove = null;
+        };
+      };
+    }
   },
   methods: {
     getData(val) {
@@ -248,18 +323,25 @@ export default {
       this.CustomerList = this.EditRuleTo.categoriesSelect;
       this.cusSerList = this.EditRuleTo.serSelect;
       this.allListappGroups = this.EditRuleTo.leftSelectAll.appGroups;
-      this.allListcategories = this.EditRuleTo.leftSelectAll.categories;
+      this.allListcategories = this.EditRuleTo.leftSelectAll.urlCategoryNames;
       this.allListpredefinedApps = this.EditRuleTo.leftSelectAll.predefinedApps;
       this.allListpredefinedFilters = this.EditRuleTo.leftSelectAll.predefinedFilters;
       this.allListservices = this.EditRuleTo.leftSelectAll.services;
       this.address = this.EditRuleTo.sourceAddressSelect;
-      console.log(this.EditRuleToline);
+      this.FZones = this.EditRuleTo.zones;
+      console.log(this.address);
+      console.log(this.EditRuleTo);
+      console.log(originItem);
+      this.titleName =
+        'Create Rule to category' + '-' + originItem.categoryName;
     },
     handleOk() {
       this.visible = false;
       this.originItem.rules.push(this.form);
+      this.originItem.rules.defaultPathPriorities = this.wanNetworkGroupsRes;
       console.log(this.originItem.rules);
       this.form = {};
+      this.$refs.addModleRef.forEach(item => item.init());
     },
     handleCancel() {
       this.visible = false;

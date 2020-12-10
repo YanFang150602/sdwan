@@ -1629,7 +1629,10 @@ export default {
     },
     customStrategyFunc(params) {
       this.operType = 'edit';
-      this.curEditStrategy = params.rowData;
+      let row = this.strategyList.find(rule => {
+        return params.rowData.name === rule.name;
+      });
+      this.curEditStrategy = row;
       this.curEditStrategy.disabledName = true;
       this.strategyTitle = 'Edit Strategy';
       this.addOrEditWinVisible = true;

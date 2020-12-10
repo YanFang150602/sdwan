@@ -417,12 +417,17 @@ export default {
     },
 
     // 表格单选
-    delItem(selection) {
-      selection.forEach(item => {
-        this.delParam.ids.push(item.orgName);
+    delItem(selection, rowData) {
+      // 添加单选
+      const data = [];
+      this.tableData.map(item => {
+        item.orgName != rowData.orgName
+          ? (item._checked = false)
+          : (item._checked = true);
+        data.push(item);
       });
-      const newArr = Array.from(new Set(this.delParam.ids));
-      this.delParam.ids = newArr;
+      this.tableData = data;
+      this.delParam.ids.push(rowData.orgName);
     },
     // 删除组织项
     async deleteItem() {
@@ -505,30 +510,12 @@ export default {
       };
       this.message = {};
       this.loading = false;
-    },
-    // 搜索框设备查询
-    search(data) {
-      // 转换全小写,实现模糊匹配
-      const keyword = data.trim().toLowerCase();
-      const list = this.tableData.filter(item =>
-        item.orgName.toLowerCase().includes(keyword)
-      );
-
-      this.totalCount = list.length;
-      this.tableData = list;
-    },
-    // 取消搜索，显示当前数据
-    cancelSearch() {
-      this.lists();
     }
   },
   components: { TaskNotice }
 };
 </script>
 <style lang="scss" scoped>
-/deep/.v-table-title-class tr td:nth-of-type(1) .table-title .v-checkbox {
-  display: block;
-}
 .organRole {
   width: 844px;
   h6 {

@@ -2,13 +2,20 @@
   <div>
     <a-modal
       v-model="visible"
-      title="Edit Rule to category Real Time"
+      :title="titleName"
       on-ok="handleOk"
       width="865px"
       :maskClosable="false"
+      v-drag
     >
       <template slot="footer">
-        <a-button key="submit" type="primary" @click="handleOk" :loading="loading">Ok</a-button>
+        <a-button
+          key="submit"
+          type="primary"
+          @click="handleOk"
+          :loading="loading"
+          >Ok</a-button
+        >
         <a-button key="back" @click="handleCancel">Cancel</a-button>
       </template>
       <a-form-model :model="form">
@@ -20,7 +27,7 @@
                 <a-col :span="24">
                   <a-form-model-item>
                     <a-form-model-item label="Name">
-                      <a-input v-model="currentEdit.name"/>
+                      <a-input v-model="currentEdit.name" />
                     </a-form-model-item>
                   </a-form-model-item>
                 </a-col>
@@ -29,7 +36,7 @@
                 <a-col :span="24">
                   <a-form-model-item>
                     <a-form-model-item label="Description">
-                      <a-input v-model="currentEdit.description"/>
+                      <a-input v-model="currentEdit.description" />
                     </a-form-model-item>
                   </a-form-model-item>
                 </a-col>
@@ -112,14 +119,21 @@
                 <a-col :span="4">
                   <p class="height-100">
                     <a-form-model-item>
-                      <a-checkbox value="1" name="type" v-model="check.FEC">FEC</a-checkbox>
+                      <a-checkbox value="1" name="type" v-model="check.FEC"
+                        >FEC</a-checkbox
+                      >
                     </a-form-model-item>
                   </p>
                 </a-col>
                 <a-col :span="4">
                   <p class="height-50">
                     <a-form-model-item>
-                      <a-checkbox value="1" name="type" v-model="check.Replication">Replication</a-checkbox>
+                      <a-checkbox
+                        value="1"
+                        name="type"
+                        v-model="check.Replication"
+                        >Replication</a-checkbox
+                      >
                     </a-form-model-item>
                   </p>
                 </a-col>
@@ -127,8 +141,12 @@
                   <p class="height-120">
                     <a-form-model-item label="Load Balance">
                       <a-select v-model="perContant">
-                        <a-select-option value="PER_FLOW">Per Flow</a-select-option>
-                        <a-select-option value="PER_PACKET">Per Packet</a-select-option>
+                        <a-select-option value="PER_FLOW"
+                          >Per Flow</a-select-option
+                        >
+                        <a-select-option value="PER_PACKET"
+                          >Per Packet</a-select-option
+                        >
                       </a-select>
                     </a-form-model-item>
                   </p>
@@ -141,7 +159,9 @@
                 <a-col :span="4">
                   <p class="height-100">
                     <a-form-model-item>
-                      <a-checkbox value="1" name="type" v-model="check.Latency">Low Latency</a-checkbox>
+                      <a-checkbox value="1" name="type" v-model="check.Latency"
+                        >Low Latency</a-checkbox
+                      >
                     </a-form-model-item>
                   </p>
                 </a-col>
@@ -152,7 +172,8 @@
                         value="1"
                         name="type"
                         v-model="check.LowPacketLoss"
-                      >Low Packet Loss</a-checkbox>
+                        >Low Packet Loss</a-checkbox
+                      >
                     </a-form-model-item>
                   </p>
                 </a-col>
@@ -163,7 +184,8 @@
                         value="1"
                         name="type"
                         v-model="check.Variation"
-                      >Low Delay Variation</a-checkbox>
+                        >Low Delay Variation</a-checkbox
+                      >
                     </a-form-model-item>
                   </p>
                 </a-col>
@@ -184,7 +206,9 @@
       v-show="formTips.flag"
       class="form-tips"
       :style="formTips.positionStyle"
-    >{{ formTips.tipText }}</div>
+    >
+      {{ formTips.tipText }}
+    </div>
   </div>
 </template>
 <script>
@@ -197,7 +221,8 @@ export default {
     'EditRuleToline',
     'selects',
     'rule',
-    'wanNetworkGroups'
+    'wanNetworkGroups',
+    'nameTitle'
   ],
   mixins: [tip],
   created() {},
@@ -212,6 +237,7 @@ export default {
   },
   data() {
     return {
+      titleName: '',
       seleArrFirst: [
         { title: 'Source Address', valKey: 'SourceAddress' },
         { title: 'Destionation Address', valKey: 'customApplications' },
@@ -279,14 +305,58 @@ export default {
         Latency: false,
         LowPacketLoss: false,
         Variation: false
-      }
+      },
+      tiName: ''
     };
   },
+  directives: {
+    // 拖拽自定义指令
+    drag(el) {
+      console.log('移动', el);
+      // 将ant-modal的position改为静态，使拖拽框按照电脑屏幕定位
+      // el.children[1].children[0].style.position = 'static';
+      // 获取到ant-modal-content元素
+      let targetEl = el.children[1].children[0].children[1];
+      // targetEl.style.top = '100px';
+      targetEl.onmousedown = function(e) {
+        // 点下鼠标的位置
+        let startX = e.pageX;
+        let startY = e.pageY;
+        // 点下鼠标的元素的位置
+        let offsetX = targetEl.offsetLeft;
+        let offsetY = targetEl.offsetTop;
+        document.onmousemove = function(e) {
+          // 计算出元素的left 和 top 值
+          let dx = offsetX + (e.pageX - startX);
+          let dy = offsetY + (e.pageY - startY);
+          // // 进行拖拽范围的限制(不能超出屏幕)
+          // dx = Math.max(0, dx);
+          // dy = Math.max(0, dy);
+          // let scrollWidth = window.innerWidth - targetEl.offsetWidth;
+          // let scrollHeight = window.innerHeight - targetEl.offsetHeight;
+          // dx = Math.min(scrollWidth, dx);
+          // dy = Math.min(scrollHeight, dy);
+          // 设置元素的left和top值，实现拖拽
+          targetEl.style.left = dx + 'px';
+          targetEl.style.top = dy + 'px';
+        };
+        // 鼠标弹起，取消鼠标移动事件
+        targetEl.onmouseup = function() {
+          document.onmousemove = null;
+        };
+      };
+    }
+  },
   methods: {
-    getData(val) {
+    getData(val, item) {
+      // console.log(val);
+      console.log(item);
+      this.tiName = item.categoryName;
+      console.log(this.tiName);
+      this.titleName = 'Edit Rule to category' + '-' + this.tiName;
       this.currentEdit = val;
-      console.log(this.currentEdit);
-      console.log(this.currentEdit.ruleActions);
+      // console.log(this.currentEdit);
+      // console.log(this.currentEdit.ruleActions);
       if (this.currentEdit.ruleActions.includes('PER_FLOW')) {
         this.perContant = 'Per Flow';
       } else if (this.currentEdit.ruleActions.includes('PER_PACKET')) {
@@ -324,9 +394,7 @@ export default {
       this.allListpredefinedFilters = this.EditRuleTo.leftSelectAll.predefinedFilters;
       this.allListservices = this.EditRuleTo.leftSelectAll.services;
       this.address = this.EditRuleTo.sourceAddressSelect;
-
       // console.log(this.cusSerList);
-
       // console.log(this.EditRuleTo.serSelect);
       console.log(this.EditRuleToline);
     },
@@ -336,6 +404,7 @@ export default {
       //   this.loading = false;
       // }, 3000);
       this.visible = false;
+      console.log(this.currentEdit);
     },
     handleCancel() {
       this.visible = false;

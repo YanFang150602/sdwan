@@ -338,19 +338,29 @@ export default {
     },
 
     selectChange(selection, rowData) {
-      console.log('select-change22222222222', selection, rowData);
-      selection.forEach(item => {
-        console.log(item.name);
-        this.dele.ids.push(item.name);
+      // console.log('select-change22222222222', selection, rowData);
+      // selection.forEach(item => {
+      //   console.log(item.name);
+      //   this.dele.ids.push(item.name);
+      // });
+      // const newArr = Array.from(new Set(this.dele.ids));
+      // this.dele.ids = newArr;
+      // console.log(this.dele);
+      // if (this.dele.ids.length <= 0) {
+      //   this.delet = true;
+      // } else {
+      //   this.delet = false;
+      // }
+
+      const data = [];
+      this.tableData.map(item => {
+        item.name != rowData.name
+          ? (item._checked = false)
+          : (item._checked = true);
+        data.push(item);
       });
-      const newArr = Array.from(new Set(this.dele.ids));
-      this.dele.ids = newArr;
-      console.log(this.dele);
-      if (this.dele.ids.length <= 0) {
-        this.delet = true;
-      } else {
-        this.delet = false;
-      }
+      this.tableData = data;
+      this.dele.ids.push(rowData.name);
     },
 
     selectGroupChange(selection) {

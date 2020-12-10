@@ -19,7 +19,7 @@
       :title-rows="titleRows"
       :table-data="tableData"
       :select-change="delItem"
-      style="width:100%;"
+      style="width: 100%;"
       isFrozen="true"
       @on-custom-comp="modifyItem"
       error-content="Temporarily no data"
@@ -57,14 +57,13 @@
                     @mouseleave="leave"
                     @mousemove="updateXY"
                     v-model="formParam.dto.name"
-                    size="small"
                   />
                 </a-form-model-item>
               </a-col>
               <!-- Description -->
               <a-col :span="24">
                 <a-form-model-item label="Description">
-                  <a-input v-model="formParam.dto.description" size="small" />
+                  <a-input v-model="formParam.dto.description" />
                 </a-form-model-item>
               </a-col>
               <!-- Tags -->
@@ -78,10 +77,7 @@
                 <a-row type="flex" justify="start" align="bottom">
                   <a-col>
                     <a-form-model-item label="Session Timeout(secs)">
-                      <a-input
-                        v-model="formParam.dto.sessionTimeout"
-                        size="small"
-                      />
+                      <a-input v-model="formParam.dto.sessionTimeout" />
                     </a-form-model-item>
                   </a-col>
                   <a-col :style="{ padding: '8px' }">
@@ -103,7 +99,7 @@
             </a-row>
           </a-tab-pane>
           <!-- Source/Destination -->
-          <a-tab-pane key="2" tab="Source/Destination">
+          <a-tab-pane :forceRender="true" key="2" tab="Source/Destination">
             <a-row
               class="add-modle-con"
               type="flex"
@@ -113,7 +109,6 @@
               <a-col class="add-modle-item">
                 <div class="listCon">
                   <ListCrt
-                    v-if="visible"
                     ref="sourZone"
                     :list-data="zoneListData"
                     :item-data="formParam.dto.sourceZoneList"
@@ -125,7 +120,6 @@
               <a-col class="add-modle-item">
                 <div class="listCon">
                   <ListCrt
-                    v-if="visible"
                     ref="desZone"
                     :list-data="zoneListData"
                     :item-data="formParam.dto.destinationZoneList"
@@ -137,7 +131,6 @@
               <a-col class="add-modle-item" :style="{ marginBottom: 0 }">
                 <div class="listCon">
                   <ListCrt
-                    v-if="visible"
                     ref="sourAddress"
                     crt-type="sltGp"
                     :list-gp-data="addressListData"
@@ -150,7 +143,6 @@
               <a-col class="add-modle-item" :style="{ marginBottom: 0 }">
                 <div class="listCon">
                   <ListCrt
-                    v-if="visible"
                     ref="desAddress"
                     crt-type="sltGp"
                     :list-gp-data="addressListData"
@@ -163,7 +155,7 @@
             </a-row>
           </a-tab-pane>
           <!-- Headers/Schedule -->
-          <a-tab-pane key="3" tab="Headers/Schedule">
+          <a-tab-pane :forceRender="true" key="3" tab="Headers/Schedule">
             <a-row type="flex" justify="space-between" align="top">
               <a-col :style="{ width: '305px' }">
                 <a-row
@@ -174,7 +166,7 @@
                 >
                   <a-col :style="{ width: '120px' }">
                     <a-form-model-item label="Ip Version">
-                      <a-select size="small" v-model="formParam.dto.ipVersion">
+                      <a-select v-model="formParam.dto.ipVersion">
                         <a-select-option value="">--Select--</a-select-option>
                         <a-select-option value="ipv4">ipv4</a-select-option>
                       </a-select>
@@ -182,7 +174,7 @@
                   </a-col>
                   <a-col :style="{ width: '120px', marginRight: '30px' }">
                     <a-form-model-item label="IP Flags">
-                      <a-select size="small" v-model="formParam.dto.ipFlags">
+                      <a-select v-model="formParam.dto.ipFlags">
                         <a-select-option value="">--Select--</a-select-option>
                         <a-select-option value="DF">DF</a-select-option>
                       </a-select>
@@ -207,7 +199,10 @@
                     >
                       <a-col :span="13">
                         <a-form-model-item label="Condition">
-                          <a-select size="small" placeholder="select">
+                          <a-select v-model="formParam.dto.type">
+                            <a-select-option value=""
+                              >--Select--</a-select-option
+                            >
                             <a-select-option value="Greater than or equal to"
                               >Greater than or equal to</a-select-option
                             >
@@ -222,7 +217,7 @@
                       </a-col>
                       <a-col :span="10">
                         <a-form-model-item label="Value">
-                          <a-input v-model="formParam.dto.ge" size="small" />
+                          <a-input v-model="formParam.dto.value" />
                         </a-form-model-item>
                       </a-col>
                     </a-row>
@@ -230,8 +225,8 @@
                 </a-row>
                 <a-row>
                   <a-col class="otherInfo" :span="24">
-                    <a-form-model-item style="width:150px" label="Schedules">
-                      <a-select size="small" placeholder="select">
+                    <a-form-model-item style="width: 150px;" label="Schedules">
+                      <a-select placeholder="select">
                         <a-select-option value="yffZone001"
                           >yffZone001</a-select-option
                         >
@@ -244,10 +239,13 @@
                 <a-form-model-item label="Services">
                   <div :style="{ height: '185px', background: '#fff' }">
                     <ListCrt
-                      v-if="visible"
                       ref="service"
-                      :list-data="servicesListData"
-                      :item-data="formParam.dto.predefinedServicesList"
+                      crt-type="sltGp"
+                      :list-gp-data="servicesListData"
+                      :item-data="[
+                        ...formParam.dto.predefinedServicesList,
+                        ...formParam.dto.servicesList
+                      ]"
                       :title="servicesList"
                       @subdata="serviceSub"
                     />
@@ -257,7 +255,7 @@
             </a-row>
           </a-tab-pane>
           <!-- Applications/URL -->
-          <a-tab-pane key="4" tab="Applications/URL">
+          <a-tab-pane :forceRender="true" key="4" tab="Applications/URL">
             <a-row
               class="add-modle-con"
               type="flex"
@@ -268,10 +266,17 @@
                 <h6>Applications</h6>
                 <div class="listCon">
                   <ListCrt
-                    v-if="visible"
                     ref="application"
-                    :list-data="applicationtData"
-                    :item-data="formParam.dto.predefinedApplicationList"
+                    crt-type="sltGp"
+                    :list-gp-data="applicationtData"
+                    :item-data="[
+                      ...formParam.dto.userDefinedApplicationList,
+                      ...formParam.dto.groupList,
+                      ...formParam.dto.filterList,
+                      ...formParam.dto.predefinedApplicationList,
+                      ...formParam.dto.predefinedGroupList,
+                      ...formParam.dto.predefinedFilterList
+                    ]"
                     :title="applicationList"
                     @subdata="applicationSub"
                   />
@@ -281,10 +286,13 @@
                 <h6>URL Categories</h6>
                 <div class="listCon">
                   <ListCrt
-                    v-if="visible"
                     ref="urlCategory"
-                    :list-data="urlCategoryData"
-                    :item-data="formParam.dto.predefined"
+                    crt-type="sltGp"
+                    :list-gp-data="urlCategoryData"
+                    :item-data="[
+                      ...formParam.dto.userDefined,
+                      ...formParam.dto.predefined
+                    ]"
                     :title="urlCategoryList"
                     @subdata="urlCategorySub"
                   />
@@ -313,7 +321,6 @@
                     prop="qosProfile"
                   >
                     <a-select
-                      size="small"
                       placeholder="select"
                       v-model="formParam.dto.qosProfile"
                     >
@@ -402,14 +409,23 @@ export default {
           destinationRegion: [],
           destinationZoneList: [],
           dscp: [],
-          eq: '',
-          ge: '',
+          type: '',
+          value: '',
           ipFlags: '',
           ipVersion: '',
           name: '',
           predefined: [],
+          userDefined: [],
+
           predefinedApplicationList: [],
+          userDefinedApplicationList: [],
+          predefinedGroupList: [],
+          predefinedFilterList: [],
+          groupList: [],
+          filterList: [],
+
           predefinedServicesList: [],
+          servicesList: [],
           qosProfile: '',
           schedule: '',
           sessionTimeout: '',
@@ -541,17 +557,19 @@ export default {
     // 获取Services列表
     async services() {
       const { result } = await serviceList({
-        deviceName: this.deviceName,
-        userName: this.organization
+        objectName: this.deviceName,
+        orgName: this.organization,
+        objectType: 'device'
       });
-      console.log('services', result);
+
       if (result && result.length > 0) this.servicesListData = result;
     },
+
     // 获取application列表
     async application() {
       const { result } = await applicationList({
         deviceName: this.deviceName,
-        userName: this.organization
+        orgName: this.organization
       });
       console.log('application', result);
       if (result && result.length > 0) this.applicationtData = result;
@@ -559,8 +577,9 @@ export default {
     // 获取urlCategory列表
     async urlCategory() {
       const { result } = await urlCategoryList({
-        deviceName: this.deviceName,
-        userName: this.organization
+        objectName: this.deviceName,
+        orgName: this.organization,
+        objectType: 'device'
       });
       console.log('urlCategory', result);
       if (result && result.length > 0) this.urlCategoryData = result;
@@ -580,13 +599,22 @@ export default {
       this.formParam.destinationAddressList = data;
     },
     serviceSub(data) {
-      this.formParam.dto.predefinedServicesList = data;
+      this.formParam.dto.predefinedServicesList = data.preService;
+      this.formParam.dto.servicesList = data.userService;
     },
     applicationSub(data) {
-      this.formParam.dto.predefinedApplicationList = data;
+      console.log(data);
+      this.formParam.dto.predefinedApplicationList = data.preApplication;
+      this.formParam.dto.userDefinedApplicationList = data.userApplication;
+      this.formParam.dto.predefinedGroupList = data.preApplicationGroup;
+      this.formParam.dto.predefinedFilterList = data.preApplicationFilter;
+      this.formParam.dto.groupList = data.userApplicationGroup;
+      this.formParam.dto.filterList = data.userApplicationFilter;
     },
     urlCategorySub(data) {
-      this.formParam.dto.predefined = data;
+      console.log('data', data);
+      this.formParam.dto.predefined = data.preUrlCategory;
+      this.formParam.dto.userDefined = data.userUrlCategory;
     },
 
     // 添加tag标签
@@ -641,7 +669,6 @@ export default {
       this.modalType = 'edt';
       const { result } = await appQosPolicyLists(this.listParam);
 
-      console.log('modifyItem', result);
       result.data.forEach(item => {
         if (item.name === rowData.name) {
           console.log('rowData', item);
@@ -651,7 +678,6 @@ export default {
           );
         }
       });
-      console.log('this.formParam.dto', this.formParam.dto);
 
       this.sourceDesZone();
       this.sourceDesAddress();
@@ -695,13 +721,13 @@ export default {
         this.$refs.form.validate(async valid => {
           if (valid) {
             this.$nextTick(() => {
-              this.$refs.sourZone && this.$refs.sourZone.param();
-              this.$refs.desZone && this.$refs.desZone.param();
-              this.$refs.sourAddress && this.$refs.sourAddress.param();
-              this.$refs.desAddress && this.$refs.desAddress.param();
-              this.$refs.service && this.$refs.service.param();
-              this.$refs.application && this.$refs.application.param();
-              this.$refs.urlCategory && this.$refs.urlCategory.param();
+              this.$refs.sourZone.param();
+              this.$refs.desZone.param();
+              this.$refs.sourAddress.param();
+              this.$refs.desAddress.param();
+              this.$refs.service.param();
+              this.$refs.application.param();
+              this.$refs.urlCategory.param();
             });
 
             this.loading = true;
@@ -720,17 +746,17 @@ export default {
         this.$refs.form.validateField(['name'], async () => {
           if (!this.message.name) {
             this.$nextTick(() => {
-              this.$refs.sourZone && this.$refs.sourZone.param();
-              this.$refs.desZone && this.$refs.desZone.param();
-              this.$refs.sourAddress && this.$refs.sourAddress.param();
-              this.$refs.desAddress && this.$refs.desAddress.param();
-              this.$refs.service && this.$refs.service.param();
-              this.$refs.application && this.$refs.application.param();
-              this.$refs.urlCategory && this.$refs.urlCategory.param();
+              this.$refs.sourZone.param();
+              this.$refs.desZone.param();
+              this.$refs.sourAddress.param();
+              this.$refs.desAddress.param();
+              this.$refs.service.param();
+              this.$refs.application.param();
+              this.$refs.urlCategory.param();
             });
 
-            this.loading = true;
             this.formParam.id = this.formParam.dto.name;
+            this.loading = true;
             const res = await appQosPolicyModify(this.formParam);
             this.loading = false;
             if (res.status !== '0000') return this.$message.error(res.message);
@@ -755,14 +781,23 @@ export default {
           destinationRegion: [],
           destinationZoneList: [],
           dscp: [],
-          eq: '',
-          ge: '',
+          type: '',
+          value: '',
           ipFlags: '',
           ipVersion: '',
           name: '',
           predefined: [],
+          userDefined: [],
+
           predefinedApplicationList: [],
+          userDefinedApplicationList: [],
+          predefinedGroupList: [],
+          predefinedFilterList: [],
+          groupList: [],
+          filterList: [],
+
           predefinedServicesList: [],
+          servicesList: [],
           qosProfile: '',
           schedule: '',
           sessionTimeout: '',
@@ -780,15 +815,14 @@ export default {
       this.actKey = '1';
       this.message = {};
       this.loading = false;
+      this.addressItemData = [];
+      this.desAddressItemData = [];
     }
   },
   components: { TagInput, Pagination, ListCrt }
 };
 </script>
 <style lang="scss" scoped>
-/deep/.v-table-title-class tr td:nth-of-type(1) .table-title {
-  display: none;
-}
 .form-wrap {
   .add-modle-con {
     h6 {

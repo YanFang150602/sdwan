@@ -105,5 +105,6 @@ module.exports = {
   VPNIPsecRestatVolumne: 'IPsec重新启动卷',
   VPNIPsecForwardSecretMode: '转发保密模式',
   IKE_ERROR: '输入有误',
-  IKE_IDTYPE_EMAIL: '请输入邮件格式'
+  IKE_IDTYPE_EMAIL: '请输入邮件格式',
+  FieldRequired: '必填字段'
 };

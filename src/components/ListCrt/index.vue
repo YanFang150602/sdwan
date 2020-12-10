@@ -114,7 +114,7 @@ export default {
     return {
       allCheck: false,
       bodyHeight: 0,
-      listSlt: this.listData,
+      listSlt: JSON.parse(JSON.stringify(this.listData)),
       listGp: JSON.parse(JSON.stringify(this.listGpData)),
       listItem: [],
       showLabel: false
@@ -126,14 +126,19 @@ export default {
     }
   },
   created() {
-    if(this.listData && this.listData.length) {
-      this.showLabel = Object.prototype.toString.call(this.listData[0]) === '[object Object]';
+    if (this.listData && this.listData.length) {
+      this.showLabel =
+        Object.prototype.toString.call(this.listData[0]) === '[object Object]';
     }
     this.itemData.forEach(item => {
       if (this.showLabel) {
-        for(let i = 0; i < this.listData.length; i++) {
+        for (let i = 0; i < this.listData.length; i++) {
           if (this.listData[i].value === item) {
-            this.listItem.push({ check: false, data: this.listData[i].label, show: false });
+            this.listItem.push({
+              check: false,
+              data: this.listData[i].label,
+              show: false
+            });
             break;
           }
         }
@@ -209,7 +214,7 @@ export default {
     sltNew() {
       switch (true) {
         case this.crtType === 'select':
-          this.listSlt = this.listData;
+          this.listSlt = JSON.parse(JSON.stringify(this.listData));
           this.listItem.forEach(item => {
             this.listSlt = this.listSlt.filter(i => {
               if (this.showLabel) {
@@ -217,7 +222,6 @@ export default {
               } else {
                 return item.data !== i;
               }
-              
             });
           });
           break;
@@ -257,14 +261,13 @@ export default {
         const data = [];
         this.listItem.forEach(item => {
           if (this.showLabel) {
-            for(let i = 0; i < this.listData.length; i++) {
+            for (let i = 0; i < this.listData.length; i++) {
               if (this.listData[i].label === item.data) {
                 data.push(this.listData[i].value);
                 break;
               }
             }
-          }
-          else {
+          } else {
             data.push(item.data);
           }
         });
@@ -309,6 +312,7 @@ export default {
       height: 100%;
     }
     .addDelBtn {
+      width: 40px;
       height: 14px;
       margin-left: auto;
       vertical-align: top;

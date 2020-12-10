@@ -174,7 +174,7 @@ export default {
         name: '',
         slot: '',
         remoteAddress: '',
-        parentInterface: 'tvi-0/29.0',
+        parentInterface: [],
         enable: false
       },
       rules: {
@@ -426,7 +426,7 @@ export default {
     //关闭修改
     cleanData() {
       this.form = {};
-      this.form.parentInterface = 'tvi-0/29.0';
+      this.form.parentInterface = [];
       this.Loading = false;
       this.$refs.ruleForm.resetFields();
       this.changeFlag = false;

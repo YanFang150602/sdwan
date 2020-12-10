@@ -34,6 +34,7 @@
       cancelText="Cancel"
       okText="Ok"
       :afterClose="cleanData"
+      :maskClosable="false"
     >
       <!-- 添加修改表单 -->
       <a-form-model

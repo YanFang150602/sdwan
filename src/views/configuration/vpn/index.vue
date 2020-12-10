@@ -1,5 +1,5 @@
 <template>
-  <div class="vpn-cfg-file">
+  <div class="main-con">
     <!-- 搜索框 -->
     <Pagination
       :total="totalCount"
@@ -402,7 +402,7 @@ export default {
   computed: {
     ...mapState(['organization', 'deviceName'])
   },
-  mounted() {
+  created() {
     this.queryTableDataList();
   },
   methods: {
@@ -670,36 +670,6 @@ Vue.component('vpncfgfile-opration', {
 });
 </script>
 <style lang="scss" scoped>
-.vpn-cfg-file {
-  height: 100%;
-  overflow: hidden;
-  min-height: 503px;
-  .list-action {
-    line-height: 18px;
-    color: #0f2c3e;
-    font-size: 12px;
-    margin-bottom: 10px;
-    .table-header {
-      margin-bottom: 10px;
-      height: 22px;
-    }
-  }
-  /deep/.search-bar {
-    .ant-input {
-      width: 700px;
-      color: #6a6f75;
-      border: 1px solid #b0c7d5;
-      height: 20px;
-      border-radius: 4px;
-      font-size: 12px;
-      line-height: 18px;
-      &:focus {
-        box-shadow: none;
-        border-color: #b0c7d5;
-      }
-    }
-  }
-}
 /deep/.ant-modal-content {
   max-height: 325px;
   .ant-modal-header {

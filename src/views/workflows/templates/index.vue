@@ -9,6 +9,7 @@
       @create-item="createItem"
       @delete-item="deleteItem"
       @search="search"
+      @cancel-search="cancelSearch"
     />
     <!-- 表单主体内容 -->
     <v-table
@@ -492,6 +493,7 @@ export default {
     // Basic param 数据传回
     basicParam(param) {
       this.formParam.template = Object.assign(this.formParam.template, param);
+      console.log('this.formParam.template', this.formParam.template);
     },
     // interfacesParam 数据传回
     interfacesParam(param) {
@@ -806,6 +808,7 @@ export default {
         this.$refs.basic.$refs.form.validate(async valid => {
           if (valid) {
             if (this.formParam.template.wanInterfaces.length < 1) {
+              this.subParam();
               this.actKey = '2';
               return this.$message.error('must add a waninterface');
             }
@@ -861,7 +864,6 @@ export default {
       this.$message.success('模板部署成功！');
       // 刷新表格数据
       this.lists();
-      this.visible = false;
     },
     async createTem() {
       if (this.modalType === 'add') {
@@ -876,6 +878,7 @@ export default {
             this.subParam();
             const res = await templateAdd(this.formParam);
             if (res.status !== '0000') return this.$message.error(res.message);
+            this.visible = false;
             this.deploy(this.formParam.template.templateName);
           }
         });
@@ -895,6 +898,7 @@ export default {
               this.formParam
             );
             if (res.status !== '0000') return this.$message.error(res.message);
+            this.visible = false;
             this.deploy(this.formParam.template.templateName);
           }
         });
@@ -988,7 +992,6 @@ export default {
     //Management,
     Wifi
   },
-
   watch: {
     organization: {
       handler: 'lists',

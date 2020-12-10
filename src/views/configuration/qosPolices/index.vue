@@ -21,7 +21,7 @@
       :title-rows="titleRows"
       :table-data="tableData"
       :select-change="delItem"
-      style="width:100%;"
+      style="width: 100%;"
       isFrozen="true"
       @on-custom-comp="modifyItem"
       error-content="Temporarily no data"
@@ -89,7 +89,7 @@
             </a-row>
           </a-tab-pane>
           <!-- Source/Destination -->
-          <a-tab-pane key="2" tab="Source/Destination">
+          <a-tab-pane :forceRender="true" key="2" tab="Source/Destination">
             <a-row
               class="add-modle-con"
               type="flex"
@@ -98,7 +98,6 @@
             >
               <a-col class="add-modle-item">
                 <ListCrt
-                  v-if="visible"
                   ref="zone"
                   :list-data="zoneListData"
                   :item-data="formParam.data.sourceZoneList"
@@ -118,7 +117,6 @@
               </a-col>
               <a-col class="add-modle-item" :style="{ marginBottom: 0 }">
                 <ListCrt
-                  v-if="visible"
                   ref="address"
                   crt-type="sltGp"
                   :list-gp-data="addressListData"
@@ -129,7 +127,6 @@
               </a-col>
               <a-col class="add-modle-item" :style="{ marginBottom: 0 }">
                 <ListCrt
-                  v-if="visible"
                   ref="desAddress"
                   crt-type="sltGp"
                   :list-gp-data="addressListData"
@@ -141,7 +138,7 @@
             </a-row>
           </a-tab-pane>
           <!-- Headers/Schedule -->
-          <a-tab-pane key="3" tab="Headers/Schedule">
+          <a-tab-pane :forceRender="true" key="3" tab="Headers/Schedule">
             <a-row type="flex" justify="space-between" align="top">
               <a-col :style="{ width: '305px' }">
                 <a-row
@@ -161,7 +158,7 @@
                   </a-col>
                   <a-col :style="{ width: '115px', marginRight: '30px' }">
                     <a-form-model-item label="IP Flags">
-                      <a-select size="small" v-model="formParam.data.ipFlags">
+                      <a-select v-model="formParam.data.ipFlags">
                         <a-select-option value="">--Select--</a-select-option>
                         <a-select-option value="DF"
                           >Don't Fragment</a-select-option
@@ -191,7 +188,10 @@
                     >
                       <a-col :span="13">
                         <a-form-model-item label="Condition">
-                          <a-select placeholder="select">
+                          <a-select v-model="formParam.data.type">
+                            <a-select-option value=""
+                              >--Select--</a-select-option
+                            >
                             <a-select-option value="Greater than or equal to"
                               >Greater than or equal to</a-select-option
                             >
@@ -206,7 +206,7 @@
                       </a-col>
                       <a-col :span="10">
                         <a-form-model-item label="Value">
-                          <a-input v-model="formParam.data.ge" />
+                          <a-input v-model="formParam.data.value" />
                         </a-form-model-item>
                       </a-col>
                     </a-row>
@@ -243,7 +243,6 @@
                 </h6>
                 <div :style="{ height: '200px', background: '#fff' }">
                   <ListCrt
-                    v-if="visible"
                     ref="service"
                     crt-type="sltGp"
                     :list-gp-data="servicesListData"
@@ -269,7 +268,6 @@
               <a-col :style="{ width: '150px' }">
                 <a-form-model-item label="MAC Address Type">
                   <a-select
-                    size="small"
                     placeholder="select"
                     v-model="formParam.data.destinationMacAddressType"
                   >
@@ -285,7 +283,7 @@
               </a-col>
               <a-col :style="{ width: '180px' }">
                 <a-form-model-item label="IEEE 802 1p Values">
-                  <a-input size="small" />
+                  <a-input />
                 </a-form-model-item>
               </a-col>
             </a-row>
@@ -306,7 +304,6 @@
                     :style="{ width: '170px' }"
                   >
                     <a-select
-                      size="small"
                       placeholder="select"
                       v-model="formParam.data.etherType"
                     >
@@ -322,10 +319,7 @@
                     v-show="ethernet === 2"
                     :style="{ width: '170px' }"
                   >
-                    <a-input
-                      v-model="formParam.data.etherTypeValue"
-                      size="small"
-                    />
+                    <a-input v-model="formParam.data.etherTypeValue" />
                   </a-form-model-item>
                 </a-col>
               </a-row>
@@ -345,11 +339,11 @@
                   </a-radio-group>
                 </div>
                 <a-form-model-item label="Anchor Core Class">
-                  <a-select size="small" placeholder="select"></a-select>
+                  <a-select placeholder="select"></a-select>
                 </a-form-model-item>
                 <div class="permit">
                   <a-form-model-item label="Permit Existing Flow">
-                    <a-select size="small" placeholder="select">
+                    <a-select placeholder="select">
                       <a-select-option value="Allow">Allow</a-select-option>
                       <a-select-option value="validate"
                         >validate</a-select-option
@@ -361,10 +355,7 @@
               <a-col :style="{ width: '305px' }">
                 <div class="qosSet">
                   <a-form-model-item label="Qos Profile">
-                    <a-select
-                      size="small"
-                      v-model="formParam.data.setQosProfile"
-                    >
+                    <a-select v-model="formParam.data.setQosProfile">
                       <a-select-option value="">--Select--</a-select-option>
                       <a-select-option
                         v-for="(item, index) in ProfileSetData"
@@ -463,7 +454,8 @@ export default {
           dscp: [],
           etherType: '',
           etherTypeValue: '',
-          ge: '',
+          type: '',
+          value: '',
           ieee802Value: [],
           ipFlags: '',
           ipVersion: '',
@@ -790,12 +782,14 @@ export default {
           dscp: [],
           etherType: '',
           etherTypeValue: '',
-          ge: '',
+          type: '',
+          value: '',
           ieee802Value: [],
           ipFlags: '',
           ipVersion: '',
           name: '',
           predefinedServicesList: [],
+          userDefinedServices: [],
           schedule: '',
           setAction: '',
           setPermitExistingFlow: '',

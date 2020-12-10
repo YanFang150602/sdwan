@@ -44,13 +44,28 @@ export default {
     // 搜索
     search(data) {
       // 转换全小写,实现模糊匹配
+      let field = '';
+      switch (this.$route.name) {
+        case 'Organizations':
+          field = 'orgName';
+          break;
+        case 'Templates':
+          field = 'templateName';
+          break;
+        default:
+          field = 'name';
+      }
+
       const keyword = data.trim().toLowerCase();
       const list = this.tableData.filter(item =>
-        item.name.toLowerCase().includes(keyword)
+        item[field].toLowerCase().includes(keyword)
       );
+
+      this.totalCount = list.length;
       this.tableData = list;
     },
     cancelSearch() {
+      this.offset = 0;
       this.lists();
     },
     //验证表单提示信息

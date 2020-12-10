@@ -508,7 +508,8 @@ import common from '@/mixins/tip';
 import selectItem from './selectItem';
 import networkCreate from './networkName';
 
-import { networkName, adminSearch, zones } from 'apis/administration';
+import { networkName, adminSearch } from 'apis/administration';
+import { zonePPName } from 'apis/zoneQos';
 export default {
   mixins: [common],
   props: {
@@ -968,8 +969,10 @@ export default {
     },
     // zones下拉内容
     async getZonesName() {
-      const { result } = await zones({
-        orgName: this.formParam.orguuid
+      const { result } = await zonePPName({
+        orgName: this.formParam.orguuid,
+        objectType: 'template',
+        objectName: this.formParam.orguuid + '-DataStore'
       });
       this.zonesNames = result;
     },
@@ -990,8 +993,6 @@ export default {
           if (i.id === this.networkId && name) {
             i.networkName = name;
             this.getNetTransport();
-          } else {
-            i.networkName = '';
           }
         });
       });

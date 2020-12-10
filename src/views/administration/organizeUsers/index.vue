@@ -9,6 +9,7 @@
       @create-item="createItem"
       @delete-item="deleteItem"
       @search="search"
+      @cancel-search="cancelSearch"
     />
     <!-- 表单主体内容 -->
     <v-table
@@ -243,9 +244,6 @@ export default {
   created() {
     //获取组织列表
     this.getNameList();
-    if (this.organization) {
-      this.lists();
-    }
   },
   methods: {
     ...mapActions(['getNameList']),
@@ -367,8 +365,9 @@ export default {
     }
   },
   watch: {
-    organization() {
-      this.lists();
+    organization: {
+      handler: 'lists',
+      immediate: true
     },
 
     ['formParam.user.password']() {

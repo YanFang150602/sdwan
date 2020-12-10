@@ -39,7 +39,7 @@
           prop="domains"
         >
           <a-select mode="multiple" size="small" v-model="formParam.domains">
-            <a-select-option v-for="(item, index) in domainList" :key="index">
+            <a-select-option v-for="item in domainList" :key="item.name">
               {{ item.name }}</a-select-option
             >
           </a-select>

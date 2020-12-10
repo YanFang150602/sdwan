@@ -41,70 +41,105 @@
           <a-row type="flex" justify="space-between" align="middle">
             <a-col :span="6">
               <a-form-model-item label="Template Name" prop="templateName">
-                <a-input v-model="form.templateName"/>
+                <a-input v-model="form.templateName" :disabled="isDisabled" />
               </a-form-model-item>
             </a-col>
             <a-col :span="6">
               <a-form-model-item label="Organization" prop="organization">
-                <a-select @change="handleChange" v-model="form.organization">
+                <a-select
+                  @change="handleChange"
+                  v-model="form.organization"
+                  :disabled="isDisabled"
+                >
                   <a-select-option
                     :value="item.name"
                     v-for="(item, index) in organ"
                     :key="index"
-                  >{{ item.name }}</a-select-option>
+                    >{{ item.name }}</a-select-option
+                  >
                 </a-select>
               </a-form-model-item>
             </a-col>
             <a-col :span="6"></a-col>
-            <a-col :span="6">
-              <a-button type="primary" @click="showModel">Add Traffic Category</a-button>
-            </a-col>
+            <a-button type="primary" @click="showModel"
+              >Add Traffic Category</a-button
+            >
+            <!-- <a-col :span="6"></a-col> -->
           </a-row>
         </div>
-        <div class="mainPart" v-for="(item,index) in originData" :key="index">
-          <div class="firstBox">
-            <a-row type="flex" justify="space-between" align="top">
-              <a-col :span="12">
-                <span>{{item.categoryName}}</span>
-                <p>{{item.forwardingClass}}</p>
-              </a-col>
-              <a-col :span="4">
-                <a-icon type="minus" @click="showDeleteTop(index)"/>
-                <a-icon type="plus" @click="showAdd(item)"/>
-                <a-icon type="edit" @click="showEdit(index)"/>
-              </a-col>
-            </a-row>
-          </div>
-          <div class="firstBottom">
-            <div class="firstVoice" v-for="(rule,index) in item.rules" :key="rule.name">
+        <div class="middlesection">
+          <div
+            class="mainPart"
+            v-for="(item, index) in originData"
+            :key="index"
+          >
+            <div class="firstBox">
               <a-row type="flex" justify="space-between" align="top">
-                <a-col :span="16">
-                  <p>{{rule.name}}</p>
+                <a-col :span="12">
+                  <span>{{ item.categoryName }}</span>
+                  <p>{{ item.forwardingClass }}</p>
                 </a-col>
                 <a-col :span="4">
-                  <p>
-                    <a-icon type="minus" @click="item.rules.splice(index,1)"/>
-                    <a-icon type="edit" @click="showRule(rule)"/>
-                  </p>
+                  <a-icon type="minus" @click="showDeleteTop(index)" />
+                  <a-icon type="plus" @click="showAdd(item)" />
+                  <a-icon type="edit" @click="showEdit(index, item)" />
                 </a-col>
               </a-row>
             </div>
+            <div class="firstBottom">
+              <div
+                class="firstVoice"
+                v-for="(rule, index) in item.rules"
+                :key="rule.name"
+              >
+                <a-row type="flex" justify="space-between" align="top">
+                  <a-col :span="16">
+                    <p>{{ rule.name }}</p>
+                  </a-col>
+                  <a-col :span="4">
+                    <p>
+                      <a-icon
+                        type="minus"
+                        @click="item.rules.splice(index, 1)"
+                      />
+                      <a-icon type="edit" @click="showRule(rule, item)" />
+                    </p>
+                  </a-col>
+                </a-row>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="btn">
-          <a-button type="dashed" @click="isShow=true">cancel</a-button>
-          <a-button type="danger" style="margin-left: 10px;" @click="handleClick">Save</a-button>
-          <a-button type="primary" style="margin-left: 10px;" @click="handleDeploy">Deploy</a-button>
+        <div class="footer-btn">
+          <div class="btn">
+            <a-button type="dashed" @click="isShow = true">cancel</a-button>
+            <a-button
+              type="danger"
+              style="margin-left: 10px;"
+              @click="handleClick"
+              >Save</a-button
+            >
+            <a-button
+              type="primary"
+              style="margin-left: 10px;"
+              @click="handleDeploy"
+              >Deploy</a-button
+            >
+          </div>
         </div>
       </div>
     </a-form-model>
     <!--Create Traffic Category  -->
     <TrafficCategory
       ref="TrafficCategoryRef"
-      @table="(information)=>originData.push({ ...information })"
+      @table="information => originData.push({ ...information })"
+      :wanNetworkGroups="wanNetworkGroups"
     ></TrafficCategory>
     <!--Edit Traffic Category  -->
-    <EditTrafficCategory ref="EditTrafficCategoryRef" :EditTraffic="squareListInformation"></EditTrafficCategory>
+    <EditTrafficCategory
+      ref="EditTrafficCategoryRef"
+      :EditTraffic="squareListInformation"
+    ></EditTrafficCategory>
     <!-- Edit Rule to category Real Time -->
     <EditRuleToCategory
       ref="EditRuleToCategoryRef"
@@ -113,6 +148,7 @@
       :wanNetworkGroups="wanNetworkGroups"
       :EditRuleToline="informationLine"
       @customerSelect="customerSelect"
+      :editNameTitle="nameTitle"
     ></EditRuleToCategory>
     <!-- Create Rule to category Real Time -->
     <CreateRuleToCategoryRealTime
@@ -121,9 +157,13 @@
       :EditRuleToline="informationLine"
       ref="CreateRuleToCategoryRealTimeRef"
       @addLine="addLine"
+      :wanNetworkGroups="wanNetworkGroups"
     ></CreateRuleToCategoryRealTime>
     <!-- 删除弹框 -->
-    <Applicationdelete ref="ApplicationdeleteRef" :Application="dele"></Applicationdelete>
+    <Applicationdelete
+      ref="ApplicationdeleteRef"
+      :Application="dele"
+    ></Applicationdelete>
   </div>
 </template>
 <script>
@@ -164,6 +204,8 @@ export default {
   },
   data() {
     return {
+      nameTitle: [],
+      isDisabled: false,
       labelCol: { span: 10 },
       wrapperCol: { span: 14 },
       // 搜索框
@@ -250,7 +292,8 @@ export default {
         categoriesSelect: [],
         serSelect: [],
         leftSelectAll: [],
-        sourceAddressSelect: []
+        sourceAddressSelect: [],
+        zones: []
       },
       boxList: [
         {
@@ -364,6 +407,7 @@ export default {
     async customCompFunc(params, index) {
       console.log(params.rowData.name);
       this.isShow = false;
+      this.isDisabled = true;
       // this.isAdd = false;
       const res = await steeringListCheck({ id: params.rowData.name });
       console.log(res.result.trafficCategories);
@@ -373,6 +417,9 @@ export default {
       this.squareList = res.result.trafficCategories;
       if (index < 4) this.squareListInformation = this.squareList[index];
       this.handleChange();
+      // this.getOrg();
+      const resw = await steeringOrg();
+      this.organ = resw.result.organizations;
     },
     // 分页
     async pageChange(pageIndex) {
@@ -417,9 +464,9 @@ export default {
       }
     },
     // 弹出编辑框
-    showRule(rule) {
+    showRule(rule, item) {
       this.$refs.EditRuleToCategoryRef.showModalAdd();
-      this.$refs.EditRuleToCategoryRef.getData(rule);
+      this.$refs.EditRuleToCategoryRef.getData(rule, item);
     },
     // 获取列表数据
     async tableForm() {
@@ -438,7 +485,7 @@ export default {
       console.log(this.organization);
       this.objectName = this.form.organization + '-DataStore';
       Promise.all([
-        LeftSelectAll({ paramName: this.paramName }),
+        LeftSelectAll(),
         ApplicationSelect({
           orgName: this.form.organization,
           objectName: this.deviceName,
@@ -463,15 +510,17 @@ export default {
           orgName: this.form.organization,
           objectType: 'template',
           objectName: this.objectName
-        }),
-        SourceAddressSelect({
-          organization: this.form.organization
-        }),
-        SourceZonesSelect({
-          orgName: this.form.organization,
-          objectName: this.objectName,
-          objectType: this.objectType
         })
+        // SourceAddressSelect({
+        //   orgName: this.form.organization,
+        //   objectType: 'template',
+        //   objectName: this.objectName
+        // }),
+        // SourceZonesSelect({
+        //   orgName: this.form.organization,
+        //   objectName: this.objectName,
+        //   objectType: 'template'
+        // })
       ]).then(res => {
         console.log('preDefinedService', res);
         const keyArr = [
@@ -479,16 +528,16 @@ export default {
           'customFilters',
           'customGroups',
           'customCategories',
-          'customService',
-          'SourceZones',
-          'SourceAddress'
+          'customService'
+          // 'SourceZones'
+          // 'SourceAddress'
         ];
         const leftKeys = [
-          { valKey: 'preDefinedApplications', resKey: 'predefinedApps' },
-          { valKey: 'preDefinedCategories', resKey: 'categories' },
-          { valKey: 'preDefinedGroups', resKey: 'appGroups' },
-          { valKey: 'preDefinedFilters', resKey: 'predefinedFilters' },
-          { valKey: 'preDefinedService', resKey: 'services' }
+          { valKey: 'preDefinedApplications', resKey: 'appNames' },
+          { valKey: 'preDefinedCategories', resKey: 'urlCategoryNames' },
+          { valKey: 'preDefinedGroups', resKey: 'appGroupNames' },
+          { valKey: 'preDefinedFilters', resKey: 'appFilterNames' },
+          { valKey: 'preDefinedService', resKey: 'serviceNames' }
         ];
         console.log(res);
         res.forEach((item, index) => {
@@ -501,13 +550,22 @@ export default {
 
       // const res = await SourceZonesSelect({ orgName: this.form.organization });
       // this.group.sourceSelect = res.result;
+      const res = await SourceZonesSelect({
+        orgName: this.form.organization,
+        objectName: this.objectName,
+        objectType: 'template'
+      });
+      this.group.zones = res.result;
       const resw = await WANCircuitSelect({ id: this.form.organization });
       this.group.wanSelect = resw.result;
       this.wanNetworkGroups = resw.result[0].wanNetworkGroups.map(
         item => item.name
       );
+      console.log(this.wanNetworkGroups);
       const ressds = await SourceAddressSelect({
-        organization: this.form.organization
+        orgName: this.form.organization,
+        objectType: 'template',
+        objectName: this.objectName
       });
       this.group.sourceAddressSelect = ressds.result;
 
@@ -521,8 +579,8 @@ export default {
     },
 
     // 四个盒子的编辑
-    showEdit(index) {
-      this.$refs.EditTrafficCategoryRef.showModalAdd(index);
+    showEdit(index, item) {
+      this.$refs.EditTrafficCategoryRef.showModalAdd(index, item);
       if (index < 4) this.squareListInformation = this.squareList[index];
     },
     // 增加
@@ -532,6 +590,9 @@ export default {
       } else {
         this.$refs.CreateRuleToCategoryRealTimeRef.showModalAdd(item);
       }
+      console.log(item);
+      // this.nameTitle = this.nameTitle.push(item.categoryName);
+      // console.log(this.nameTitle);
     },
     // 四个盒子的删除
     showDeleteTop(index) {
@@ -613,6 +674,8 @@ export default {
   }
 };
 import Vue from 'vue';
+// import { Template } from 'webpack';
+// import { template } from 'babel__core';
 // import { firebrick } from 'color-name';
 Vue.component('table-operationDevice', {
   props: {
@@ -641,8 +704,9 @@ Vue.component('table-operationDevice', {
 
 <style lang="scss" scoped>
 .temp {
-  width: 1293px;
-  overflow-y: scroll;
+  // width: 1293px;
+  // overflow-y: scroll;
+  padding: 5px 20px 30px 15px;
   /deep/.search-bar {
     .ant-input {
       width: 700px;
@@ -659,12 +723,13 @@ Vue.component('table-operationDevice', {
     }
   }
   .tamplate {
-    width: 1258px;
+    width: 100%;
     // height: 40px;
+    border: 1px solid rgb(170, 192, 213);
     overflow-y: scroll;
     .title {
-      width: 1300px;
-      height: 50px;
+      width: 100%;
+      height: 40px;
       background: #b0c7d5;
       overflow: hidden;
       .ant-btn-primary {
@@ -672,6 +737,8 @@ Vue.component('table-operationDevice', {
         border: none;
         box-shadow: unset;
         text-shadow: unset;
+        margin-bottom: 22px;
+        // line-height: 40px;
       }
       /deep/.ant-select-selection__rendered {
         line-height: 18px;
@@ -681,59 +748,69 @@ Vue.component('table-operationDevice', {
         height: 20px;
       }
       /deep/.ant-select-selection--single {
-        width: 150px;
+        // width: 150px;
         height: 20px;
         line-height: 20px;
       }
     }
-    .mainPart {
-      width: 290px;
-      float: left;
-      margin-left: 10px;
-      margin-top: 20px;
-      .firstBox {
-        height: 67px;
-        border: 1px solid black;
-        overflow-y: scroll;
-        overflow-x: scroll;
-        border-bottom: none;
-        background-color: rgb(213, 170, 170);
-      }
-      .firstBottom {
-        height: 110px;
-        overflow-y: scroll;
-        overflow-x: scroll;
-        border: 1px solid black;
-        border-top: none;
-        .firstVoice {
-          border: 1px solid rgb(213, 170, 170);
+    .middlesection {
+      height: 450px;
+      overflow-y: scroll;
+      overflow-x: scroll;
+
+      .mainPart {
+        width: 23%;
+        float: left;
+        margin-left: 15px;
+        margin-top: 20px;
+        .firstBox {
+          height: 67px;
+          border: 1px solid black;
+          overflow-y: scroll;
+          overflow-x: scroll;
+          border-bottom: none;
+          background-color: rgb(213, 170, 170);
         }
-        .firstVideo {
-          border: 1px solid rgb(213, 170, 170);
+        .firstBottom {
+          height: 110px;
+          overflow-y: scroll;
+          overflow-x: scroll;
+          border: 1px solid black;
+          border-top: none;
+          .firstVoice {
+            border: 1px solid rgb(213, 170, 170);
+          }
+          .firstVideo {
+            border: 1px solid rgb(213, 170, 170);
+          }
         }
       }
     }
-  }
-  .btn {
-    float: right;
-    .ant-btn-dashed {
-      background-color: #3f4a5b;
-      border-color: unset;
-      border-style: unset;
-      color: #fff;
-    }
-    .ant-btn-danger {
-      width: 60px;
-      height: 32px;
-      background-color: #a7d054;
-      color: #fff;
-      border-color: unset;
-    }
-    .ant-btn-primary {
-      width: 69px;
-      height: 30px;
-      background-color: #0095da;
-      color: #fff;
+    .footer-btn {
+      height: 80px;
+      overflow-x: scroll;
+      .btn {
+        float: right;
+        .ant-btn-dashed {
+          background-color: #3f4a5b;
+          border-color: unset;
+          border-style: unset;
+          color: #fff;
+        }
+        .ant-btn-danger {
+          width: 60px;
+          height: 32px;
+          background-color: #a7d054;
+          color: #fff;
+          border-color: unset;
+        }
+        .ant-btn-primary {
+          width: 69px;
+          height: 30px;
+          background-color: #0095da;
+          color: #fff;
+        }
+      }
     }
   }
 }
