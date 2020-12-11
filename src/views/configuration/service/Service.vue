@@ -1,5 +1,5 @@
 <template>
-  <div class="spokeGroups">
+  <div class="spokeGroups main-con">
     <!-- 搜索框 -->
     <Pagination
       :total="totalCount"

@@ -90,7 +90,9 @@
                 >{{ $t('Administration') }}</router-link
               >
             </a-col>
-            <a-col class="commit-btn">{{ $t('CommitTemplate') }}</a-col>
+            <a-col class="commit-btn" @click="showModel">{{
+              $t('CommitTemplate')
+            }}</a-col>
           </a-row>
         </a-layout-header>
         <!-- 加载条 -->
@@ -271,13 +273,17 @@
         {{ formTips.tipText }}
       </div>
     </div>
+    <!-- commit弹框 -->
+    <commit ref="commitRef"></commit>
   </div>
 </template>
 <script>
 import { mapState, mapMutations, mapActions } from 'vuex';
 import { passWordEdt } from 'apis/administration';
+import commit from './commit';
 export default {
   name: 'Home',
+  components: { commit },
   data() {
     // 右上角修改密码表单验证
     let oldPassword = (rule, value, callback) => {
@@ -543,6 +549,10 @@ export default {
         top: this.y + 14 + 'px',
         left: this.x - 2 + 'px'
       };
+    },
+    // 右上角弹框
+    showModel() {
+      this.$refs.commitRef.showModalAdd();
     }
   },
   watch: {

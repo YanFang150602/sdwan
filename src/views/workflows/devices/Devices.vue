@@ -1,20 +1,22 @@
 <template>
-  <div class="devices">
+  <div class="devices main-con">
     <!-- 搜索框 -->
     <Pagination
-      :total="totalCount"
+      :total="device.totalCount"
       :page-size="pageSize"
       @page-change="pageChange"
       @page-size-change="pageSizeChange"
       @create-item="showModal"
       @delete-item="showModalDelete"
       @search="search"
-      @cancelSearch="cancelSearch"
+      @cancel-search="cancelSearch"
     />
     <!-- 列表 -->
     <!-- 表单主体内容 -->
     <v-table
+      :style="{ height: 'calc(100% - 15px)' }"
       class="mainTable"
+      is-vertical-resize
       is-horizontal-resize
       column-width-drag
       :columns="columns"
@@ -22,8 +24,7 @@
       :select-all="selectALL"
       :select-change="selectChange"
       :select-group-change="selectGroupChange"
-      :height="500"
-      style="width:100%;"
+      style="width: 100%;"
       isFrozen="true"
       @on-custom-comp="customCompFunc"
       error-content="Temporarily no data"
@@ -48,7 +49,7 @@
           @show="show"
         ></DevicesAdd>
         <template slot="footer">
-          <span style="float:left;">
+          <span style="float: left;">
             <a-button
               key="back"
               class="back"
@@ -151,7 +152,7 @@
           @edit="edit"
         ></DevicesCheck>
         <template slot="footer">
-          <span style="float:left;">
+          <span style="float: left;">
             <a-button
               key="back"
               class="back"
@@ -195,7 +196,7 @@ import DevicesAdd from './DevicesAdd';
 // import DevicesDelete from './DevicesDelete';
 import DevicesCheck from './DevicesCheck';
 import Pagination from 'components/Pagination';
-import { mapState } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import {
   devicesDelete,
   addDevices,
@@ -224,7 +225,7 @@ export default {
       //分页
       pageIndex: 1,
       pageSize: 20,
-      totalCount: 100,
+      totalCount: 0,
       // 搜索框
       keyworks: '',
       // 新增弹框
@@ -249,7 +250,7 @@ export default {
           titleAlign: 'left',
           columnAlign: 'left',
           isResize: true,
-          componentName: 'table-operationDevice'
+          componentName: 'vTableName'
         },
         {
           field: 'siteId',
@@ -323,9 +324,6 @@ export default {
       }
     };
   },
-  activated() {
-    this.$store.dispatch('getNameList');
-  },
   computed: {
     ...mapState(['device', 'organization', 'showAdd']),
     ...mapState({
@@ -333,16 +331,21 @@ export default {
     })
   },
   created() {
-    this.$store.dispatch('getNameList');
+    //获取组织列表
+    this.getNameList();
+
+    //console.log('organization', this.organization);
     this.$store.dispatch('Tabledevice', {
       deep: true,
       orgname: this.organization,
       offset: 0,
       limit: this.pageSize
     });
+    console.log('device', this.device);
     // this.queryDevice();
   },
   methods: {
+    ...mapActions(['getNameList']),
     // 分页
     queryDevice() {
       this.$store.dispatch('Tabledevice', {
@@ -521,11 +524,10 @@ export default {
     DevCheck(check) {
       this.dev = { ...check };
     },
-    // 设备查询old
+    //设备查询old
     // async search() {
     //   const res = await DeviceSearch(this.keyworks);
     //   console.log(res);
-
     //   this.$store.dispatch('Tabledevice', {
     //     deep: true,
     //     orgname: this.organization,
@@ -541,14 +543,15 @@ export default {
       const list = this.device['versanms.sdwan-device-list'].filter(item =>
         item.deviceName.toLowerCase().includes(keyword)
       );
+      this.totalCount = list.length;
       this.device['versanms.sdwan-device-list'] = list;
     },
     // 取消搜索，显示当前数据
     cancelSearch() {
-      if (this.keyworks.trim() === '') {
-        this.queryDevice();
-      }
+      this.pageIndex = 1;
+      this.queryDevice();
     },
+
     // 新增中的部署按钮
     async handleOkDeploy() {
       console.log('deploy', this.$refs.devicesAddRef.dev);
@@ -748,34 +751,11 @@ export default {
     }
   }
 };
-import Vue from 'vue';
-Vue.component('table-operationDevice', {
-  props: {
-    rowData: {
-      type: Object
-    },
-    field: {
-      type: String
-    },
-    index: {
-      type: Number
-    }
-  },
-  template: `<span>
-        <a href="" @click.stop.prevent="update(rowData,index)">{{rowData.deviceName}}</a>&nbsp;
-        </span>`,
-  methods: {
-    update() {
-      // 参数根据业务场景随意构造
-      let params = { type: 'edit', index: this.index, rowData: this.rowData };
-      this.$emit('on-custom-comp', params);
-    }
-  }
-});
 </script>
 
 <style lang="scss" scoped>
 .devices {
+  height: 100%;
   padding: 5px 20px 30px 15px;
   // 搜索栏与表格主体的间隔
   .table-header {

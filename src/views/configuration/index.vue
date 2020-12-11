@@ -2,11 +2,7 @@
   <a-layout :style="{ height: '100%' }">
     <Tree />
     <a-layout-content>
-      <keep-alive>
-        <a-spin :spinning="isLoading">
-          <router-view></router-view>
-        </a-spin>
-      </keep-alive>
+      <router-view></router-view>
     </a-layout-content>
   </a-layout>
 </template>
@@ -38,4 +34,11 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+/deep/.ant-spin-nested-loading {
+  height: 100%;
+  .ant-spin-container {
+    height: 100%;
+  }
+}
+</style>

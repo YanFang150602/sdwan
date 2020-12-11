@@ -1,47 +1,6 @@
 <template>
-  <div class="main-con">
+  <div class="devices main-con">
     <!-- 搜索框 -->
-    <!-- <a-row class="table-header" type="flex" justify="space-between" align="middle"> -->
-    <!--搜索栏-->
-    <!-- <a-col :style="{ width: 'calc(100%-475px)' }">
-        <a-input
-          class="search-bar"
-          ref="searchInput"
-          v-model="keyworks"
-          placeholder="Search"
-          @keyup.enter="search"
-        >
-          <a-icon slot="prefix" type="search"/>
-          <a-icon @click="keyworks = ''" v-show="keyworks != ''" slot="suffix" type="close"/>
-        </a-input>
-    </a-col>-->
-    <!--表格功能按钮-->
-    <!-- <a-col>
-        <a-row :style="{ width: '425px' }" type="flex" justify="end" align="middle">
-          <a-col
-            :style="{
-              fontSize: '18px',
-              cursor: 'pointer',
-              marginRight: '20px'
-            }"
-          >
-            <a-icon @click="showModal" type="plus"/>
-          </a-col>
-          <a-col
-            :style="{
-              fontSize: '18px',
-              cursor: 'pointer',
-              marginRight: '20px'
-            }"
-          >
-            <a-icon @click="showModalDelete" type="minus"/>
-          </a-col>
-          <a-col>
-            <v-pagination size="small" :layout="['prev', 'jumper', 'next', 'sizer']"></v-pagination>
-          </a-col>
-        </a-row>
-    </a-col>-->
-    <!-- </a-row> -->
     <Pagination
       :total="totalCount"
       :page-size="pageSize"
@@ -57,12 +16,12 @@
     <v-table
       is-horizontal-resize
       column-width-drag
+      is-vertical-resize
       :columns="columns"
       :table-data="tableData"
       :select-all="selectALL"
       :select-change="selectChange"
       :select-group-change="selectGroupChange"
-      :height="540"
       style="width:100%;"
       isFrozen="true"
       @on-custom-comp="customCompFunc"

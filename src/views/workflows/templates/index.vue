@@ -13,6 +13,7 @@
     />
     <!-- 表单主体内容 -->
     <v-table
+      :style="{ height: 'calc(100% - 15px)' }"
       is-vertical-resize
       is-horizontal-resize
       column-width-drag
@@ -20,7 +21,7 @@
       :table-data="tableData"
       :select-all="delItem"
       :select-change="delItem"
-      style="width:100%"
+      style="width: 100%;"
       isFrozen="true"
       @on-custom-comp="modifyItem"
       error-content="Temporarily no data"
@@ -117,7 +118,7 @@
       </a-tabs>
       <template slot="footer">
         <a-button
-          style="float:left"
+          style="float: left;"
           v-show="!(actKey === '1')"
           key="Back"
           @click="tabPrev"

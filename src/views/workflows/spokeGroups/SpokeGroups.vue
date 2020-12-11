@@ -1,5 +1,5 @@
 <template>
-  <div class="spokeGroups">
+  <div class="spokeGroups main-con">
     <!-- 搜索框 -->
     <Pagination
       :total="totalCount"
@@ -9,20 +9,21 @@
       @create-item="showModal"
       @delete-item="groupDel"
       @search="search"
-      @cancelSearch="cancelSearch"
+      @cancel-search="cancelSearch"
     />
     <!-- 列表 -->
     <!-- 表单主体内容 -->
     <v-table
+      :style="{ height: 'calc(100% - 15px)' }"
       is-horizontal-resize
+      is-vertical-resize
       column-width-drag
       :columns="columns"
       :table-data="tableData"
       :select-all="selectALL"
       :select-change="selectChange"
       :select-group-change="selectGroupChange"
-      :height="540"
-      style="width:100%;"
+      style="width: 100%;"
       isFrozen="true"
       @on-custom-comp="customCompFunc"
       error-content="Temporarily no data"
@@ -121,7 +122,7 @@ export default {
           titleAlign: 'left',
           columnAlign: 'left',
           isResize: true,
-          componentName: 'table-operationSpoke'
+          componentName: 'vTableName'
         },
         {
           field: 'org',
@@ -231,19 +232,8 @@ export default {
     };
   },
   created() {
-    // 列表
-    this.tableForm();
     // spoke组查询
-    // this.customCompFunc();
-    // this.$store.dispatch('SPTableForm', {
-    //   orgname: this.organization,
-    //   offset: 0,
-    //   limit: this.pageSize
-    // });
-    if (this.organization == '') {
-      this.tableForm();
-    }
-    // this.queryDeviceGrops();
+    this.customCompFunc();
   },
   computed: {
     ...mapState(['spoke', 'organization'])
@@ -256,13 +246,13 @@ export default {
       const list = this.tableData.filter(item =>
         item.name.toLowerCase().includes(keyword)
       );
+      this.totalCount = list.length;
       this.tableData = list;
     },
     // 取消搜索，显示当前数据
     cancelSearch() {
-      if (this.keyworks.trim() === '') {
-        this.tableForm();
-      }
+      this.pageIndex = 1;
+      this.tableForm();
     },
     // 分页
     pageChange(pageIndex) {
@@ -387,13 +377,10 @@ export default {
     async tableForm() {
       const offset = (this.pageIndex - 1) * this.pageSize;
       const limit = this.pageSize;
-      const orgname = '';
+      const orgname = this.organization;
       const res = await SPTableForm(orgname, offset, limit);
-      // console.log(res.result.totalCount);
       this.tableData = res.result.data;
       this.totalCount = res.result.totalCount;
-      // this.tableData = res.result.data;
-      console.log(this.tableData);
     },
     // 选取了组织
     queryDeviceGrops() {
@@ -428,32 +415,14 @@ export default {
       this.spokeAdd = {};
       console.log(this.spokeAdd);
     }
+  },
+  watch: {
+    organization: {
+      handler: 'tableForm',
+      immediate: true
+    }
   }
 };
-import Vue from 'vue';
-Vue.component('table-operationSpoke', {
-  props: {
-    rowData: {
-      type: Object
-    },
-    field: {
-      type: String
-    },
-    index: {
-      type: Number
-    }
-  },
-  template: `<span>
-        <a href="" @click.stop.prevent="update(rowData,index)">{{rowData.name}}</a>&nbsp;
-        </span>`,
-  methods: {
-    update() {
-      // 参数根据业务场景随意构造
-      let params = { type: 'edit', index: this.index, rowData: this.rowData };
-      this.$emit('on-custom-comp', params);
-    }
-  }
-});
 </script>
 
 <style lang="scss" scoped>

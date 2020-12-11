@@ -9,13 +9,7 @@
       v-drag
     >
       <template slot="footer">
-        <a-button
-          key="submit"
-          type="primary"
-          @click="handleOk"
-          :loading="loading"
-          >Ok</a-button
-        >
+        <a-button key="submit" type="primary" @click="handleOk" :loading="loading">Ok</a-button>
         <a-button key="back" @click="handleCancel">Cancel</a-button>
       </template>
       <a-form-model ref="ruleForm" :model="form">
@@ -27,7 +21,7 @@
                 <a-col :span="24">
                   <a-form-model-item>
                     <a-form-model-item label="Name" prop="name">
-                      <a-input v-model="form.name" />
+                      <a-input v-model="form.name"/>
                     </a-form-model-item>
                   </a-form-model-item>
                 </a-col>
@@ -36,7 +30,7 @@
                 <a-col :span="24">
                   <a-form-model-item>
                     <a-form-model-item label="Description">
-                      <a-input v-model="form.description" />
+                      <a-input v-model="form.description"/>
                     </a-form-model-item>
                   </a-form-model-item>
                 </a-col>
@@ -110,27 +104,23 @@
                 <a-col :span="4">
                   <p class="height-100">
                     <a-form-model-item>
-                      <a-checkbox value="1" name="type">FEC</a-checkbox>
+                      <a-checkbox value="1" name="type" v-model="fec">FEC</a-checkbox>
                     </a-form-model-item>
                   </p>
                 </a-col>
                 <a-col :span="4">
                   <p class="height-50">
                     <a-form-model-item>
-                      <a-checkbox value="1" name="type">Replication</a-checkbox>
+                      <a-checkbox value="1" name="type" v-model="replication">Replication</a-checkbox>
                     </a-form-model-item>
                   </p>
                 </a-col>
                 <a-col :span="8">
                   <p class="height-120">
                     <a-form-model-item label="Load Balance">
-                      <a-select>
-                        <a-select-option value="PER_FLOW"
-                          >Per Flow</a-select-option
-                        >
-                        <a-select-option value="PER_PACKET"
-                          >Per Packet</a-select-option
-                        >
+                      <a-select v-model="LoadBalance">
+                        <a-select-option value="PER_FLOW">Per Flow</a-select-option>
+                        <a-select-option value="PER_PACKET">Per Packet</a-select-option>
                       </a-select>
                     </a-form-model-item>
                   </p>
@@ -143,25 +133,25 @@
                 <a-col :span="4">
                   <p class="height-100">
                     <a-form-model-item>
-                      <a-checkbox value="1" name="type">Low Latency</a-checkbox>
+                      <a-checkbox value="1" name="type" v-model="LowLatency">Low Latency</a-checkbox>
                     </a-form-model-item>
                   </p>
                 </a-col>
                 <a-col :span="4">
                   <p class="height-50">
                     <a-form-model-item>
-                      <a-checkbox value="1" name="type"
-                        >Low Packet Loss</a-checkbox
-                      >
+                      <a-checkbox value="1" name="type" v-model="LowPacketLoss">Low Packet Loss</a-checkbox>
                     </a-form-model-item>
                   </p>
                 </a-col>
                 <a-col :span="8">
                   <p class="height-120">
                     <a-form-model-item>
-                      <a-checkbox value="1" name="type"
-                        >Low Delay Variation</a-checkbox
-                      >
+                      <a-checkbox
+                        value="1"
+                        name="type"
+                        v-model="LowDelayVariation"
+                      >Low Delay Variation</a-checkbox>
                     </a-form-model-item>
                   </p>
                 </a-col>
@@ -171,6 +161,7 @@
                 style="width:806px;margin-left:15px"
                 :title="Priority"
                 v-model="wanNetworkGroupsRes"
+                ref="addModleDoubleRef"
               ></AddModleDouble>
             </div>
           </a-tab-pane>
@@ -182,9 +173,7 @@
       v-show="formTips.flag"
       class="form-tips"
       :style="formTips.positionStyle"
-    >
-      {{ formTips.tipText }}
-    </div>
+    >{{ formTips.tipText }}</div>
   </div>
 </template>
 <script>
@@ -207,6 +196,12 @@ export default {
   },
   data() {
     return {
+      fec: false,
+      replication: false,
+      LowLatency: false,
+      LowPacketLoss: false,
+      LowDelayVariation: false,
+      LoadBalance: '',
       titleName: '',
       seleArr: [
         { title: 'Predefined Applications', valKey: 'preDefinedApplications' },
@@ -314,24 +309,30 @@ export default {
       console.log(this.currentEdit);
     },
     showModalAdd(originItem) {
+      this.fec = false;
+      this.replication = false;
+      this.LowLatency = false;
+      this.LowPacketLoss = false;
+      this.LowDelayVariation = false;
+      this.LoadBalance = '';
       this.originItem = originItem;
       this.visible = true;
-      this.sourceList = this.EditRuleTo.sourceSelect;
-      this.predeList = this.EditRuleTo.appSelect;
-      this.cusappList = this.EditRuleTo.filterSelect;
-      this.preAppGroList = this.EditRuleTo.groupSelect;
-      this.CustomerList = this.EditRuleTo.categoriesSelect;
-      this.cusSerList = this.EditRuleTo.serSelect;
-      this.allListappGroups = this.EditRuleTo.leftSelectAll.appGroups;
-      this.allListcategories = this.EditRuleTo.leftSelectAll.urlCategoryNames;
-      this.allListpredefinedApps = this.EditRuleTo.leftSelectAll.predefinedApps;
-      this.allListpredefinedFilters = this.EditRuleTo.leftSelectAll.predefinedFilters;
-      this.allListservices = this.EditRuleTo.leftSelectAll.services;
-      this.address = this.EditRuleTo.sourceAddressSelect;
-      this.FZones = this.EditRuleTo.zones;
-      console.log(this.address);
-      console.log(this.EditRuleTo);
-      console.log(originItem);
+      // this.sourceList = this.EditRuleTo.sourceSelect;
+      // this.predeList = this.EditRuleTo.appSelect;
+      // this.cusappList = this.EditRuleTo.filterSelect;
+      // this.preAppGroList = this.EditRuleTo.groupSelect;
+      // this.CustomerList = this.EditRuleTo.categoriesSelect;
+      // this.cusSerList = this.EditRuleTo.serSelect;
+      // this.allListappGroups = this.EditRuleTo.leftSelectAll.appGroups;
+      // this.allListcategories = this.EditRuleTo.leftSelectAll.urlCategoryNames;
+      // this.allListpredefinedApps = this.EditRuleTo.leftSelectAll.predefinedApps;
+      // this.allListpredefinedFilters = this.EditRuleTo.leftSelectAll.predefinedFilters;
+      // this.allListservices = this.EditRuleTo.leftSelectAll.services;
+      // this.address = this.EditRuleTo.sourceAddressSelect;
+      // this.FZones = this.EditRuleTo.zones;
+      // console.log(this.address);
+      // console.log(this.EditRuleTo);
+      // console.log(originItem);
       this.titleName =
         'Create Rule to category' + '-' + originItem.categoryName;
     },
@@ -341,7 +342,12 @@ export default {
       this.originItem.rules.defaultPathPriorities = this.wanNetworkGroupsRes;
       console.log(this.originItem.rules);
       this.form = {};
-      this.$refs.addModleRef.forEach(item => item.init());
+      console.log(this.$refs.addModleRef);
+      if (Array.isArray(this.$refs.addModleRef)) {
+        this.$refs.addModleRef.forEach(item => item.init());
+      }
+      console.log(this.$refs.addModleDoubleRef);
+      this.$refs.addModleDoubleRef.init();
     },
     handleCancel() {
       this.visible = false;

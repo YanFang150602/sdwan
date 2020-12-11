@@ -5,7 +5,7 @@
       justify="space-between"
       align="top"
       data-text="DHCP Server"
-      style="margin:5px 0 20px"
+      style="margin: 5px 0 20px;"
     >
       <a-col class="tableSub" data-text="DHCP Server">
         <div class="serTable">
@@ -25,7 +25,7 @@
                   <th>
                     <span>DHCP Options Profile</span>
                   </th>
-                  <th style="width:68px"></th>
+                  <th style="width: 68px;"></th>
                 </tr>
               </thead>
               <tbody>
@@ -101,7 +101,7 @@
                     <span>IP Address</span>
                   </th>
 
-                  <th style="width:68px"></th>
+                  <th style="width: 68px;"></th>
                 </tr>
               </thead>
               <tbody>
@@ -200,11 +200,11 @@
 </template>
 
 <script>
-import common from '@/mixins/tip';
+import tip from '@/mixins/tip';
 
 import { profile } from 'apis/administration';
 export default {
-  mixins: [common],
+  mixins: [tip],
   props: {
     servicesData: {
       type: Object
@@ -253,7 +253,7 @@ export default {
     addParam(type) {
       this.$refs[`form${type}`].validate(valid => {
         if (valid) {
-          this[`${type}Param`].push(this[`${type}Crt`]);
+          this[`${type}Param`].push({ ...this[`${type}Crt`] });
           this.networkname = this.networkname.filter(item => {
             return item !== this[`${type}Crt`].name;
           });

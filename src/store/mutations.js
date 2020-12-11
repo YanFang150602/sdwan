@@ -15,7 +15,6 @@ import {
   DEVICE_NAME_SAVE,
   ORGANIZATION_SAVE,
   VPN_PEERFQDN_OPTIONS,
-  SPOKEGROUP_FORM,
   OBJECT_TYPE
 } from '@/store/mutation-types';
 
@@ -25,6 +24,7 @@ export default {
     state.admNameList = [...adminNameList];
     localStorage.setItem('admNameList', JSON.stringify(adminNameList));
   },
+
   // ###################################zwj
   [DEVICES_BID](state) {
     state.show = {
@@ -83,30 +83,19 @@ export default {
     state.organization = organization;
   },
   [DEVICE_FORM](state, { result, organization }) {
-    console.log(result);
     if (result.totalCount !== 0) {
-      console.log(result);
       state.device = { ...result };
     } else {
       state.device = {};
     }
-    console.log(state.device);
     state.organization = organization;
   },
-  [DEVICEGROUP_FORM](state, { result }) {
+  [DEVICEGROUP_FORM](state, result) {
+    console.log('result', result);
     if (result.totalCount) {
       state.deviceGroupResult = result;
     } else {
-      state.deviceGroupResult = [];
-    }
-  },
-  [SPOKEGROUP_FORM](state, { result }) {
-    console.log(state);
-    if (result.totalCount) {
-      state.spoke = result;
-      console.log(state.spoke);
-    } else {
-      state.spoke = [];
+      state.deviceGroupResult = {};
     }
   },
 

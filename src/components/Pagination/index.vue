@@ -8,13 +8,7 @@
     >
       <!-- 搜索栏 -->
       <a-col class="pull-left" :span="16" v-if="searchFlag">
-        <a-input
-          ref="searchInput"
-          v-model="keyworks"
-          placeholder="Search"
-          @keyup.enter="searchVal"
-          @keyup.delete="cancelSearch"
-        >
+        <a-input ref="searchInput" v-model="keyworks" placeholder="Search">
           <a-icon slot="prefix" type="search" />
           <a-icon
             @click="keyworks = ''"
@@ -183,7 +177,6 @@ export default {
     //切换pagesize  更新this.inputVal 提交  page-size-change 传this.selectVal
     pageSizeChange() {
       this.inputVal = 1;
-      console.log(this.selectVal, 666);
       this.$emit('page-size-change', this.selectVal);
     },
     // 输入框改变值 在正确范围内 更新this.inputVal
@@ -192,14 +185,6 @@ export default {
       if (this.inputChangeVal >= 1 && this.inputChangeVal <= this.nextNum) {
         this.inputVal = this.inputChangeVal;
       }
-    },
-    // 搜索框事件
-    searchVal() {
-      this.$emit('search', this.keyworks);
-    },
-    // 搜索框为空时
-    cancelSearch() {
-      this.$emit('cancelSearch');
     },
     // 新建数据
     createItem() {
@@ -215,6 +200,14 @@ export default {
       if (this.inputVal > this.nextNum) {
         this.inputVal = 1;
       }
+    },
+    keyworks(val) {
+      if (val === '') {
+        this.inputVal = 1;
+        this.$emit('cancel-search');
+      } else {
+        this.$emit('search', this.keyworks);
+      }
     }
   }
 };
@@ -222,7 +215,7 @@ export default {
 
 <style lang="scss" scoped>
 .list-action {
-  margin: 5px;
+  margin: 5px 0;
   .pull-left {
     /deep/.ant-input {
       color: #6a6f75;

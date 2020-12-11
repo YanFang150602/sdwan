@@ -1,5 +1,5 @@
 <template>
-  <div class="devices">
+  <div class="devices main-con">
     <!-- 搜索框 -->
     <Pagination
       :total="totalCount"
@@ -16,12 +16,12 @@
     <v-table
       is-horizontal-resize
       column-width-drag
+      is-vertical-resize
       :columns="columns"
       :table-data="tableData"
       :select-all="selectALL"
       :select-change="selectChange"
       :select-group-change="selectGroupChange"
-      :height="540"
       style="width:100%;"
       isFrozen="true"
       @on-custom-comp="customCompFunc"
@@ -30,7 +30,10 @@
     <!-- 新增弹框 -->
     <ApplicationGroupsAdd ref="GroupsAddRef"></ApplicationGroupsAdd>
     <!-- 删除的弹框 -->
-    <ApplicationGroupsDelete ref="GroupsDeleteRef" :GroupDelete="dele"></ApplicationGroupsDelete>
+    <ApplicationGroupsDelete
+      ref="GroupsDeleteRef"
+      :GroupDelete="dele"
+    ></ApplicationGroupsDelete>
     <!-- 查看弹框 -->
     <ApplicationEdit ref="GroupsEditRef"></ApplicationEdit>
   </div>

@@ -1,6 +1,6 @@
 <template>
-  <div class="temp">
-    <div v-if="isShow">
+  <div class="temp main-con">
+    <div v-if="isShow" :style="{ height: 'calc(100% - 15px)' }">
       <Pagination
         :total="totalCount"
         :page-size="pageSize"
@@ -14,15 +14,16 @@
       <!-- 列表 -->
       <!-- 表单主体内容 -->
       <v-table
+        :style="{ height: '100%' }"
         is-horizontal-resize
+        is-vertical-resize
         column-width-drag
         :columns="columns"
         :table-data="tableData"
         :select-all="selectALL"
         :select-change="selectChange"
         :select-group-change="selectGroupChange"
-        :height="540"
-        style="width:100%;"
+        style="width: 100%;"
         isFrozen="true"
         @on-custom-comp="customCompFunc"
         error-content="Temporarily no data"
@@ -41,38 +42,27 @@
           <a-row type="flex" justify="space-between" align="middle">
             <a-col :span="6">
               <a-form-model-item label="Template Name" prop="templateName">
-                <a-input v-model="form.templateName" :disabled="isDisabled" />
+                <a-input v-model="form.templateName" :disabled="isDisabled"/>
               </a-form-model-item>
             </a-col>
             <a-col :span="6">
               <a-form-model-item label="Organization" prop="organization">
-                <a-select
-                  @change="handleChange"
-                  v-model="form.organization"
-                  :disabled="isDisabled"
-                >
+                <a-select @change="handleChange" v-model="form.organization" :disabled="isDisabled">
                   <a-select-option
                     :value="item.name"
                     v-for="(item, index) in organ"
                     :key="index"
-                    >{{ item.name }}</a-select-option
-                  >
+                  >{{ item.name }}</a-select-option>
                 </a-select>
               </a-form-model-item>
             </a-col>
             <a-col :span="6"></a-col>
-            <a-button type="primary" @click="showModel"
-              >Add Traffic Category</a-button
-            >
+            <a-button type="primary" @click="showModel">Add Traffic Category</a-button>
             <!-- <a-col :span="6"></a-col> -->
           </a-row>
         </div>
         <div class="middlesection">
-          <div
-            class="mainPart"
-            v-for="(item, index) in originData"
-            :key="index"
-          >
+          <div class="mainPart" v-for="(item, index) in originData" :key="index">
             <div class="firstBox">
               <a-row type="flex" justify="space-between" align="top">
                 <a-col :span="12">
@@ -80,29 +70,22 @@
                   <p>{{ item.forwardingClass }}</p>
                 </a-col>
                 <a-col :span="4">
-                  <a-icon type="minus" @click="showDeleteTop(index)" />
-                  <a-icon type="plus" @click="showAdd(item)" />
-                  <a-icon type="edit" @click="showEdit(index, item)" />
+                  <a-icon type="minus" @click="showDeleteTop(index)"/>
+                  <a-icon type="plus" @click="showAdd(item)"/>
+                  <a-icon type="edit" @click="showEdit(index, item)"/>
                 </a-col>
               </a-row>
             </div>
             <div class="firstBottom">
-              <div
-                class="firstVoice"
-                v-for="(rule, index) in item.rules"
-                :key="rule.name"
-              >
+              <div class="firstVoice" v-for="(rule, index) in item.rules" :key="rule.name">
                 <a-row type="flex" justify="space-between" align="top">
                   <a-col :span="16">
                     <p>{{ rule.name }}</p>
                   </a-col>
                   <a-col :span="4">
                     <p>
-                      <a-icon
-                        type="minus"
-                        @click="item.rules.splice(index, 1)"
-                      />
-                      <a-icon type="edit" @click="showRule(rule, item)" />
+                      <a-icon type="minus" @click="item.rules.splice(index, 1)"/>
+                      <a-icon type="edit" @click="showRule(rule, item)"/>
                     </p>
                   </a-col>
                 </a-row>
@@ -113,18 +96,8 @@
         <div class="footer-btn">
           <div class="btn">
             <a-button type="dashed" @click="isShow = true">cancel</a-button>
-            <a-button
-              type="danger"
-              style="margin-left: 10px;"
-              @click="handleClick"
-              >Save</a-button
-            >
-            <a-button
-              type="primary"
-              style="margin-left: 10px;"
-              @click="handleDeploy"
-              >Deploy</a-button
-            >
+            <a-button type="danger" style="margin-left: 10px;" @click="handleClick">Save</a-button>
+            <a-button type="primary" style="margin-left: 10px;" @click="handleDeploy">Deploy</a-button>
           </div>
         </div>
       </div>
@@ -139,6 +112,7 @@
     <EditTrafficCategory
       ref="EditTrafficCategoryRef"
       :EditTraffic="squareListInformation"
+      :wanNetworkGroups="wanNetworkGroups"
     ></EditTrafficCategory>
     <!-- Edit Rule to category Real Time -->
     <EditRuleToCategory
@@ -160,10 +134,7 @@
       :wanNetworkGroups="wanNetworkGroups"
     ></CreateRuleToCategoryRealTime>
     <!-- 删除弹框 -->
-    <Applicationdelete
-      ref="ApplicationdeleteRef"
-      :Application="dele"
-    ></Applicationdelete>
+    <Applicationdelete ref="ApplicationdeleteRef" :Application="dele"></Applicationdelete>
   </div>
 </template>
 <script>
@@ -419,7 +390,9 @@ export default {
       this.handleChange();
       // this.getOrg();
       const resw = await steeringOrg();
-      this.organ = resw.result.organizations;
+      if (resw.result.organizations && resw.result.organizations.length > 0) {
+        this.organ = resw.result.organizations;
+      }
     },
     // 分页
     async pageChange(pageIndex) {

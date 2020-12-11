@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-row class="tableSub" data-text="BGP" style="margin:5px 0 20px">
+    <a-row class="tableSub" data-text="BGP" style="margin: 5px 0 20px;">
       <a-col
         class="bgpTable"
         :class="{ shadow: routingData.networkNameWall.length < 1 }"
@@ -33,7 +33,7 @@
                 <th>
                   <span>BFD</span>
                 </th>
-                <th style="width:50px"></th>
+                <th style="width: 50px;"></th>
               </tr>
             </thead>
             <tbody>
@@ -148,7 +148,7 @@
                   <th>
                     <span>BFD</span>
                   </th>
-                  <th style="width:50px"></th>
+                  <th style="width: 50px;"></th>
                 </tr>
               </thead>
               <tbody>
@@ -230,7 +230,7 @@
                   <th class="mandatory">
                     <span>Nexthop</span>
                   </th>
-                  <th style="width:50px"></th>
+                  <th style="width: 50px;"></th>
                 </tr>
               </thead>
               <tbody>
@@ -308,10 +308,10 @@
 </template>
 
 <script>
-import common from '@/mixins/tip';
+import tip from '@/mixins/tip';
 
 export default {
-  mixins: [common],
+  mixins: [tip],
   props: {
     routingData: {
       type: Object
@@ -360,9 +360,6 @@ export default {
         nexthop: [{ required: true, message: 'field required' }]
       }
     };
-  },
-  created() {
-    console.log(this.routingData);
   },
   methods: {
     addParam(type) {
@@ -435,10 +432,10 @@ export default {
                   return item.networkName === this.ospCrt.networkName;
                 });
                 if (!hasItem) {
-                  this.ospParam.push(this.ospCrt);
+                  this.ospParam.push({ ...this.ospCrt });
                 }
               } else {
-                this.ospParam.push(this.ospCrt);
+                this.ospParam.push({ ...this.ospCrt });
               }
               this.ospCrt = {
                 id: this.guid() + 'osp',

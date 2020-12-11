@@ -1,5 +1,5 @@
 <template>
-  <div class="main-con">
+  <div class="devices main-con">
     <!-- 搜索框 -->
     <Pagination
       :total="totalCount"
@@ -15,13 +15,13 @@
     <!-- 表单主体内容 -->
     <v-table
       is-horizontal-resize
+      is-vertical-resize
       column-width-drag
       :columns="columns"
       :table-data="tableData"
       :select-all="selectALL"
       :select-change="selectChange"
       :select-group-change="selectGroupChange"
-      :height="540"
       style="width:100%;"
       isFrozen="true"
       @on-custom-comp="customCompFunc"
@@ -32,7 +32,11 @@
     <!-- 删除的弹框 -->
     <AddressDelete ref="AddressDeleteRef" :addressDele="idDele"></AddressDelete>
     <!-- 查看弹框 -->
-    <AddressEdit ref="AddressEditRef" :addressEdit="addressCheck" :addressDele="idDele"></AddressEdit>
+    <AddressEdit
+      ref="AddressEditRef"
+      :addressEdit="addressCheck"
+      :addressDele="idDele"
+    ></AddressEdit>
   </div>
 </template>
 <script>

@@ -599,22 +599,29 @@ export default {
       this.formParam.destinationAddressList = data;
     },
     serviceSub(data) {
-      this.formParam.dto.predefinedServicesList = data.preService;
-      this.formParam.dto.servicesList = data.userService;
+      data.preService &&
+        (this.formParam.dto.predefinedServicesList = data.preService);
+      data.userService && (this.formParam.dto.servicesList = data.userService);
     },
     applicationSub(data) {
-      console.log(data);
-      this.formParam.dto.predefinedApplicationList = data.preApplication;
-      this.formParam.dto.userDefinedApplicationList = data.userApplication;
-      this.formParam.dto.predefinedGroupList = data.preApplicationGroup;
-      this.formParam.dto.predefinedFilterList = data.preApplicationFilter;
-      this.formParam.dto.groupList = data.userApplicationGroup;
-      this.formParam.dto.filterList = data.userApplicationFilter;
+      data.preApplication &&
+        (this.formParam.dto.predefinedApplicationList = data.preApplication);
+      data.userApplication &&
+        (this.formParam.dto.userDefinedApplicationList = data.userApplication);
+      data.preApplicationGroup &&
+        (this.formParam.dto.predefinedGroupList = data.preApplicationGroup);
+      data.preApplicationFilter &&
+        (this.formParam.dto.predefinedFilterList = data.preApplicationFilter);
+      data.userApplicationGroup &&
+        (this.formParam.dto.groupList = data.userApplicationGroup);
+      data.userApplicationFilter &&
+        (this.formParam.dto.filterList = data.userApplicationFilter);
     },
     urlCategorySub(data) {
-      console.log('data', data);
-      this.formParam.dto.predefined = data.preUrlCategory;
-      this.formParam.dto.userDefined = data.userUrlCategory;
+      data.preUrlCategory &&
+        (this.formParam.dto.predefined = data.preUrlCategory);
+      data.userUrlCategory &&
+        (this.formParam.dto.userDefined = data.userUrlCategory);
     },
 
     // 添加tag标签

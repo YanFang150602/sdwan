@@ -1,5 +1,5 @@
 <template>
-  <div class="main-con">
+  <div class="devices main-con">
     <Pagination
       :total="totalCount"
       :page-size="pageSize"
@@ -15,12 +15,12 @@
     <v-table
       is-horizontal-resize
       column-width-drag
+      is-vertical-resize
       :columns="columns"
       :table-data="tableData"
       :select-all="selectALL"
       :select-change="selectChange"
       :select-group-change="selectGroupChange"
-      :height="540"
       style="width: 100%"
       isFrozen="true"
       @on-custom-comp="customCompFunc"
@@ -37,7 +37,13 @@
         :maskClosable="false"
       >
         <template slot="footer">
-          <a-button key="submit" type="primary" @click="handleOk" :loading="loading">Ok</a-button>
+          <a-button
+            key="submit"
+            type="primary"
+            @click="handleOk"
+            :loading="loading"
+            >Ok</a-button
+          >
           <a-button key="back" @click="handleCancel">Cancel</a-button>
         </template>
         <a-form-model :model="form.data" ref="ruleForm" :rules="rules">
@@ -59,7 +65,7 @@
               <a-col :span="24">
                 <a-form-model-item>
                   <a-form-model-item label="Description">
-                    <a-input size="small" v-model="form.data.description"/>
+                    <a-input size="small" v-model="form.data.description" />
                   </a-form-model-item>
                 </a-form-model-item>
               </a-col>
@@ -75,7 +81,8 @@
                       v-for="(item, index) in TrafficClassOption"
                       :key="index"
                       :value="item"
-                    >{{ item }}</a-select-option>
+                      >{{ item }}</a-select-option
+                    >
                   </a-select>
                 </a-form-model-item>
               </a-col>
@@ -88,7 +95,8 @@
                       v-for="(item, index) in TrafficClassOption"
                       :key="index"
                       :value="item"
-                    >{{ item }}</a-select-option>
+                      >{{ item }}</a-select-option
+                    >
                   </a-select>
                 </a-form-model-item>
               </a-col>
@@ -101,7 +109,8 @@
                       v-for="(item, index) in TrafficClassOption"
                       :key="index"
                       :value="item"
-                    >{{ item }}</a-select-option>
+                      >{{ item }}</a-select-option
+                    >
                   </a-select>
                 </a-form-model-item>
               </a-col>
@@ -114,7 +123,8 @@
                       v-for="(item, index) in TrafficClassOption"
                       :key="index"
                       :value="item"
-                    >{{ item }}</a-select-option>
+                      >{{ item }}</a-select-option
+                    >
                   </a-select>
                 </a-form-model-item>
               </a-col>
@@ -125,7 +135,10 @@
         </a-form-model>
       </a-modal>
       <!-- 删除的弹框 -->
-      <schedulerMapsDel ref="AddressDeleteRef" :DeleName="idDele"></schedulerMapsDel>
+      <schedulerMapsDel
+        ref="AddressDeleteRef"
+        :DeleName="idDele"
+      ></schedulerMapsDel>
     </div>
   </div>
 </template>

@@ -1,5 +1,5 @@
 <template>
-  <div class="main-con">
+  <div class="devices main-con">
     <Pagination
       :total="totalCount"
       :page-size="pageSize"
@@ -15,12 +15,12 @@
     <v-table
       is-horizontal-resize
       column-width-drag
+      is-vertical-resize
       :columns="columns"
       :table-data="tableData"
       :select-all="selectALL"
       :select-change="selectChange"
       :select-group-change="selectGroupChange"
-      :height="540"
       style="width: 100%"
       isFrozen="true"
       @on-custom-comp="customCompFunc"
@@ -37,7 +37,13 @@
         :maskClosable="false"
       >
         <template slot="footer">
-          <a-button key="submit" type="primary" @click="handleOk" :loading="loading">Ok</a-button>
+          <a-button
+            key="submit"
+            type="primary"
+            @click="handleOk"
+            :loading="loading"
+            >Ok</a-button
+          >
           <a-button key="back" @click="handleCancel">Cancel</a-button>
         </template>
         <a-form-model :model="form.data" ref="ruleForm" :rules="rules">
@@ -59,7 +65,7 @@
               <a-col :span="24">
                 <a-form-model-item>
                   <a-form-model-item label="Description">
-                    <a-input size="small" v-model="form.data.description"/>
+                    <a-input size="small" v-model="form.data.description" />
                   </a-form-model-item>
                 </a-form-model-item>
               </a-col>
@@ -72,7 +78,8 @@
                       v-for="(item, index) in LossPriorityOption"
                       :key="index"
                       :value="item"
-                    >{{ item }}</a-select-option>
+                      >{{ item }}</a-select-option
+                    >
                   </a-select>
                 </a-form-model-item>
               </a-col>
@@ -83,7 +90,8 @@
                       v-for="(item, index) in LossPriorityOption"
                       :key="index"
                       :value="item"
-                    >{{ item }}</a-select-option>
+                      >{{ item }}</a-select-option
+                    >
                   </a-select>
                 </a-form-model-item>
               </a-col>
@@ -92,7 +100,10 @@
           <div class="addtableBox">
             <div class="addtable">
               <div class="addtitle">Transmit Rate</div>
-              <a-radio-group v-model="form.data.transmitRate" @change="transmitChange">
+              <a-radio-group
+                v-model="form.data.transmitRate"
+                @change="transmitChange"
+              >
                 <a-radio value="true">Rate (Kbps)</a-radio>
                 <a-radio value="false">Rate (%)</a-radio>
               </a-radio-group>
@@ -100,7 +111,7 @@
                 <a-col :span="24">
                   <a-form-model-item>
                     <a-form-model-item :label="TransmitLabel">
-                      <a-input size="small" v-model="form.data.transmitValue"/>
+                      <a-input size="small" v-model="form.data.transmitValue" />
                     </a-form-model-item>
                   </a-form-model-item>
                 </a-col>
@@ -108,7 +119,10 @@
             </div>
             <div class="addtable">
               <div class="addtitle">Guaranteed Rate</div>
-              <a-radio-group v-model="form.data.guaranteedRate" @change="guaranteedChange">
+              <a-radio-group
+                v-model="form.data.guaranteedRate"
+                @change="guaranteedChange"
+              >
                 <a-radio value="true">Rate (Kbps)</a-radio>
                 <a-radio value="false">Rate (%)</a-radio>
               </a-radio-group>
@@ -116,7 +130,10 @@
                 <a-col :span="24">
                   <a-form-model-item>
                     <a-form-model-item :label="GuaranteedLabel">
-                      <a-input size="small" v-model="form.data.guaranteedValue"/>
+                      <a-input
+                        size="small"
+                        v-model="form.data.guaranteedValue"
+                      />
                     </a-form-model-item>
                   </a-form-model-item>
                 </a-col>
@@ -131,7 +148,8 @@
                     v-for="(item, index) in TrafficClassOption"
                     :key="index"
                     :value="item"
-                  >{{ item }}</a-select-option>
+                    >{{ item }}</a-select-option
+                  >
                 </a-select>
               </a-form-model-item>
             </a-col>
@@ -142,7 +160,8 @@
                     v-for="(item, index) in TrafficClassOption"
                     :key="index"
                     :value="item"
-                  >{{ item }}</a-select-option>
+                    >{{ item }}</a-select-option
+                  >
                 </a-select>
               </a-form-model-item>
             </a-col>
@@ -155,7 +174,8 @@
                     v-for="(item, index) in TrafficClassOption"
                     :key="index"
                     :value="item"
-                  >{{ item }}</a-select-option>
+                    >{{ item }}</a-select-option
+                  >
                 </a-select>
               </a-form-model-item>
             </a-col>
@@ -166,7 +186,8 @@
                     v-for="(item, index) in TrafficClassOption"
                     :key="index"
                     :value="item"
-                  >{{ item }}</a-select-option>
+                    >{{ item }}</a-select-option
+                  >
                 </a-select>
               </a-form-model-item>
             </a-col>

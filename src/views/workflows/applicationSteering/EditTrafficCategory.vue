@@ -18,7 +18,7 @@
             <a-col :span="24">
               <a-form-model-item>
                 <a-form-model-item label="Name">
-                  <a-input v-model="EditTraffic.categoryName" disabled />
+                  <a-input v-model="form.categoryName" disabled/>
                 </a-form-model-item>
               </a-form-model-item>
             </a-col>
@@ -27,13 +27,12 @@
             <a-col :span="24">
               <a-form-model-item>
                 <a-form-model-item label="Forwarding Class">
-                  <a-select v-model="EditTraffic.forwardingClass">
+                  <a-select v-model="form.forwardingClass">
                     <a-select-option
                       :value="item.name"
                       v-for="(item, index) in forClassList"
                       :key="index.name"
-                      >{{ item.lable }}</a-select-option
-                    >
+                    >{{ item.lable }}</a-select-option>
                   </a-select>
                 </a-form-model-item>
               </a-form-model-item>
@@ -43,94 +42,80 @@
             <a-col :span="24">
               <a-form-model-item>
                 <a-form-model-item label="Loss Priority">
-                  <a-select v-model="EditTraffic.lossPriority">
+                  <a-select v-model="form.lossPriority">
                     <a-select-option
                       :value="item"
                       v-for="(item, index) in transList"
                       :key="index"
-                      >{{ item }}</a-select-option
-                    >
+                    >{{ item }}</a-select-option>
                   </a-select>
                 </a-form-model-item>
               </a-form-model-item>
             </a-col>
           </a-row>
         </div>
-
-        <div class="main">
-          <div class="traffic">Traffic Conditioning</div>
-          <a-row>
-            <a-col :span="8">
+        <a-checkbox-group v-model="form.defaultActions">
+          <div class="main">
+            <div class="traffic">Traffic Conditioning</div>
+            <a-row>
+              <a-col :span="8">
+                <a-form-model-item>
+                  <a-checkbox name="type" value="FEC" v-model="fec">FEC</a-checkbox>
+                </a-form-model-item>
+              </a-col>
+              <a-col :span="8">
+                <a-form-model-item>
+                  <a-checkbox name="type" value="REPLICATION" v-model="rep">Replication</a-checkbox>
+                </a-form-model-item>
+              </a-col>
+              <a-col :span="8">
+                <a-form-model-item label="Load Balance">
+                  <a-select v-model="LoadBalance">
+                    <a-select-option value="PER_FLOW">Per Flow</a-select-option>
+                    <a-select-option value="PER_PACKET">Per Packet</a-select-option>
+                  </a-select>
+                </a-form-model-item>
+              </a-col>
+            </a-row>
+          </div>
+          <div class="bottom">
+            <div class="circuit">Circuit Selection Criteria</div>
+            <a-row>
+              <a-col :span="8">
+                <a-form-model-item>
+                  <a-checkbox name="type" value="LOW_LATENCY" v-model="loLa">Low Latency</a-checkbox>
+                </a-form-model-item>
+              </a-col>
+              <a-col :span="8">
+                <a-form-model-item>
+                  <a-checkbox name="type" value="LOW_PACKET_LOSS" v-model="lowPaLo">Low Packet Loss</a-checkbox>
+                </a-form-model-item>
+              </a-col>
+              <a-col :span="8">
+                <a-form-model-item>
+                  <a-checkbox
+                    name="type"
+                    value="LOW_DELAY_VARIATION"
+                    @change="handleChange('ldv')"
+                    v-model="lowDeVa"
+                  >Low Delay Variation</a-checkbox>
+                </a-form-model-item>
+              </a-col>
+            </a-row>
+            <div>
               <a-form-model-item>
-                <a-checkbox name="type" value="FEC" v-model="fec"
-                  >FEC</a-checkbox
-                >
+                <AddModleDouble
+                  :title="Priority"
+                  :titleSecond="WANCircuit"
+                  :listdate="wanNetworkGroups"
+                  style="width:800px;"
+                  ref="AddModleDoubleRef"
+                  v-model="form.defaultPathPriorities"
+                />
               </a-form-model-item>
-            </a-col>
-            <a-col :span="8">
-              <a-form-model-item>
-                <a-checkbox name="type" value="REPLICATION" v-model="rep"
-                  >Replication</a-checkbox
-                >
-              </a-form-model-item>
-            </a-col>
-            <a-col :span="8">
-              <a-form-model-item label="Load Balance">
-                <a-select
-                  v-if="EditTraffic.defaultActions"
-                  v-model="EditTraffic.defaultActions[2]"
-                >
-                  <a-select-option value="PER_FLOW">Per Flow</a-select-option>
-                  <a-select-option value="PER_PACKET"
-                    >Per Packet</a-select-option
-                  >
-                </a-select>
-              </a-form-model-item>
-            </a-col>
-          </a-row>
-        </div>
-        <div class="bottom">
-          <div class="circuit">Circuit Selection Criteria</div>
-          <a-row>
-            <a-col :span="8">
-              <a-form-model-item>
-                <a-checkbox name="type" value="LOW_LATENCY" v-model="loLa"
-                  >Low Latency</a-checkbox
-                >
-              </a-form-model-item>
-            </a-col>
-            <a-col :span="8">
-              <a-form-model-item>
-                <a-checkbox
-                  name="type"
-                  value="LOW_PACKET_LOSS"
-                  v-model="lowPaLo"
-                  >Low Packet Loss</a-checkbox
-                >
-              </a-form-model-item>
-            </a-col>
-            <a-col :span="8">
-              <a-form-model-item>
-                <a-checkbox
-                  name="type"
-                  value="LOW_DELAY_VARIATION"
-                  @change="handleChange('ldv')"
-                  v-model="lowDeVa"
-                  >Low Delay Variation</a-checkbox
-                >
-              </a-form-model-item>
-            </a-col>
-          </a-row>
-        </div>
-        <div>
-          <a-form-model-item>
-            <AddModleDouble
-              :title="Priority"
-              :titleSecond="WANCircuit"
-              style="width:800px;"
-            />
-          </a-form-model-item>
-        </div>
+            </div>
+          </div>
+        </a-checkbox-group>
       </a-form-model>
     </a-modal>
     <!-- 表单验证悬浮提示框 -->
@@ -138,9 +123,7 @@
       v-show="formTips.flag"
       class="form-tips"
       :style="formTips.positionStyle"
-    >
-      {{ formTips.tipText }}
-    </div>
+    >{{ formTips.tipText }}</div>
   </div>
 </template>
 <script>
@@ -148,7 +131,7 @@ import tip from '@/mixins/tip';
 import AddModleDouble from 'components/TrafficDouble/AddModle';
 
 export default {
-  props: ['EditTraffic'],
+  props: ['EditTraffic', 'wanNetworkGroups'],
   mixins: [tip],
   created() {
     // console.log(this.index);
@@ -195,7 +178,8 @@ export default {
       rep: false,
       loLa: false,
       lowPaLo: false,
-      lowDeVa: false
+      lowDeVa: false,
+      LoadBalance: ''
     };
   },
   directives: {
@@ -275,13 +259,38 @@ export default {
   },
   methods: {
     showModalAdd(index, item) {
+      console.log(this.wanNetworkGroups);
       this.visible = true;
       console.log(index);
       console.log(item);
+      this.form = item;
       this.titleName = 'Edit Traffic Category' + '_' + item.categoryName;
+      console.log(this.form.defaultActions);
+      if (this.form.defaultActions.includes('FEC')) return (this.fec = true);
+      if (this.form.defaultActions.includes('REPLICATION'))
+        return (this.rep = true);
+      if (this.form.defaultActions.includes('LOW_LATENCY'))
+        return (this.loLa = true);
+      if (this.form.defaultActions.includes('LOW_PACKET_LOSS'))
+        return (this.lowPaLo = true);
+      if (this.form.defaultActions.includes('LOW_DELAY_VARIATION'))
+        return (this.lowDeVa = true);
+      if (this.form.defaultActions.includes('PER_FLOW')) {
+        this.LoadBalance = 'Per Flow';
+      } else if (this.form.defaultActions.includes('PER_PACKET')) {
+        this.LoadBalance = 'Per Packet';
+      } else {
+        this.LoadBalance = '';
+      }
+
+      console.log(43883643647);
+      this.$nextTick(() => {
+        this.$refs.AddModleDoubleRef && this.$refs.AddModleDoubleRef.init();
+      });
     },
     handleOk() {
       this.visible = false;
+      console.log(this.form);
       this.$emit('table', this.form);
     },
     handleCancel() {
@@ -292,7 +301,6 @@ export default {
     // },
     clear() {},
     handleChange(type, e) {
-      // if(type==='ldv'){}
       console.log(type, e);
     }
   }
@@ -448,7 +456,7 @@ export default {
 }
 .bottom {
   width: 845px;
-  height: 71px;
+  height: 171px;
   border: 1px solid #456880;
   margin-top: 10px;
   padding: 3px 10px 10px;

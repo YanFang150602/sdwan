@@ -1,23 +1,5 @@
 <template>
-  <div class="devices">
-    <!-- <a-dropdown>
-      <a>
-        Templates
-        <a-icon type="down"/>
-      </a>
-      <a-menu slot="overlay" @click="onClick">
-        <a-menu-item key="Devices Templates">Devices Templates</a-menu-item>
-      </a-menu>
-    </a-dropdown>
-    <a-dropdown>
-      <a class="ant-dropdown-link">
-        Device
-        <a-icon type="down"/>
-      </a>
-      <a-menu slot="overlay" @click="onClick">
-        <a-menu-item key="Devices">Devices</a-menu-item>
-      </a-menu>
-    </a-dropdown>-->
+  <div class="devices main-con">
     <!--搜索栏-->
     <Pagination
       :total="totalCount"
@@ -33,15 +15,16 @@
     <!-- 列表 -->
     <!-- 表单主体内容 -->
     <v-table
+      :style="{ height: 'calc(100% - 15px)' }"
       column-width-drag
       is-horizontal-resize
+      is-vertical-resize
       :columns="columns"
       :table-data="tableData"
       :select-all="selectALL"
       :select-change="selectChange"
       :select-group-change="selectGroupChange"
-      :height="350"
-      style="width: 100%"
+      style="width: 100%;"
       isFrozen="true"
       @on-custom-comp="customCompFunc"
       error-content="Temporarily no data"
@@ -53,7 +36,6 @@
 import { mapActions, mapMutations, mapState } from 'vuex';
 import Pagination from 'components/Pagination';
 import { adDeviceForm } from 'apis/adAppliances';
-// import { CfTableForm } from 'apis/Configuration';
 
 export default {
   components: {

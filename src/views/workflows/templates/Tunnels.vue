@@ -1,6 +1,10 @@
 <template>
   <div>
-    <a-row class="tableSub" data-text="Split Tunnels" style="margin:5px 0 20px">
+    <a-row
+      class="tableSub"
+      data-text="Split Tunnels"
+      style="margin: 5px 0 20px;"
+    >
       <a-col
         class="splitTable"
         :class="{ shadow: tunnelsData.vrfName.length < 1 }"
@@ -21,13 +25,13 @@
                 <th>
                   <span>WAN Interfaces</span>
                 </th>
-                <th style="width:87px">
+                <th style="width: 87px;">
                   <span>DIA</span>
                 </th>
-                <th style="width:167px">
+                <th style="width: 167px;">
                   <span>Gateway</span>
                 </th>
-                <th style="width:112px"></th>
+                <th style="width: 112px;"></th>
               </tr>
             </thead>
             <tbody>
@@ -145,7 +149,7 @@
                 <th>
                   <span>BGP Enabled</span>
                 </th>
-                <th style="width:50px"></th>
+                <th style="width: 50px;"></th>
               </tr>
             </thead>
             <tbody>
@@ -289,9 +293,9 @@
 </template>
 
 <script>
-import common from '@/mixins/tip';
+import tip from '@/mixins/tip';
 export default {
-  mixins: [common],
+  mixins: [tip],
   props: {
     tunnelsData: {
       type: Object
@@ -334,9 +338,6 @@ export default {
       vpnDisabled: true
     };
   },
-  created() {
-    console.log(this.tunnelsData);
-  },
   methods: {
     addParam(type) {
       switch (true) {
@@ -349,10 +350,10 @@ export default {
                   return item.vrfName === this.splCrt.vrfName;
                 });
                 if (!hasItem) {
-                  this.splParam.push(this.splCrt);
+                  this.splParam.push({ ...this.splCrt });
                 }
               } else {
-                this.splParam.push(this.splCrt);
+                this.splParam.push({ ...this.splCrt });
               }
               this.splCrt = {
                 id: this.guid() + 'spl',
@@ -376,14 +377,14 @@ export default {
                     this.siteCrt.wanNetwork = this.siteCrt.networkName;
                     this.siteCrt.networkName = null;
                   }
-                  this.siteParam.push(this.siteCrt);
+                  this.siteParam.push({ ...this.siteCrt });
                 }
               } else {
                 if (this.siteCrt.peerType === 'AzurevWAN') {
                   this.siteCrt.wanNetwork = this.siteCrt.networkName;
                   this.siteCrt.networkName = null;
                 }
-                this.siteParam.push(this.siteCrt);
+                this.siteParam.push({ ...this.siteCrt });
               }
               this.siteCrt = {
                 id: this.guid() + 'site',
@@ -395,7 +396,6 @@ export default {
                 vpnProfileName: '',
                 bgpEnabled: false
               };
-              console.log(this.siteParam);
             }
           });
           break;
@@ -416,7 +416,6 @@ export default {
       }
     },
     peerChange(value) {
-      console.log(value);
       if (value === '') {
         this.networkNameW = [];
       } else if (value === 'AzurevWAN') {

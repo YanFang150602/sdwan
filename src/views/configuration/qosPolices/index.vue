@@ -604,18 +604,25 @@ export default {
       this.formParam.data.destinationZoneList = data;
     },
     addressSub(data) {
-      this.formParam.data.sourceAddressList = data.Address;
-      this.formParam.data.sourceAddressGroupList = data.AddressGroup;
-      this.formParam.data.sourceRegion = data.AddressRegion;
+      data.Address && (this.formParam.data.sourceAddressList = data.Address);
+      data.AddressGroup &&
+        (this.formParam.data.sourceAddressGroupList = data.AddressGroup);
+      data.AddressRegion &&
+        (this.formParam.data.sourceRegion = data.AddressRegion);
     },
     desAddressSub(data) {
-      this.formParam.data.destinationAddressList = data.Address;
-      this.formParam.data.destinationAddressGroupList = data.AddressGroup;
-      this.formParam.data.destinationRegion = data.AddressRegion;
+      data.Address &&
+        (this.formParam.data.destinationAddressList = data.Address);
+      data.AddressGroup &&
+        (this.formParam.data.destinationAddressGroupList = data.AddressGroup);
+      data.AddressRegion &&
+        (this.formParam.data.destinationRegion = data.AddressRegion);
     },
     serviceSub(data) {
-      this.formParam.data.predefinedServicesList = data.userDefinedService;
-      this.formParam.data.userDefinedServices = data.predefinedService;
+      data.userDefinedService &&
+        (this.formParam.data.predefinedServicesList = data.userDefinedService);
+      data.predefinedService &&
+        (this.formParam.data.userDefinedServices = data.predefinedService);
     },
 
     // 添加tag标签
@@ -726,11 +733,11 @@ export default {
         this.$refs.form.validate(async valid => {
           if (valid) {
             this.$nextTick(() => {
-              this.$refs.zone && this.$refs.zone.param();
-              this.$refs.desZone && this.$refs.desZone.param();
-              this.$refs.address && this.$refs.address.param();
-              this.$refs.desAddress && this.$refs.desAddress.param();
-              this.$refs.service && this.$refs.service.param();
+              this.$refs.zone.param();
+              this.$refs.desZone.param();
+              this.$refs.address.param();
+              this.$refs.desAddress.param();
+              this.$refs.service.param();
             });
             this.loading = true;
             const addRes = await qosPolicyCreate(this.formParam);
@@ -747,11 +754,11 @@ export default {
       if (this.modalType === 'edt' && !this.loading) {
         this.$refs.form.validateField(['name'], async () => {
           this.$nextTick(() => {
-            this.$refs.zone && this.$refs.zone.param();
-            this.$refs.desZone && this.$refs.desZone.param();
-            this.$refs.address && this.$refs.address.param();
-            this.$refs.desAddress && this.$refs.desAddress.param();
-            this.$refs.service && this.$refs.service.param();
+            this.$refs.zone.param();
+            this.$refs.desZone.param();
+            this.$refs.address.param();
+            this.$refs.desAddress.param();
+            this.$refs.service.param();
           });
 
           if (!this.message.name) {

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-row class="tableSub" data-text="Inbound NAT" style="margin:5px 0 20px">
+    <a-row class="tableSub" data-text="Inbound NAT" style="margin: 5px 0 20px;">
       <a-col
         class="inboundTable"
         :class="{ shadow: inboundData.vrfName.length < 1 }"
@@ -39,7 +39,7 @@
                 <th>
                   <span>Internal Ports</span>
                 </th>
-                <th style="width:50px"></th>
+                <th style="width: 50px;"></th>
               </tr>
             </thead>
             <tbody>
@@ -179,9 +179,9 @@
 </template>
 
 <script>
-import common from '@/mixins/tip';
+import tip from '@/mixins/tip';
 export default {
-  mixins: [common],
+  mixins: [tip],
   props: {
     inboundData: {
       type: Object
@@ -220,10 +220,10 @@ export default {
               return item.name === this.inbCrt.name;
             });
             if (!hasItem) {
-              this.inbParam.push(this.inbCrt);
+              this.inbParam.push({ ...this.inbCrt });
             }
           } else {
-            this.inbParam.push(this.inbCrt);
+            this.inbParam.push({ ...this.inbCrt });
           }
           this.inbCrt = {
             id: this.guid() + 'spl',

@@ -1,11 +1,6 @@
 <template>
   <div class="add-con">
-    <a-row
-      class="add-header"
-      type="flex"
-      justify="space-between"
-      align="middle"
-    >
+    <a-row class="add-header" type="flex" justify="space-between" align="middle">
       <a-col :span="2" class="header-input">
         <a-checkbox
           @click="handleSeleAll"
@@ -29,9 +24,11 @@
           </a-col>
           <a-col :span="22">
             <a-select size="small" v-model="data[index]">
-              <a-select-option v-for="opt in optList" :key="opt" :value="opt">{{
+              <a-select-option v-for="opt in optList" :key="opt" :value="opt">
+                {{
                 opt
-              }}</a-select-option>
+                }}
+              </a-select-option>
             </a-select>
           </a-col>
         </a-row>
@@ -80,6 +77,7 @@ export default {
     },
     init() {
       this.data = [];
+      // console.log(this.data);
     }
   },
   watch: {

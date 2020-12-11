@@ -1,11 +1,6 @@
 <template>
   <div class="add-con">
-    <a-row
-      class="add-header"
-      type="flex"
-      justify="space-between"
-      align="middle"
-    >
+    <a-row class="add-header" type="flex" justify="space-between" align="middle">
       <a-col :span="2" class="header-input">
         <a-checkbox
           @click="handleSeleAll"
@@ -18,39 +13,28 @@
       <a-col :span="10" class="header-title">{{ title }}</a-col>
       <!-- <a-col :span="10" class="header-title">{{ Sectitle }}</a-col> -->
       <a-col :span="2" class="addDelBtn">
-        <a
-          href="javascript:;"
-          class="addBtn"
-          @click="data.push({ id: Math.random() })"
-        ></a>
+        <a href="javascript:;" class="addBtn" @click="data.push({ id: Math.random() })"></a>
         <a href="javascript:;" class="delBtn" @click="handleDel"></a>
       </a-col>
     </a-row>
     <div class="add-body">
       <a-checkbox-group style="width: 100%;" v-model="selectArr">
-        <a-row
-          :key="item.id"
-          v-for="(item, index) in data"
-          style="margin: 3px 0;"
-        >
+        <a-row :key="item.id" v-for="(item, index) in data" style="margin: 3px 0;">
           <a-col :span="2" style="text-align: center">
             <a-checkbox :value="item"></a-checkbox>
           </a-col>
           <a-col :span="11">
             <a-select size="small" v-model="data[index].val">
-              <a-select-option
-                v-for="sel in arrSelect"
-                :key="sel.key"
-                :value="sel"
-                >{{ sel }}</a-select-option
-              >
+              <a-select-option v-for="sel in arrSelect" :key="sel.key" :value="sel">{{ sel }}</a-select-option>
             </a-select>
           </a-col>
           <a-col :span="11">
             <a-select size="small" v-model="data[index].key">
-              <a-select-option v-for="opt in optList" :key="opt" :value="opt">{{
+              <a-select-option v-for="opt in optList" :key="opt" :value="opt">
+                {{
                 opt
-              }}</a-select-option>
+                }}
+              </a-select-option>
             </a-select>
           </a-col>
         </a-row>
@@ -102,6 +86,15 @@ export default {
     handleDel() {
       this.data = this.data.filter(item => !this.selectArr.includes(item));
       this.selectArr = [];
+    },
+    init() {
+      this.data = Object.keys(this.value).map(key => ({
+        key,
+        id: Math.random(),
+        val: this.value[key]
+      }));
+      this.data = [];
+      console.log(this.data, 23213213);
     }
   },
   watch: {

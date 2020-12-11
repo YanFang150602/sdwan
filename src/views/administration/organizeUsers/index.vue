@@ -13,6 +13,7 @@
     />
     <!-- 表单主体内容 -->
     <v-table
+      :style="{ height: 'calc(100% - 15px)' }"
       is-horizontal-resize
       is-vertical-resize
       column-width-drag
@@ -20,7 +21,7 @@
       :table-data="tableData"
       :select-change="delItem"
       :select-all="selectAll"
-      style="width:100%"
+      style="width: 100%;"
       isFrozen="true"
       @on-custom-comp="modifyItem"
       error-content="Temporarily no data"
@@ -280,7 +281,7 @@ export default {
       this.modalTitle = 'Edit Organization User';
       this.modalType = 'edt';
       this.visible = true;
-      this.formParam.user = params.rowData;
+      this.formParam.user = { ...this.formParam.user, ...params.rowData };
     },
 
     //获取删除表单的name

@@ -1,5 +1,5 @@
 <template>
-  <div class="main-con">
+  <div class="schedules main-con">
     <Pagination
       :total="totalCount"
       :page-size="pageSize"
@@ -15,12 +15,12 @@
     <v-table
       is-horizontal-resize
       column-width-drag
+      is-vertical-resize
       :columns="columns"
       :table-data="tableDataList"
       :select-all="selectALL"
       :select-change="selectChange"
       :select-group-change="selectGroupChange"
-      :height="550"
       style="width:100%;"
       isFrozen="true"
       @on-custom-comp="customTableFunc"
@@ -28,14 +28,25 @@
     ></v-table>
     <!-- 组群弹框 -->
     <div>
-      <a-modal v-model="delWinVisible" title="Confirm Decommission" @ok="delOK" width="430px">
+      <a-modal
+        v-model="delWinVisible"
+        title="Confirm Decommission"
+        @ok="delOK"
+        width="430px"
+      >
         <template slot="footer">
-          <a-button key="submit" type="primary" :loading="delLoading" @click="delOK">OK</a-button>
+          <a-button
+            key="submit"
+            type="primary"
+            :loading="delLoading"
+            @click="delOK"
+            >OK</a-button
+          >
           <a-button key="back" @click="delCancel">Cancel</a-button>
         </template>
-        <span
-          style="color:#fff;margin:12px 0;"
-        >Are you sure you want to delete the selected record(s)?</span>
+        <span style="color:#fff;margin:12px 0;"
+          >Are you sure you want to delete the selected record(s)?</span
+        >
       </a-modal>
       <a-modal
         v-drag
@@ -50,7 +61,13 @@
           @passChildContent="passChildContent"
         ></ScheduleAddOrEdit>
         <template slot="footer">
-          <a-button key="submit" type="primary" :loading="addOrEditLoading" @click="addOrEditOK">OK</a-button>
+          <a-button
+            key="submit"
+            type="primary"
+            :loading="addOrEditLoading"
+            @click="addOrEditOK"
+            >OK</a-button
+          >
           <a-button key="back" @click="addOrEditCancel">Cancel</a-button>
         </template>
       </a-modal>

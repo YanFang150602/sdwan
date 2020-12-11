@@ -1,5 +1,5 @@
 <template>
-  <div class="deviceGroups">
+  <div class="deviceGroups main-con">
     <!-- 搜索框 -->
     <Pagination
       :total="totalCount"
@@ -9,20 +9,21 @@
       @create-item="showAddDeviceGroupModal"
       @delete-item="showDelDeviceGroupModal"
       @search="search"
-      @cancelSearch="cancelSearch"
+      @cancel-search="cancelSearch"
     />
     <!-- 列表 -->
     <!-- 表单主体内容 -->
     <v-table
+      :style="{ height: '100%' }"
       is-horizontal-resize
+      is-vertical-resize
       column-width-drag
       :columns="columns"
       :table-data="deviceGroupResult.deviceGroups"
       :select-all="selectALL"
       :select-change="selectChange"
       :select-group-change="selectGroupChange"
-      :height="500"
-      style="width:100%;"
+      style="width: 100%;"
       isFrozen="true"
       @on-custom-comp="customDGTableFunc"
     ></v-table>
@@ -45,7 +46,7 @@
           >
           <a-button key="back" @click="handleCancelDelete">Cancel</a-button>
         </template>
-        <span style="color:#fff;margin:12px 0;"
+        <span style="color: #fff; margin: 12px 0;"
           >Are you sure you want to delete the selected record(s)?</span
         >
       </a-modal>
@@ -77,7 +78,6 @@
   </div>
 </template>
 <script>
-import Vue from 'vue';
 import {
   DeviceGroupAdd,
   DeviceGroupEdit,
@@ -85,7 +85,7 @@ import {
 } from 'apis/workFlows';
 import Pagination from 'components/Pagination';
 import DeviceGroup from 'views/workflows/devices/DeviceGroup';
-import { mapState } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 export default {
   name: 'deviceGroup',
   components: {
@@ -94,6 +94,7 @@ export default {
   },
   data() {
     return {
+      totalCount: 0,
       keyworks: '',
       columns: [
         {
@@ -109,7 +110,7 @@ export default {
           width: 253,
           columnAlign: 'left',
           isResize: true,
-          componentName: 'devicegroups-opration'
+          componentName: 'vTableName'
         },
         {
           field: 'organization',
@@ -138,7 +139,6 @@ export default {
       visibleDelete: false,
       pageIndex: 1,
       pageSize: 20,
-      totalCount: 0,
       title: '',
       groupName: '',
       delDeviceGroups: {
@@ -147,32 +147,31 @@ export default {
     };
   },
   computed: {
-    ...mapState({
-      deviceGroupResult: 'deviceGroupResult',
-      organization: 'organization'
-    })
+    ...mapState(['deviceGroupResult', 'organization'])
   },
   created() {
-    this.$store.dispatch('getNameList');
+    //获取组织列表
+    this.getNameList();
     this.queryDeviceGrops();
   },
   methods: {
+    ...mapActions(['getNameList']),
     // 搜索框查询
     search(data) {
       // 转换全小写,实现模糊匹配
-      console.log(11);
       const keyword = data.trim().toLowerCase();
       console.log(this.deviceGroupResult.deviceGroups);
       const list = this.deviceGroupResult.deviceGroups.filter(item =>
         item.name.toLowerCase().includes(keyword)
       );
+      this.totalCount = list.length;
       this.deviceGroupResult.deviceGroups = list;
     },
     // 取消搜索，显示当前数据
     cancelSearch() {
-      if (this.keyworks.trim() === '') {
-        this.queryDeviceGrops();
-      }
+      this.offset = 0;
+      this.queryDeviceGrops();
+      this.totalCount = this.deviceGroupResult.totalCount;
     },
     queryDeviceGrops() {
       this.$store.dispatch('DeviceGroups', {
@@ -306,32 +305,13 @@ export default {
       });
       return isOK;
     }
+  },
+  watch: {
+    'deviceGroupResult.totalCount'() {
+      this.totalCount = this.deviceGroupResult.totalCount;
+    }
   }
 };
-// 自定义列组件
-Vue.component('devicegroups-opration', {
-  template: `<span>
-    <a href="" @click.stop.prevent="update(rowData,index)">{{ rowData.name }}</a>
-    </span>`,
-  props: {
-    rowData: {
-      type: Object
-    },
-    field: {
-      type: String
-    },
-    index: {
-      type: Number
-    }
-  },
-  methods: {
-    update() {
-      // 参数根据业务场景随意构造
-      let params = { type: 'edit', index: this.index, rowData: this.rowData };
-      this.$emit('on-custom-comp', params);
-    }
-  }
-});
 </script>
 <style lang="scss" scoped>
 .deviceGroups {

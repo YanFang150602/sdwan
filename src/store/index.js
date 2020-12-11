@@ -30,7 +30,6 @@ const state = {
   deviceFrom: [],
   device: {},
   deviceGroupResult: {},
-  spoke: {},
   deviceName: localStorage.getItem('deviceName') || '',
   isLoading: 0,
   vpnTableSelects: {

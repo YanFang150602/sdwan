@@ -1,9 +1,9 @@
 <template>
-  <div class="main-con">
+  <div class="devices main-con">
     <a-dropdown>
       <a>
         Templates
-        <a-icon type="down"/>
+        <a-icon type="down" />
       </a>
       <a-menu slot="overlay" @click="onClick">
         <a-menu-item key="Devices Templates">Devices Templates</a-menu-item>
@@ -12,7 +12,7 @@
     <a-dropdown>
       <a class="ant-dropdown-link">
         Device
-        <a-icon type="down"/>
+        <a-icon type="down" />
       </a>
       <a-menu slot="overlay" @click="onClick">
         <a-menu-item key="Devices">Devices</a-menu-item>
@@ -33,14 +33,16 @@
     <!-- 列表 -->
     <!-- 表单主体内容 -->
     <v-table
+      :style="{ height: 'calc(100% - 36px)' }"
       column-width-drag
+      is-vertical-resize
       is-horizontal-resize
       :columns="columns"
       :table-data="deviceFrom"
       :select-all="selectALL"
       :select-change="selectChange"
       :select-group-change="selectGroupChange"
-      style="width:100%;min-height:500px"
+      style="width: 100%;"
       isFrozen="true"
       @on-custom-comp="customCompFunc"
       error-content="Temporarily no data"
@@ -166,8 +168,10 @@ export default {
       ]
     };
   },
-  mounted() {
+
+  created() {
     this.$store.dispatch('getNameList');
+    console.log(this.deviceFrom);
   },
   methods: {
     onClick(params) {

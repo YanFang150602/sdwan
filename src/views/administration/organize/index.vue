@@ -13,6 +13,7 @@
     />
     <!-- 表单主体内容 -->
     <v-table
+      :style="{ height: 'calc(100% - 15px)' }"
       is-horizontal-resize
       is-vertical-resize
       column-width-drag
@@ -20,7 +21,7 @@
       :table-data="tableData"
       :select-change="delItem"
       :select-all="selectAll"
-      style="width:100%;"
+      style="width: 100%;"
       isFrozen="true"
       @on-custom-comp="modifyItem"
       error-content="Temporarily no data"
@@ -46,7 +47,7 @@
       >
         <a-row type="flex" justify="space-between" align="top">
           <!-- 组织名称 -->
-          <a-col :style="{ width: '270px' }">
+          <a-col>
             <a-form-model-item
               @blur.native.capture="routeAdd"
               label="Name"
@@ -63,14 +64,13 @@
             </a-form-model-item>
           </a-col>
           <!-- 全局组织ID -->
-          <a-col :style="{ width: '270px' }">
+          <a-col>
             <a-form-model-item label="Global Organization ID">
               <a-input size="small" disabled v-model="formParam.globalId" />
             </a-form-model-item>
           </a-col>
           <!-- 设备部署类型 -->
           <a-col
-            :style="{ width: '270px' }"
             @mouseenter="enter('cpeDeploymentType')"
             @mouseleave="leave"
             @mousemove="updateXY"
@@ -92,7 +92,6 @@
           </a-col>
           <!-- 父级组织名称 -->
           <a-col
-            :style="{ width: '413px' }"
             @mouseenter="enter('parentOrg')"
             @mouseleave="leave"
             @mousemove="updateXY"
@@ -115,7 +114,6 @@
           </a-col>
           <!-- 控制器选择 -->
           <a-col
-            :style="{ width: '413px' }"
             @mouseenter="enter('controllers')"
             @mouseleave="leave"
             @mousemove="updateXY"
@@ -127,9 +125,6 @@
                 placeholder="Organizations must exist"
                 v-model="formParam.controllers"
                 @change="contrChange"
-                @mouseenter="enter('controllers')"
-                @mouseleave="leave"
-                @mousemove="updateXY"
               >
                 <a-select-option
                   v-for="(item, index) in controllerList"
@@ -140,73 +135,89 @@
               </a-select>
             </a-form-model-item>
           </a-col>
+          <!-- IKE Authentication -->
+          <a-col :style="{ paddingTop: '2px' }">
+            <a-form-model-item label="IKE Authentication">
+              <a-radio-group disabled v-model="formParam.ikeAuthType">
+                <a-radio value="psk">
+                  PSk
+                </a-radio>
+                <a-radio value="pki">
+                  PKI
+                </a-radio>
+              </a-radio-group>
+            </a-form-model-item>
+          </a-col>
         </a-row>
         <!-- 组织权限部分 -->
-        <a-row class="organRole">
+        <a-row class="tableSub">
           <h6>Routing Instance</h6>
-          <table>
-            <thead>
-              <tr>
-                <th style="width:199px">Name</th>
-                <th style="width:199px">ID</th>
-                <th style="width:199px">VPN</th>
-                <th style="width:48px"></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <a-input
-                    v-model="vrfsData.name"
-                    style="width:194px"
-                    size="small"
-                  />
-                </td>
-                <td>
-                  <a-input
-                    disabled
-                    v-model="vrfsData.id"
-                    style="width:194px"
-                    size="small"
-                  />
-                </td>
-                <td style="text-align:left">
-                  <a-checkbox v-model="vrfsData.enableVpn"></a-checkbox>
-                </td>
-                <td>
-                  <a-button class="addRow" @click="addVrfs">+</a-button>
-                </td>
-              </tr>
-              <tr v-for="(item, index) in formParam.vrfs" :key="index">
-                <td>
-                  <a-input
-                    v-model="item.name"
-                    style="width:194px"
-                    size="small"
-                  />
-                </td>
-
-                <td>
-                  <a-input
-                    disabled
-                    v-model="item.id"
-                    style="width:194px"
-                    size="small"
-                  />
-                </td>
-                <td style="text-align:left">
-                  <a-checkbox v-model="item.enableVpn"></a-checkbox>
-                </td>
-                <td>
-                  <span @click="delVrfs(index)">
-                    <img src="@/assets/images/organize/del.png" alt />
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <a-col :style="{ height: '200px', width: '100%' }">
+            <a-form-model
+              ref="vrfs"
+              :rules="rulesVrfs"
+              :model="vrfsCrt"
+              @validate="validate"
+              hideRequiredMark
+            >
+              <table>
+                <thead>
+                  <tr>
+                    <th :style="{ width: '265px' }" class="mandatory">
+                      <span>Name</span>
+                    </th>
+                    <th :style="{ width: '265px' }">
+                      <span>Idk</span>
+                    </th>
+                    <th :style="{ width: '265px' }">
+                      <span>VPN</span>
+                    </th>
+                    <th style="width: 50px;"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <a-form-model-item prop="name">
+                        <a-input
+                          @mouseenter="enter('name')"
+                          @mouseleave="leave"
+                          @mousemove="updateXY"
+                          v-model="vrfsCrt.name"
+                        />
+                      </a-form-model-item>
+                    </td>
+                    <td>
+                      <a-form-model-item prop="internalAddress">
+                        <a-input v-model="vrfsCrt.id" />
+                      </a-form-model-item>
+                    </td>
+                    <td>
+                      <a-form-model-item>
+                        <a-checkbox v-model="vrfsCrt.enableVPN" />
+                      </a-form-model-item>
+                    </td>
+                    <td class="addBtn">
+                      <button @click="addParam">+</button>
+                    </td>
+                  </tr>
+                  <tr v-for="item in formParam.vrfs" :key="item.id">
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.id }}</td>
+                    <td><input type="checkBox" :checked="item.enableVPN" /></td>
+                    <td class="delBtn">
+                      <a href="javascript:;" @click="delVrfsParam(item.id)"
+                        ><img src="@/assets/images/organize/del.png" alt
+                      /></a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </a-form-model>
+          </a-col>
         </a-row>
       </a-form-model>
+
       <template slot="footer">
         <a-button key="back" @click="visible = false">Cancel</a-button>
         <a-button
@@ -237,6 +248,7 @@ import { mapState, mapActions } from 'vuex';
 import { columns } from './table';
 import { name, select, inputs } from '@/validate/common';
 import common from '@/mixins/common';
+import { removeNull } from '@/utils/assits';
 
 import {
   adminList,
@@ -261,10 +273,13 @@ export default {
         type: ''
       },
       controllerList: [],
-      vrfsData: {
+      vrfsCrt: {
         id: '',
         name: '',
-        enableVpn: false
+        enableVPN: true
+      },
+      rulesVrfs: {
+        name: [{ required: true, message: 'field required' }]
       },
       //新建组织提交表单模型
       formParam: {
@@ -338,38 +353,34 @@ export default {
     // 路由添加
     async routeAdd() {
       const { result } = await adminRouerId();
-      console.log(result);
-      //路由name获取
-      if (this.formParam.vrfs.length == 0) {
+      if (this.formParam.vrfs.length > 0) {
+        this.formParam.vrfs[0].name = this.formParam.orgName + '-LAN-VR';
+      } else {
         this.formParam.vrfs.push({
-          id: '',
-          name: '',
-          enableVpn: true
+          id: result.SdwanGlobalIds.globalIds[0],
+          name: this.formParam.orgName + '-LAN-VR',
+          enableVPN: true
         });
-        this.formParam.vrfs[0].id = result.SdwanGlobalIds.globalIds[0];
-
-        this.vrfsData.id = result.SdwanGlobalIds.globalIds[1];
-        console.log(this.vrfsData.id);
+        this.vrfsCrt.id = result.SdwanGlobalIds.globalIds[1];
       }
-      this.formParam.vrfs[0].name = this.formParam.orgName + '-LAN-VR';
     },
     //routing Instance 添加
-    async addVrfs() {
-      if (this.vrfsData.name && this.vrfsData.id) {
-        this.formParam.vrfs.push(this.vrfsData);
-        this.vrfsData = {
-          id: '',
-          name: '',
-          enableVpn: false
-        };
-        const { result } = await adminRouerId();
-
-        this.vrfsData.id = result.SdwanGlobalIds.globalIds[0];
-      }
+    addParam() {
+      this.$refs.vrfs.validate(async valid => {
+        if (valid) {
+          this.formParam.vrfs.push({ ...this.vrfsCrt });
+          const { result } = await adminRouerId();
+          this.vrfsCrt.id = result.SdwanGlobalIds.globalIds[0];
+          this.vrfsCrt.name = '';
+          this.$refs.form.clearValidate();
+        }
+      });
     },
     //routing Instance 删除
-    delVrfs(index) {
-      this.formParam.vrfs.splice(index, 1);
+    delVrfsParam(id) {
+      this.formParam.vrfs = this.formParam.vrfs.filter(item => {
+        return item.id !== id;
+      });
     },
 
     // 获取组织列表
@@ -406,13 +417,11 @@ export default {
       // 查询当前组织信息
       const { result } = await adminSearch(this.searchParam);
       //控制器查询
-      this.formParam = result;
+      this.formParam = { ...this.formParam, ...removeNull(result) };
       this.getController(this.formParam.parentOrg);
-      this.formParam.vrfs.forEach(item => {
-        item.enableVpn = item.enableVpn === 'true' ? true : false;
-      });
-      const RouerIdRes = await adminRouerId();
-      this.vrfsData.id = RouerIdRes.result.SdwanGlobalIds.globalIds[0];
+
+      const { result: resId } = await adminRouerId();
+      this.vrfsCrt.id = resId.SdwanGlobalIds.globalIds[0];
       this.visible = true;
     },
 
@@ -506,7 +515,7 @@ export default {
       this.vrfsData = {
         id: '',
         name: '',
-        enableVpn: false
+        enableVPN: true
       };
       this.message = {};
       this.loading = false;
@@ -516,74 +525,25 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.organRole {
-  width: 844px;
+.form-wrap .ant-col {
+  width: 270px;
+}
+.tableSub {
+  padding: 0;
+  width: 100%;
+  border: none;
+  &::before {
+    display: none;
+  }
   h6 {
     color: #fff;
     font-size: 12px;
   }
-  thead {
-    th {
-      border: 1px solid #d3d3d3;
-      border-right: 0;
-      border-left: 1px solid #97acbe;
-      background: #b6c9db;
-      height: 22px;
-      padding: 0 2px 0 2px;
-      color: #0f2c3e;
-      font-size: 12px;
-      font-weight: normal;
-    }
-  }
-  tbody {
-    background: #fff;
-    tr {
-      height: 24px;
-      text-align: center;
-      line-height: 24px;
-      font-size: 12px;
-      background-color: #f5f5f5;
-      border: 1px solid #ddd;
-    }
-    td {
-      border-right-color: #ccc;
-      padding-top: 2px;
-      padding-bottom: 2px;
-      border-top-color: #ccc;
-      border-right-width: 1px;
-      border-right-style: solid;
-      font-weight: bold;
-      overflow: hidden;
-      white-space: nowrap;
-      height: 21px;
-      padding: 0 2px 0 2px;
-      border-top-width: 1px;
-      border-top-style: solid;
-      font-size: 12px;
-      font-weight: normal;
-      input {
-        padding: 0px 3px;
-        height: 20px;
-        border-radius: 4px;
-        color: #0f2c3e;
-        font-size: 12px;
-        line-height: 18px;
-        border: 1px solid #b0c7d5;
-        border-left: 1px solid #dee3e8;
-      }
-      .addRow {
-        min-width: 24px;
-        background: none;
-        padding: 0;
-        background-color: #a7d054;
-        font-size: 20px !important;
-        color: #fff;
-        display: inline-block;
-        text-align: center;
-      }
-    }
-    tr:nth-child(even) td {
-      background: #e9eef4;
+  .ant-form-item {
+    padding: 0;
+    .ant-input {
+      margin: 0;
+      width: 97%;
     }
   }
 }

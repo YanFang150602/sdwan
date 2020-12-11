@@ -123,7 +123,7 @@
         </a-row>
       </a-col>
     </a-row>
-    <a-row class="tableSub" style="margin:5px 0 20px">
+    <a-row class="tableSub" style="margin: 5px 0 20px;">
       <a-col class="wifiTable">
         <table>
           <thead>
@@ -191,19 +191,19 @@
                   <a-select-option value="wep-shared-key"
                     >wep-shared-key</a-select-option
                   >
-                  <a-select-option value="wpa-enterprise"
+                  <!-- <a-select-option value="wpa-enterprise"
                     >wpa-enterprise</a-select-option
-                  >
+                  > -->
                   <a-select-option value="wep-psk">wpa-psk</a-select-option>
-                  <a-select-option value="wpa/wpa2-auto-enterprise"
+                  <!-- <a-select-option value="wpa/wpa2-auto-enterprise"
                     >wpa/wpa2-auto-enterprise</a-select-option
-                  >
+                  > -->
                   <a-select-option value="wpa/wpa2-auto-psk"
                     >wpa/wpa2-auto-psk</a-select-option
                   >
-                  <a-select-option value="wpa2-enterprise"
+                  <!-- <a-select-option value="wpa2-enterprise"
                     >wpa2-enterprise</a-select-option
-                  >
+                  > -->
                   <a-select-option value="wpa2-psk">wpa2-psk</a-select-option>
                 </a-select>
               </td>
@@ -246,9 +246,9 @@
 </template>
 
 <script>
-import common from '@/mixins/tip';
+import tip from '@/mixins/tip';
 export default {
-  mixins: [common],
+  mixins: [tip],
   props: {
     wifiData: {
       type: Object

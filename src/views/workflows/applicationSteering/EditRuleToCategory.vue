@@ -9,13 +9,7 @@
       v-drag
     >
       <template slot="footer">
-        <a-button
-          key="submit"
-          type="primary"
-          @click="handleOk"
-          :loading="loading"
-          >Ok</a-button
-        >
+        <a-button key="submit" type="primary" @click="handleOk" :loading="loading">Ok</a-button>
         <a-button key="back" @click="handleCancel">Cancel</a-button>
       </template>
       <a-form-model :model="form">
@@ -27,7 +21,7 @@
                 <a-col :span="24">
                   <a-form-model-item>
                     <a-form-model-item label="Name">
-                      <a-input v-model="currentEdit.name" />
+                      <a-input v-model="currentEdit.name"/>
                     </a-form-model-item>
                   </a-form-model-item>
                 </a-col>
@@ -36,7 +30,7 @@
                 <a-col :span="24">
                   <a-form-model-item>
                     <a-form-model-item label="Description">
-                      <a-input v-model="currentEdit.description" />
+                      <a-input v-model="currentEdit.description"/>
                     </a-form-model-item>
                   </a-form-model-item>
                 </a-col>
@@ -119,21 +113,14 @@
                 <a-col :span="4">
                   <p class="height-100">
                     <a-form-model-item>
-                      <a-checkbox value="1" name="type" v-model="check.FEC"
-                        >FEC</a-checkbox
-                      >
+                      <a-checkbox value="1" name="type" v-model="check.FEC">FEC</a-checkbox>
                     </a-form-model-item>
                   </p>
                 </a-col>
                 <a-col :span="4">
                   <p class="height-50">
                     <a-form-model-item>
-                      <a-checkbox
-                        value="1"
-                        name="type"
-                        v-model="check.Replication"
-                        >Replication</a-checkbox
-                      >
+                      <a-checkbox value="1" name="type" v-model="check.Replication">Replication</a-checkbox>
                     </a-form-model-item>
                   </p>
                 </a-col>
@@ -141,12 +128,8 @@
                   <p class="height-120">
                     <a-form-model-item label="Load Balance">
                       <a-select v-model="perContant">
-                        <a-select-option value="PER_FLOW"
-                          >Per Flow</a-select-option
-                        >
-                        <a-select-option value="PER_PACKET"
-                          >Per Packet</a-select-option
-                        >
+                        <a-select-option value="PER_FLOW">Per Flow</a-select-option>
+                        <a-select-option value="PER_PACKET">Per Packet</a-select-option>
                       </a-select>
                     </a-form-model-item>
                   </p>
@@ -159,9 +142,7 @@
                 <a-col :span="4">
                   <p class="height-100">
                     <a-form-model-item>
-                      <a-checkbox value="1" name="type" v-model="check.Latency"
-                        >Low Latency</a-checkbox
-                      >
+                      <a-checkbox value="1" name="type" v-model="check.Latency">Low Latency</a-checkbox>
                     </a-form-model-item>
                   </p>
                 </a-col>
@@ -172,8 +153,7 @@
                         value="1"
                         name="type"
                         v-model="check.LowPacketLoss"
-                        >Low Packet Loss</a-checkbox
-                      >
+                      >Low Packet Loss</a-checkbox>
                     </a-form-model-item>
                   </p>
                 </a-col>
@@ -184,8 +164,7 @@
                         value="1"
                         name="type"
                         v-model="check.Variation"
-                        >Low Delay Variation</a-checkbox
-                      >
+                      >Low Delay Variation</a-checkbox>
                     </a-form-model-item>
                   </p>
                 </a-col>
@@ -206,9 +185,7 @@
       v-show="formTips.flag"
       class="form-tips"
       :style="formTips.positionStyle"
-    >
-      {{ formTips.tipText }}
-    </div>
+    >{{ formTips.tipText }}</div>
   </div>
 </template>
 <script>

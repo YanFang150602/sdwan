@@ -1,14 +1,13 @@
 import { adminNameLists } from 'apis/administration';
 import { CfTableForm } from 'apis/Configuration';
 import { devicesTableForm, DeviceGroups } from 'apis/workFlows';
-import { SPTableForm } from 'apis/spokeGroups';
+
 import { DeviceCheck } from 'apis/workFlows';
 import {
   ADM_NAME_LIST,
   TABLE_DEVICE_FORM,
   DEVICE_FORM,
-  DEVICEGROUP_FORM,
-  SPOKEGROUP_FORM
+  DEVICEGROUP_FORM
 } from '@/store/mutation-types';
 export default {
   //home页面下拉组织名称列表
@@ -36,21 +35,15 @@ export default {
       offset,
       limit
     });
-    console.log(result);
+
     commit(TABLE_DEVICE_FORM, { result, organization });
   },
   async Tabledevice({ commit }, { deep, orgname, offset, limit }) {
-    const res = await devicesTableForm(deep, orgname, offset, limit);
-    commit(DEVICE_FORM, res);
+    const { result } = await devicesTableForm(deep, orgname, offset, limit);
+    commit(DEVICE_FORM, { result, organization: orgname });
   },
   async DeviceGroups({ commit }, { organization, offset, limit }) {
-    const res = await DeviceGroups({ organization, offset, limit });
-    commit(DEVICEGROUP_FORM, res);
-  },
-  // spoke组
-  async SPTableForm({ commit }, { orgname, offset, limit }) {
-    const res = await SPTableForm(orgname, offset, limit);
-    console.log(res, orgname, offset, limit);
-    commit(SPOKEGROUP_FORM, res);
+    const { result } = await DeviceGroups({ organization, offset, limit });
+    commit(DEVICEGROUP_FORM, result);
   }
 };

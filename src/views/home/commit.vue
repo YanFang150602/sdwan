@@ -1,12 +1,13 @@
 <template>
   <div>
     <a-modal
-      v-drag
       v-model="visible"
       title="Commit"
       on-ok="handleOk"
       width="865px"
       :maskClosable="false"
+      v-drag
+      wrapClassName="form-wrap"
     >
       <template slot="footer">
         <a-button
@@ -23,38 +24,87 @@
         ref="ruleForm"
         :rules="rules"
         @validate="validate"
+        layout="vertical"
       >
         <div class="title">
-          <a-row>
-            <a-col :span="8">
-              <a-form-model-item>
-                <a-form-model-item label="Organization" prop="name">
-                  <a-select
-                    v-model="form.region"
-                    placeholder="please select your zone"
+          <a-row type="flex" justify="start" align="bottom">
+            <a-col
+              :span="8"
+              @mouseenter="enter('organization')"
+              @mouseleave="leave"
+              @mousemove="updateXY"
+            >
+              <a-form-model-item label="Organization" prop="organization">
+                <a-select v-model="form.organization" @change="handleChange">
+                  <a-select-option
+                    :value="item.name"
+                    v-for="(item, index) in organ"
+                    :key="index"
+                    >{{ item.name }}</a-select-option
                   >
-                    <a-select-option value="shanghai">Zone one</a-select-option>
-                    <a-select-option value="beijing">Zone two</a-select-option>
-                  </a-select>
-                </a-form-model-item>
+                </a-select>
               </a-form-model-item>
             </a-col>
             <a-col :span="8">
               <a-form-model-item>
-                <a-form-model-item>
-                  <a-form-model-item>
-                    <a-radio-group v-model="form.resource">
-                      <a-radio value="1">Template</a-radio>
-                      <a-radio value="2">Service Template</a-radio>
-                    </a-radio-group>
-                  </a-form-model-item>
-                </a-form-model-item>
+                <a-radio-group v-model="form.region" @change="onChange">
+                  <a-radio value="MAIN">Template</a-radio>
+                  <a-radio value="SERVICE">Service Template</a-radio>
+                </a-radio-group>
               </a-form-model-item>
             </a-col>
           </a-row>
         </div>
+        <div class="title">
+          <a-row type="flex" justify="start" align="bottom">
+            <a-col
+              :span="8"
+              @mouseenter="enter('template')"
+              @mouseleave="leave"
+              @mousemove="updateXY"
+            >
+              <a-form-model-item label="Select Template" prop="template">
+                <a-select
+                  v-model="form.template"
+                  :disabled="isDisabled"
+                  @change="handleChangeTemplate"
+                >
+                  <a-select-option
+                    :value="item.name"
+                    v-for="(item, index) in Template"
+                    :key="index"
+                    >{{ item.name }}</a-select-option
+                  >
+                </a-select>
+              </a-form-model-item>
+            </a-col>
+            <a-col :span="8">
+              <a-form-model-item>
+                <a-checkbox-group v-model="form.reboot">
+                  <a-checkbox value="1">Reboot</a-checkbox>
+                </a-checkbox-group>
+              </a-form-model-item>
+            </a-col>
+            <a-col :span="8">
+              <a-form-model-item>
+                <a-radio-group v-model="form.resource">
+                  <a-radio value="merge">Auto Merge</a-radio>
+                  <a-radio value="mode">Overwrite</a-radio>
+                </a-radio-group>
+              </a-form-model-item>
+            </a-col>
+          </a-row>
+        </div>
+        <a-table
+          :columns="columns"
+          :data-source="data"
+          :row-selection="rowSelection"
+          :pagination="false"
+        />
       </a-form-model>
     </a-modal>
+    <!-- task 提示信息 -->
+    <TaskNotice :taskinfo="taskinfo" />
     <!-- 表单验证悬浮提示框 -->
     <div
       v-show="formTips.flag"
@@ -66,31 +116,119 @@
   </div>
 </template>
 <script>
-// import { addressAdd } from 'apis/address';
+import { commitOrg, selectTemplate, commitForm, commitOk } from 'apis/commit';
 import { mapState } from 'vuex';
-import { name, select } from '@/validate/common';
 import tip from '@/mixins/tip';
+import { select } from '@/validate/common';
+import TaskNotice from 'components/TaskNotice';
+
+const columns = [
+  {
+    title: 'Device',
+    dataIndex: 'name',
+    key: 'name',
+    width: '20%'
+  },
+  {
+    title: 'Device Type',
+    dataIndex: 'deviceType',
+    key: 'deviceType',
+    width: '20%'
+  },
+  {
+    title: 'Template State',
+    dataIndex: 'status',
+    width: '20%',
+    key: 'status'
+  },
+  {
+    title: 'Appliance State',
+    dataIndex: 'syncStatus',
+    width: '20%',
+    key: 'syncStatus'
+  },
+  {
+    title: 'Device Modified',
+    dataIndex: 'deviceModified',
+    width: '20%',
+    key: 'deviceModified'
+  }
+];
+const data = [
+  {
+    key: 1,
+    name: '',
+    children: [
+      {
+        key: 11,
+        name: '',
+        deviceType: '',
+        status: '',
+        syncStatus: '',
+        deviceModified: ''
+      }
+    ]
+  }
+];
 
 export default {
+  components: { TaskNotice },
   mixins: [tip],
   data() {
     return {
+      //任务进度查询
+      taskinfo: {
+        taskId: ''
+        // type: ''
+      },
+      isDisabled: false,
+      // 列表
+      data,
+      columns,
+      // rowSelection,
+      rowSelection: {
+        onChange: (selectedRowKeys, selectedRows) => {
+          console.log(
+            `selectedRowKeys: ${selectedRowKeys}`,
+            'selectedRows: ',
+            selectedRows
+          );
+        },
+        onSelect: (record, selected, selectedRows) => {
+          console.log(record, selected, selectedRows);
+          // console.log(record.children[0].name);
+          console.log(this.parameter.deviceList);
+          this.parameter.deviceList.push(record.children[0].name);
+          console.log(this.parameter.deviceList);
+        },
+        onSelectAll: (selected, selectedRows, changeRows) => {
+          console.log(selected, selectedRows, changeRows);
+        }
+      },
       loading: false,
       visible: false,
       form: {
-        description: '',
-        name: '',
-        objectName: '',
-        objectType: '',
-        orgName: '',
-        tags: [],
-        type: '',
-        value: ''
+        organization: '',
+        region: 'MAIN',
+        reboot: [],
+        deviceList: [],
+        resource: 'merge',
+        template: ''
       },
       rules: {
-        name: [{ validator: name }],
-        type: [{ validator: select }],
-        value: [{ validator: name }]
+        organization: [{ validator: select }],
+        template: [{ validator: select }]
+      },
+      // 组织下拉框
+      organ: [],
+      // template下拉框
+      Template: [],
+      // 点击ok需要的参数
+      parameter: {
+        templateName: '',
+        reboot: false,
+        mode: '',
+        deviceList: []
       }
     };
   },
@@ -135,51 +273,135 @@ export default {
   computed: {
     ...mapState(['organization', 'deviceName', 'objectType'])
   },
-  methods: {
-    showModalAdd() {
-      this.visible = true;
+  watch: {
+    'form.organization'(value) {
+      console.log(value);
+      if (value) {
+        this.isDisabled = false;
+      } else {
+        this.isDisabled = true;
+      }
     },
-    handleOk() {
+    data: {
+      deep: true,
+      handler(newVal, oldVal) {
+        console.log(newVal);
+        console.log('newVal:', newVal, 'oldVal:', oldVal, 88788);
+      },
+      immediate: true
+    }
+  },
+  methods: {
+    async showModalAdd() {
+      this.visible = true;
+      // 获取组织列表
+      const res = await commitOrg();
+      // console.log(res.result.organizations);
+      this.organ = res.result.organizations;
+      console.log(this.form.organization);
+    },
+    async handleOk() {
       this.loading = true;
       setTimeout(() => {
         this.loading = false;
       }, 3000);
-
-      // this.$refs.ruleForm.validate(async (valid, res) => {
-      //   console.log(res);
-      //   if (valid) {
-      //     const res = await addressAdd(this.form);
-      //     console.log(res);
-      //     if (res.message === 'Success') {
-      //       this.visible = false;
-      //       this.$message.success('创建成功');
-      //       this.$parent.tableForm();
-      //       this.clear();
-      //     } else {
-      //       this.$message.error(res.message);
-      //     }
-      //   } else {
-      //     console.log('error submit!!');
-      //     return false;
-      //   }
-      // });
+      if (this.form.reboot.length > 0) {
+        this.parameter.reboot = true;
+      }
+      this.parameter.mode = this.form.resource;
+      this.parameter.templateName = this.form.template;
+      this.$refs.ruleForm.validate(async (valid, res) => {
+        console.log(res);
+        if (valid) {
+          const res = await commitOk(this.parameter);
+          console.log(res);
+          if (res.message === 'Success') {
+            this.visible = false;
+            // 任务进度
+            this.taskinfo = {
+              taskId: res.result.TaskResponse['task-id'],
+              type: 'add'
+            };
+            this.form = {};
+            this.data[0].name = '';
+            this.data[0].children[0] = [];
+          } else {
+            this.$message.error(res.message);
+          }
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
     },
     handleCancel() {
       this.visible = false;
-      // this.clear();
-      // this.$refs.ruleForm.resetFields();
+      this.$refs.ruleForm.resetFields();
     },
-    handleChange(value) {
-      console.log(`selected ${value}`);
-      console.log(value);
-      this.form.tags = value;
-      console.log(this.form.tags);
+    async handleChange() {
+      console.log(this.form.organization);
+      const res = await selectTemplate({
+        organization: this.form.organization,
+        type: this.form.region
+      });
+      this.Template = res.result.template;
+      console.log(this.Template);
+    },
+    async onChange(e) {
+      console.log('radio checked', e.target.value);
+      const res = await selectTemplate({
+        organization: this.form.organization,
+        type: e.target.value
+      });
+      console.log(res);
+      this.Template = res.result.template;
+    },
+    // 列表的数据
+    async handleChangeTemplate() {
+      console.log(this.data);
+      const res = await commitForm({ template: this.form.template });
+      console.log(res.result.deviceDataList);
+      res.result.deviceDataList.map(item => {
+        console.log(item.name);
+        // this.data.name = item.name;
+        console.log(item.deviceData);
+        this.$set(this.data[0], 'name', item.name);
+        // this.$set(this.data[0], 'key', item.name);
+
+        console.log(this.data[0].children);
+        // this.children = item.deviceData;
+        // console.log(item.deviceData[0]);
+        this.children = item.deviceData[0];
+        // console.log(this.children, 84378237);
+        this.children.key = item.deviceData[0].name;
+        this.data[0].children[0] = this.children;
+        this.$set(this.data[0].children, 0, this.children);
+        console.log(this.data);
+        console.log(this.children);
+        console.log(this.data[0].children[0]);
+      });
     }
   }
 };
 </script>
-<style lang="scss">
-.ant-form-item-required {
+<style lang="scss" scoped>
+.ant-table-thead > tr > th,
+.ant-table-tbody > tr > td {
+  padding: 0;
+}
+.ant-table-thead > tr > th {
+  background: #b6c9db;
+}
+.ant-table-tbody > tr > td {
+  background: #fff;
+}
+.ant-table {
+  font-size: 12px;
+  font-weight: 400;
+  font-family: 'open_sansregular' !important;
+}
+
+.ant-form-item-label > label {
   &::before {
     display: none;
   }
@@ -193,46 +415,54 @@ export default {
 }
 </style>
 <style lang="scss" scoped>
-// label样式
-/deep/.ant-modal-title {
-  font-size: 12px;
-  margin-left: -12px;
+// // label样式
+// /deep/.ant-modal-title {
+//   font-size: 12px;
+//   margin-left: -12px;
+// }
+// /deep/.ant-form label {
+//   font-size: 12px;
+// }
+// /deep/.ant-modal-close-x {
+//   line-height: 36px;
+//   width: 40px;
+// }
+// // -----------------------
+// /deep/.ant-form-explain {
+//   display: none !important;
+// }
+// /deep/.ant-form-item-label > label::after {
+//   display: none;
+// }
+.ant-checkbox-wrapper {
+  color: #fff;
 }
-/deep/.ant-form label {
-  font-size: 12px;
-}
-/deep/.ant-modal-close-x {
-  line-height: 36px;
-  width: 40px;
-}
-// -----------------------
-/deep/.ant-form-explain {
-  display: none !important;
-}
-/deep/.ant-form-item-label > label::after {
-  display: none;
-}
-// 弹框的样式
-/deep/.ant-modal-content {
-  max-height: 1000px;
-  .ant-modal-header {
-    height: 31px;
-    background-color: #e9f4fc;
-    .ant-modal-title {
-      line-height: 8px;
-    }
-  }
-  .ant-modal-body {
-    height: 193px;
-    padding: 3px;
-    background-color: #36536b;
-  }
-  .ant-modal-footer {
-    height: 50px;
-    background-color: #e9f4fc;
-  }
-}
+// .ant-form-item {
+//   margin-bottom: 0px;
+// }
+// // 弹框的样式
+// /deep/.ant-modal-content {
+//   max-height: 1000px;
+//   .ant-modal-header {
+//     height: 31px;
+//     background-color: #e9f4fc;
+//     .ant-modal-title {
+//       line-height: 8px;
+//     }
+//   }
+//   .ant-modal-body {
+//     // height: 193px;
+//     padding: 8px;
+//     padding-top: 10px;
+//     background-color: #36536b;
+//   }
+//   .ant-modal-footer {
+//     height: 50px;
+//     background-color: #e9f4fc;
+//   }
+// }
 .title {
+  margin-bottom: 20px;
   /deep/.ant-radio-wrapper {
     color: #f9f9f9;
   }
@@ -242,16 +472,14 @@ export default {
   /deep/.ant-form-item {
     padding: 0;
     width: 270px;
-    // margin-bottom: 0;
-    // margin: auto;
     .ant-form-item-label {
-      line-height: 19px;
+      line-height: 15px;
     }
     .ant-form-item-control {
       line-height: 19px;
     }
     .ant-select-selection--single {
-      width: 270px;
+      width: 250px;
       height: 20px;
     }
     .ant-select-selection__rendered {
@@ -260,20 +488,21 @@ export default {
   }
 }
 
-// 按钮
-/deep/.ant-btn-primary {
-  width: 70px;
-  height: 30px;
-  background-color: #a7d054;
-  border: none;
-  font-size: 12px;
-}
-/deep/.ant-btn:nth-child(2) {
-  width: 70px;
-  height: 30px;
-  background-color: #3f4a5b;
-  border: none;
-  color: #ffffff;
-  font-size: 12px;
-}
+// // 按钮
+// /deep/.ant-btn-primary {
+//   width: 70px;
+//   height: 30px;
+//   background-color: rgb(0, 149, 218);
+//   border: none;
+//   font-size: 12px;
+// }
+// /deep/.ant-btn:nth-child(2) {
+//   width: 70px;
+//   height: 30px;
+//   background-color: #3f4a5b;
+//   border: none;
+//   color: #ffffff;
+//   font-size: 12px;
+// }
+//
 </style>

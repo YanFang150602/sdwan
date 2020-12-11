@@ -1,5 +1,5 @@
 <template>
-  <div class="main-con">
+  <div class="devices main-con">
     <Pagination
       :total="totalCount"
       :page-size="pageSize"
@@ -15,6 +15,7 @@
     <v-table
       is-horizontal-resize
       column-width-drag
+      is-vertical-resize
       :columns="columns"
       :table-data="tableData"
       :select-all="selectALL"
@@ -36,7 +37,13 @@
         :maskClosable="false"
       >
         <template slot="footer">
-          <a-button key="submit" type="primary" @click="handleOk" :loading="loading">Ok</a-button>
+          <a-button
+            key="submit"
+            type="primary"
+            @click="handleOk"
+            :loading="loading"
+            >Ok</a-button
+          >
           <a-button key="back" @click="handleCancel">Cancel</a-button>
         </template>
         <a-form-model :model="form.data" ref="ruleForm" :rules="rules">
@@ -44,7 +51,7 @@
             <a-row>
               <a-col :span="24">
                 <a-form-model-item label="Name" prop="name">
-                  <a-input size="small" v-model="form.data.name"/>
+                  <a-input size="small" v-model="form.data.name" />
                 </a-form-model-item>
               </a-col>
             </a-row>
@@ -52,7 +59,7 @@
               <a-col :span="24">
                 <a-form-model-item>
                   <a-form-model-item label="Description">
-                    <a-input size="small" v-model="form.data.description"/>
+                    <a-input size="small" v-model="form.data.description" />
                   </a-form-model-item>
                 </a-form-model-item>
               </a-col>
@@ -63,24 +70,24 @@
             <a-row>
               <a-col :span="10">
                 <a-form-model-item label="Max" prop="maximum">
-                  <a-input size="small" v-model="form.data.maximum"/>
+                  <a-input size="small" v-model="form.data.maximum" />
                 </a-form-model-item>
               </a-col>
               <a-col :span="10">
                 <a-form-model-item label="Min" prop="minimum">
-                  <a-input size="small" v-model="form.data.minimum"/>
+                  <a-input size="small" v-model="form.data.minimum" />
                 </a-form-model-item>
               </a-col>
             </a-row>
             <a-row>
               <a-col :span="10">
                 <a-form-model-item label="Weight">
-                  <a-input size="small" v-model="form.data.weight"/>
+                  <a-input size="small" v-model="form.data.weight" />
                 </a-form-model-item>
               </a-col>
               <a-col :span="10">
                 <a-form-model-item label="Inverse-mask Probability">
-                  <a-input size="small" v-model="form.data.robability"/>
+                  <a-input size="small" v-model="form.data.robability" />
                 </a-form-model-item>
               </a-col>
             </a-row>
@@ -91,7 +98,10 @@
       </a-modal>
     </div>
     <!-- 删除的弹框 -->
-    <dropProfileDelete ref="AddressDeleteRef" :DeleName="idDele"></dropProfileDelete>
+    <dropProfileDelete
+      ref="AddressDeleteRef"
+      :DeleName="idDele"
+    ></dropProfileDelete>
   </div>
 </template>
 <script>

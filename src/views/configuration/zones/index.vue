@@ -12,13 +12,14 @@
     />
     <!-- 表单主体内容 -->
     <v-table
+      :style="{ height: 'calc(100% - 15px)' }"
       is-horizontal-resize
       is-vertical-resize
       column-width-drag
       :columns="columns"
       :table-data="tableData"
       :select-change="delItem"
-      style="width:100%;"
+      style="width: 100%;"
       isFrozen="true"
       @on-custom-comp="modifyItem"
       error-content="Temporarily no data"
