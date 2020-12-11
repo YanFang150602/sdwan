@@ -1,5 +1,5 @@
 <template>
-  <div class="devices">
+  <div class="main-con">
     <!-- 搜索框 -->
     <Pagination
       :total="totalCount"

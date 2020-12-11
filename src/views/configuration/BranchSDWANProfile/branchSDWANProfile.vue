@@ -1,5 +1,5 @@
 <template>
-  <div class="qosProfiles">
+  <div class="main-con">
     <!-- 搜索框 -->
     <!-- <a-row class="table-header" type="flex" justify="space-between" align="middle"> -->
     <!--搜索栏-->
@@ -320,7 +320,7 @@ Vue.component('table-operationDevice', {
 </script>
 
 <style lang="scss" scoped>
-.qosProfiles {
+/* .qosProfiles {
   padding: 5px 20px 30px 15px;
   /deep/.v-table-rightview {
     right: unset;
@@ -340,7 +340,7 @@ Vue.component('table-operationDevice', {
       }
     }
   }
-}
+} */
 
 /deep/.ant-modal-content {
   max-height: 325px;

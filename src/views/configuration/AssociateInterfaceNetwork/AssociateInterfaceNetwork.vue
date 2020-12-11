@@ -1,5 +1,5 @@
 <template>
-  <div class="devices">
+  <div class="main-con">
     <!-- 搜索框 -->
     <!-- <a-row class="table-header" type="flex" justify="space-between" align="middle"> -->
     <!--搜索栏-->

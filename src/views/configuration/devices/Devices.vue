@@ -1,5 +1,5 @@
 <template>
-  <div class="devices">
+  <div class="main-con">
     <a-dropdown>
       <a>
         Templates
@@ -40,8 +40,7 @@
       :select-all="selectALL"
       :select-change="selectChange"
       :select-group-change="selectGroupChange"
-      :height="350"
-      style="width: 100%"
+      style="width:100%;min-height:500px"
       isFrozen="true"
       @on-custom-comp="customCompFunc"
       error-content="Temporarily no data"
@@ -167,10 +166,8 @@ export default {
       ]
     };
   },
-
-  created() {
+  mounted() {
     this.$store.dispatch('getNameList');
-    console.log(this.deviceFrom);
   },
   methods: {
     onClick(params) {

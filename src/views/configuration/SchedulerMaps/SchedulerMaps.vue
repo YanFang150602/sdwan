@@ -1,5 +1,5 @@
 <template>
-  <div class="devices">
+  <div class="main-con">
     <Pagination
       :total="totalCount"
       :page-size="pageSize"

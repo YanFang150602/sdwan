@@ -1,5 +1,5 @@
 <template>
-  <div class="devices">
+  <div class="main-con">
     <Pagination
       :total="totalCount"
       :page-size="pageSize"
@@ -20,7 +20,6 @@
       :select-all="selectALL"
       :select-change="selectChange"
       :select-group-change="selectGroupChange"
-      :height="540"
       style="width:100%;"
       isFrozen="true"
       @on-custom-comp="customCompFunc"
