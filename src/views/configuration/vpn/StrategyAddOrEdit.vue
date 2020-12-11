@@ -194,7 +194,9 @@ export default {
   },
   methods: {
     validName(rule, value, callback) {
-      if (!value) {
+      if (this.strategy.name) {
+        callback();
+      } else if (!value) {
         callback(this.$t('FieldRequired'));
       } else if (value.length > 50) {
         callback('Length must not be greater than 50.');

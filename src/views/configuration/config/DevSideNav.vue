@@ -23,7 +23,7 @@
         <template v-for="item in menus.firstMenus">
           <a-menu-item v-if="!item.children" :key="item.key">
             <span v-show="item.icon"
-              ><img :src="item.icon" style="width:20px;height:20px"
+              ><img :src="item.icon" style="width:20px;height:20px;margin-right:10px"
             /></span>
             <span>{{ item.title }}</span>
           </a-menu-item>
@@ -42,7 +42,7 @@
         <template v-for="item in menus.secondMenus">
           <a-menu-item v-if="!item.children" :key="item.key">
             <span v-show="item.icon"
-              ><img :src="item.icon" style="width:20px;height:20px"
+              ><img :src="item.icon" style="width:20px;height:20px;margin-right:10px"
             /></span>
             <span>{{ item.title }}</span>
           </a-menu-item>
@@ -61,7 +61,7 @@
         <template v-for="item in menus.thirdMenus">
           <a-menu-item v-if="!item.children" :key="item.key">
             <span v-show="item.icon"
-              ><img :src="item.icon" style="width:20px;height:20px"
+              ><img :src="item.icon" style="width:20px;height:20px;margin-right:10px"
             /></span>
             <span>{{ item.title }}</span>
           </a-menu-item>
@@ -80,7 +80,7 @@
         <template v-for="item in menus.fourthMenus">
           <a-menu-item v-if="!item.children" :key="item.key">
             <span v-show="item.icon"
-              ><img :src="item.icon" style="width:20px;height:20px"
+              ><img :src="item.icon" style="width:20px;height:20px;margin-right:10px"
             /></span>
             <span>{{ item.title }}</span>
           </a-menu-item>
@@ -97,12 +97,12 @@ const SubMenu = {
   template: `
       <a-sub-menu :key="menuInfo.key" v-bind="$props" v-on="$listeners">
         <span slot="title">
-          <span v-show="menuInfo.icon"><img :src="menuInfo.icon" style="width:20px;height:20px"/></span>
+          <span v-show="menuInfo.icon"><img :src="menuInfo.icon" style="width:20px;height:20px;margin-right:10px"/></span>
           <span>{{ menuInfo.title }}</span>
         </span>
         <template v-for="item in menuInfo.children">
           <a-menu-item v-if="!item.children" :key="item.key">
-            <span v-show="item.icon"><img :src="item.icon" style="width:20px;height:20px"/></span>
+            <span v-show="item.icon"><img :src="item.icon" style="width:20px;height:20px;margin-right:10px"/></span>
             <span>{{ item.title }}</span>
           </a-menu-item>
           <sub-menu v-else :key="item.key" :menu-info="item" />

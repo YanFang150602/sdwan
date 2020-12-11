@@ -1562,7 +1562,16 @@ export default {
           this.operType === 'add' ? this.curAddStrategy : this.curEditStrategy;
         this.addOrEditLoading = false;
         this.addOrEditWinVisible = false;
-        this.strategyList.push(params);
+        if (this.operType === 'edit') {
+          this.strategyList.forEach(item => {
+            if (item.name === params.name) {
+              item = params;
+            }
+          });
+        } else {
+          this.strategyList.push(params);
+        }
+        
         this.strategyNameList.push(params.name);
         this.cVPNProfile.rule = this.strategyList;
         this.pageIndex = 1;
