@@ -35,7 +35,11 @@
             <a-tab-pane key="1" :tab="$t('VPNGeneral')">
               <a-row type="flex" justify="start" align="top">
                 <a-col>
-                  <a-form-model-item :label="$t('VPNType')" class="mandatory" prop="vpnType">
+                  <a-form-model-item
+                    :label="$t('VPNType')"
+                    class="mandatory"
+                    prop="vpnType"
+                  >
                     <a-select
                       v-model="cVPNProfile.vpnType"
                       style="width:250px;"
@@ -164,7 +168,10 @@
                           :title="PeerFQDN"
                           @subdata="customFQDNFunc"
                         />
-                        <div v-show="disablePeerFQDN" class="disabled-component"></div>
+                        <div
+                          v-show="disablePeerFQDN"
+                          class="disabled-component"
+                        ></div>
                       </div>
                     </a-form-model-item>
                   </a-col>
@@ -178,7 +185,7 @@
                       />
                     </a-form-model-item>
                     <a-form-model-item>
-                      <div  class="add-modle-item">
+                      <div class="add-modle-item">
                         <ListCrt
                           v-if="visible"
                           ref="peerIPRef"
@@ -187,7 +194,10 @@
                           :title="PeerIP"
                           @subdata="customIPFunc"
                         />
-                        <div v-show="disablePeerIP" class="disabled-component"></div>
+                        <div
+                          v-show="disablePeerIP"
+                          class="disabled-component"
+                        ></div>
                       </div>
                     </a-form-model-item>
                   </a-col>
@@ -314,7 +324,7 @@
                     <a-form-model-item
                       :label="$t('VPNTunnelInterface')"
                       prop="tunnelInterface"
-                      class="mandatory" 
+                      class="mandatory"
                     >
                       <a-select
                         v-model="cVPNProfile.tunnelInterface"
@@ -354,7 +364,10 @@
                     </a-form-model-item>
                   </a-col>
                   <a-col>
-                    <a-form-model-item :label="$t('VPNBasePriority')" prop="precedence">
+                    <a-form-model-item
+                      :label="$t('VPNBasePriority')"
+                      prop="precedence"
+                    >
                       <a-input
                         size="small"
                         placeholder="Input a number"
@@ -1044,10 +1057,14 @@ export default {
             : '';
         }
       }
-      let targetValue = this.vpnProfile.local.address ? '4' : this.vpnProfile.local.interfaceName ? '5' : '6';
-      this.changeRadio({ target: { value: targetValue} });
+      let targetValue = this.vpnProfile.local.address
+        ? '4'
+        : this.vpnProfile.local.interfaceName
+        ? '5'
+        : '6';
+      this.changeRadio({ target: { value: targetValue } });
       targetValue = this.vpnProfile.tunnelRoutingInstance ? '7' : '8';
-      this.changeRadio({ target: { value: targetValue} });
+      this.changeRadio({ target: { value: targetValue } });
     }
     // 设置VPN Type
     this.changeVPNType(this.cVPNProfile.vpnType);
@@ -1058,17 +1075,14 @@ export default {
     this.queryTunnelInterfaceOptions();
   },
   methods: {
-    ...mapMutations([
-      'vpnTableSelectsMinus',
-      'vpnTableSelectsAll'
-    ]),
+    ...mapMutations(['vpnTableSelectsMinus', 'vpnTableSelectsAll']),
     getData() {
       this.$refs.ikeRef.getData();
       console.log('ike: ', this.cVPNProfile);
       this.$refs.ipsecRef.getData();
       console.log('ipsec: ', this.cVPNProfile);
-      let data = {...this.cVPNProfile};
-      switch(this.peer) {
+      let data = { ...this.cVPNProfile };
+      switch (this.peer) {
         case '1':
           delete data.peer.address;
           delete data.peer.hostname;
@@ -1081,7 +1095,7 @@ export default {
           delete data.peer.peerFqdnList;
           delete data.peer.address;
       }
-      switch(this.local) {
+      switch (this.local) {
         case '4':
           delete data.local.interfaceName;
           delete data.local.hostname;
@@ -1094,7 +1108,7 @@ export default {
           delete data.local.address;
           delete data.local.interfaceName;
       }
-      switch(this.base) {
+      switch (this.base) {
         case '7':
           delete data.precedence;
           delete data.rule;
@@ -1429,7 +1443,7 @@ export default {
         case '7':
           this.base = '7';
           this.baseOptionVal = '7';
-	  this.tunnelInfcIsRequired = true;
+          this.tunnelInfcIsRequired = true;
           this.showBaseRoute = true;
           this.showBaseStrategy = false;
           break;
@@ -1437,15 +1451,18 @@ export default {
         case '8':
           this.base = '8';
           this.baseOptionVal = '8';
-	  this.tunnelInfcIsRequired = false;
+          this.tunnelInfcIsRequired = false;
           this.showBaseRoute = false;
           this.showBaseStrategy = true;
-          this.strategyList = this.cVPNProfile.rule ? this.cVPNProfile.rule : [];
+          this.strategyList = this.cVPNProfile.rule
+            ? this.cVPNProfile.rule
+            : [];
           this.totalCount = this.strategyList.length;
           this.queryStrategyList();
-          this.strategyList.length && this.strategyList.forEach(strategy => {
-            this.strategyNameList.push(strategy.name);
-          });
+          this.strategyList.length &&
+            this.strategyList.forEach(strategy => {
+              this.strategyNameList.push(strategy.name);
+            });
           break;
         default:
           break;
@@ -1479,12 +1496,8 @@ export default {
         this.delServerList.push(item['server']);
       });
     },
-    serverTitleClick() {
-
-    },
-    serverCellMerge() {
-
-    },
+    serverTitleClick() {},
+    serverCellMerge() {},
     customServerFunc(params) {
       this.serverList[params.index]['server'] = params.label;
       // 通过刷新表格数据，实现对子组件刷新
@@ -1507,12 +1520,8 @@ export default {
         this.delDomainList.push(item['server']);
       });
     },
-    domainTitleClick() {
-
-    },
-    domainCellMerge() {
-
-    },
+    domainTitleClick() {},
+    domainCellMerge() {},
     customDomainFunc(params) {
       this.domainList[params.index]['server'] = params.label;
       // 通过刷新表格数据，实现对子组件刷新
@@ -1603,14 +1612,17 @@ export default {
     },
     queryStrategyList() {
       let tableDatas = [];
-      if (this.strategyList.length && this.strategyList.length > this.pageSize) {
+      if (
+        this.strategyList.length &&
+        this.strategyList.length > this.pageSize
+      ) {
         let start = (this.pageIndex - 1) * this.pageSize;
         let end = start + this.pageSize;
         tableDatas = this.strategyList.slice(start, end);
       } else {
         tableDatas = this.strategyList;
       }
-      
+
       this.tableDatas = [];
       if (tableDatas.length) {
         this.tableDatas = tableDatas.map(row => {

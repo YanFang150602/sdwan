@@ -13,7 +13,11 @@
           @mouseleave="leave"
           @mousemove="updateXY"
         >
-          <a-form-model-item :label="$t('VPNStrategyName')" class="mandatory" prop="name">
+          <a-form-model-item
+            :label="$t('VPNStrategyName')"
+            class="mandatory"
+            prop="name"
+          >
             <a-input
               size="small"
               v-model="cStrategy.name"
@@ -45,11 +49,7 @@
         <a-row type="flex" justify="start" align="top">
           <a-col>
             <a-form-model-item :label="$t('VPNStrategeAddress')">
-              <a-select
-                size="small"
-                style="width:250px;"
-                default-value="ipv4"
-              >
+              <a-select size="small" style="width:250px;" default-value="ipv4">
                 <a-select-option
                   :value="item.value"
                   v-for="(item, index) in optionList"
@@ -61,7 +61,11 @@
             </a-form-model-item>
           </a-col>
           <a-col>
-            <a-form-model-item :label="$t('VPNStrategeFront')" class="mandatory" prop="src.inet">
+            <a-form-model-item
+              :label="$t('VPNStrategeFront')"
+              class="mandatory"
+              prop="src.inet"
+            >
               <a-input
                 size="small"
                 v-model="cStrategy.src.inet"
@@ -86,11 +90,7 @@
         <a-row type="flex" justify="start" align="top">
           <a-col>
             <a-form-model-item :label="$t('VPNStrategeAddress')">
-              <a-select
-                size="small"
-                style="width:250px;"
-                default-value="ipv4"
-              >
+              <a-select size="small" style="width:250px;" default-value="ipv4">
                 <a-select-option
                   :value="item.value"
                   v-for="(item, index) in optionList"
@@ -102,7 +102,11 @@
             </a-form-model-item>
           </a-col>
           <a-col>
-            <a-form-model-item :label="$t('VPNStrategeFront')" class="mandatory" prop="dst.inet">
+            <a-form-model-item
+              :label="$t('VPNStrategeFront')"
+              class="mandatory"
+              prop="dst.inet"
+            >
               <a-input
                 size="small"
                 v-model="cStrategy.dst.inet"
@@ -131,7 +135,7 @@ import common from '@/mixins/common';
 import { required } from '@/validate/common';
 export default {
   name: 'StrategyAddOrEdit',
-  props: ['strategy','nameList'],
+  props: ['strategy', 'nameList'],
   mixins: [common],
   data() {
     return {
@@ -172,9 +176,7 @@ export default {
         }
       ],
       rules: {
-        name: [
-          { validator: this.validName, trigger: 'blur' }
-        ],
+        name: [{ validator: this.validName, trigger: 'blur' }],
         src: {
           inet: [{ validator: this.validSourceInet }]
         },

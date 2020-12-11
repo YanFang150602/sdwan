@@ -22,10 +22,13 @@
       >
         <template v-for="item in menus.firstMenus">
           <a-menu-item v-if="!item.children" :key="item.key">
-            <span v-show="item.icon"
-              ><img :src="item.icon" style="width:20px;height:20px;margin-right:10px"
-            /></span>
-            <span>{{ item.title }}</span>
+            <div class="device-menu-align-left">
+              <span v-show="item.icon">
+                <img :src="item.icon"
+                    class="device-menu-icon"/>
+              </span>
+              <span>{{ item.title }}</span>
+            </div>
           </a-menu-item>
           <sub-menu v-else :key="item.key" :menu-info="item" />
         </template>
@@ -41,10 +44,13 @@
       >
         <template v-for="item in menus.secondMenus">
           <a-menu-item v-if="!item.children" :key="item.key">
-            <span v-show="item.icon"
-              ><img :src="item.icon" style="width:20px;height:20px;margin-right:10px"
-            /></span>
-            <span>{{ item.title }}</span>
+            <div class="device-menu-align-left">
+              <span v-show="item.icon">
+                <img :src="item.icon"
+                    class="device-menu-icon"/>
+              </span>
+              <span>{{ item.title }}</span>
+            </div>
           </a-menu-item>
           <sub-menu v-else :key="item.key" :menu-info="item" />
         </template>
@@ -60,9 +66,13 @@
       >
         <template v-for="item in menus.thirdMenus">
           <a-menu-item v-if="!item.children" :key="item.key">
-            <span v-show="item.icon"
-              ><img :src="item.icon" style="width:20px;height:20px;margin-right:10px"
-            /></span>
+            <div class="device-menu-align-left">
+              <span v-show="item.icon">
+                <img :src="item.icon"
+                    class="device-menu-icon"/>
+              </span>
+              <span>{{ item.title }}</span>
+            </div>
             <span>{{ item.title }}</span>
           </a-menu-item>
           <sub-menu v-else :key="item.key" :menu-info="item" />
@@ -79,9 +89,13 @@
       >
         <template v-for="item in menus.fourthMenus">
           <a-menu-item v-if="!item.children" :key="item.key">
-            <span v-show="item.icon"
-              ><img :src="item.icon" style="width:20px;height:20px;margin-right:10px"
-            /></span>
+            <div class="device-menu-align-left">
+              <span v-show="item.icon">
+                <img :src="item.icon"
+                    class="device-menu-icon"/>
+              </span>
+              <span>{{ item.title }}</span>
+            </div>
             <span>{{ item.title }}</span>
           </a-menu-item>
           <sub-menu v-else :key="item.key" :menu-info="item" />
@@ -96,14 +110,20 @@ import { Menu } from 'ant-design-vue';
 const SubMenu = {
   template: `
       <a-sub-menu :key="menuInfo.key" v-bind="$props" v-on="$listeners">
-        <span slot="title">
-          <span v-show="menuInfo.icon"><img :src="menuInfo.icon" style="width:20px;height:20px;margin-right:10px"/></span>
+        <div class="device-menu-align-left" slot="title">
+          <span v-show="menuInfo.icon">
+            <img :src="menuInfo.icon" class="device-menu-icon"/>
+          </span>
           <span>{{ menuInfo.title }}</span>
-        </span>
+        </div>
         <template v-for="item in menuInfo.children">
           <a-menu-item v-if="!item.children" :key="item.key">
-            <span v-show="item.icon"><img :src="item.icon" style="width:20px;height:20px;margin-right:10px"/></span>
-            <span>{{ item.title }}</span>
+            <div class="device-menu-align-left">
+              <span v-show="item.icon">
+                <img :src="item.icon" class="device-menu-icon"/>
+              </span>
+              <span>{{ item.title }}</span>
+            </div>
           </a-menu-item>
           <sub-menu v-else :key="item.key" :menu-info="item" />
         </template>
@@ -115,13 +135,13 @@ const SubMenu = {
     ...Menu.SubMenu.props,
     menuInfo: {
       type: Object,
-      default: () => ({})
-    }
-  }
+      default: () => ({}),
+    },
+  },
 };
 export default {
   components: {
-    SubMenu
+    SubMenu,
   },
   name: 'Schedule',
   data() {
@@ -130,37 +150,37 @@ export default {
         {
           refObj: 'firstTabRef',
           style: {
-            backgroundColor: '#aac0d5'
+            backgroundColor: '#aac0d5',
           },
-          icon: 'radar-chart'
+          icon: 'radar-chart',
         },
         {
           refObj: 'secondTabRef',
           style: {
-            backgroundColor: '#8d9fb3'
+            backgroundColor: '#8d9fb3',
           },
-          icon: 'setting'
+          icon: 'setting',
         },
         {
           refObj: 'thirdTabRef',
           style: {
-            backgroundColor: '#8d9fb3'
+            backgroundColor: '#8d9fb3',
           },
-          icon: 'codepen-circle'
-        }
+          icon: 'codepen-circle',
+        },
       ],
       showTabObj: {
         firstTabRef: true,
         secondTabRef: false,
         thirdTabRef: false,
-        fourthTabRef: false
+        fourthTabRef: false,
       },
-      menus: menus
+      menus: menus,
     };
   },
   beforeRouteEnter(to, from, next) {
     console.log(to.params);
-    next(vm => {
+    next((vm) => {
       vm.curDeviceName = to.params.name;
       console.log(vm.menus);
     });
@@ -182,8 +202,8 @@ export default {
     },
     menuClick(menu) {
       this.$router.push({ name: menu.key });
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>

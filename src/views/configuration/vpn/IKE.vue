@@ -195,7 +195,11 @@
         >
           <a-row type="flex" justify="start" align="top">
             <a-col>
-              <a-form-model-item :label="$t('VPNIKEAuthType')" class="mandatory" prop="authType">
+              <a-form-model-item
+                :label="$t('VPNIKEAuthType')"
+                class="mandatory"
+                prop="authType"
+              >
                 <a-select
                   v-model="localAuthInfo.authType"
                   style="width:200px"
@@ -362,7 +366,11 @@
             v-show="!showCertAuthTable"
           >
             <a-col>
-              <a-form-model-item :label="$t('VPNIKEAuthType')" class="mandatory" prop="authType">
+              <a-form-model-item
+                :label="$t('VPNIKEAuthType')"
+                class="mandatory"
+                prop="authType"
+              >
                 <a-select
                   v-model="peerAuthInfo.authType"
                   style="width:200px"
@@ -457,7 +465,11 @@
             v-show="showCertAuthTable"
           >
             <a-col>
-              <a-form-model-item :label="$t('VPNIKEAuthType')" class="mandatory" prop="authType">
+              <a-form-model-item
+                :label="$t('VPNIKEAuthType')"
+                class="mandatory"
+                prop="authType"
+              >
                 <a-select
                   v-model="peerAuthInfo.authType"
                   placeholder="--Select--"
@@ -638,18 +650,8 @@ export default {
         { label: 'aes128-sha512' },
         { label: 'aes256-sha512' }
       ],
-      hashOptions: [
-        'md5',
-        'sha256',
-        'sha384',
-        'sha512',
-        'sha1'
-      ],
-      encryOptions: [
-        '3des',
-        'aes128',
-        'aes256'
-      ],
+      hashOptions: ['md5', 'sha256', 'sha384', 'sha512', 'sha1'],
+      encryOptions: ['3des', 'aes128', 'aes256'],
       dhOptions: [
         {
           label: 'No PFS',
@@ -906,7 +908,11 @@ export default {
     this.cVPNProfile.peerAuthInfo = this.peerAuthInfo;
     this.cVPNProfile.ike = this.ike;
     this.changePeerIdType(this.peerAuthInfo.idType);
-    if (this.ike.encryptionAlgorithms || this.ike.groups || this.ike.hashAlgorithms) {
+    if (
+      this.ike.encryptionAlgorithms ||
+      this.ike.groups ||
+      this.ike.hashAlgorithms
+    ) {
       this.cVPNProfile.tempIkeNewOrOld = 'New';
     } else {
       this.cVPNProfile.tempIkeNewOrOld = 'Old';
@@ -926,7 +932,7 @@ export default {
       this.cVPNProfile.localAuthInfo = this.localAuthInfo;
       this.cVPNProfile.peerAuthInfo = this.peerAuthInfo;
       this.cVPNProfile.ike = this.ike;
-      let data = {...this.cVPNProfile};
+      let data = { ...this.cVPNProfile };
       if (this.cVPNProfile.tempIkeNewOrOld === 'New') {
         delete data.ike.transform;
         delete data.ike.group;

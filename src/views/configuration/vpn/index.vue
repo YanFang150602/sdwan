@@ -21,7 +21,7 @@
       :table-data="tableDataList"
       :select-all="selectALL"
       :select-change="selectChange"
-      style="width:100%;"
+      style="width:100%;height:calc( 100% - 15px)"
       @on-custom-comp="customTableFunc"
       error-content="Temporarily no data"
     ></v-table>
@@ -311,28 +311,31 @@ export default {
     },
     satisfyValidation() {
       let isOK = true;
-      this.$refs.vpnProfileAddOrEditRef.$refs && this.$refs.vpnProfileAddOrEditRef.$refs.normalRef.validate(valid => {
-        if (!valid) {
-          isOK = false;
-          return false;
-        }
-      });
-      this.$refs.vpnProfileAddOrEditRef.$refs.ikeRef && this.$refs.vpnProfileAddOrEditRef.$refs.ikeRef.$refs.localAuthRef.validate(
-        valid => {
+      this.$refs.vpnProfileAddOrEditRef.$refs &&
+        this.$refs.vpnProfileAddOrEditRef.$refs.normalRef.validate(valid => {
           if (!valid) {
             isOK = false;
             return false;
           }
-        }
-      );
-      this.$refs.vpnProfileAddOrEditRef.$refs.ikeRef && this.$refs.vpnProfileAddOrEditRef.$refs.ikeRef.$refs.peerAuthRef.validate(
-        valid => {
-          if (!valid) {
-            isOK = false;
-            return false;
+        });
+      this.$refs.vpnProfileAddOrEditRef.$refs.ikeRef &&
+        this.$refs.vpnProfileAddOrEditRef.$refs.ikeRef.$refs.localAuthRef.validate(
+          valid => {
+            if (!valid) {
+              isOK = false;
+              return false;
+            }
           }
-        }
-      );
+        );
+      this.$refs.vpnProfileAddOrEditRef.$refs.ikeRef &&
+        this.$refs.vpnProfileAddOrEditRef.$refs.ikeRef.$refs.peerAuthRef.validate(
+          valid => {
+            if (!valid) {
+              isOK = false;
+              return false;
+            }
+          }
+        );
       return isOK;
     },
     // VPN Config file Add end
@@ -406,6 +409,7 @@ Vue.component('vpncfgfile-opration', {
 .v-table-rightview .v-table-footer {
   overflow-x: auto !important;
   overflow-y: auto;
+  height: calc( 100% - 15px) !important;
 }
 
 .delete {

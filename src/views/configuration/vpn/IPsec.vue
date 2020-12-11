@@ -412,18 +412,8 @@ export default {
           value: 'mod26'
         }
       ],
-      hashOptions: [
-        'md5',
-        'sha256',
-        'sha384',
-        'sha512',
-        'sha1'
-      ],
-      encryOptions: [
-        '3des',
-        'aes128',
-        'aes256'
-      ]
+      hashOptions: ['md5', 'sha256', 'sha384', 'sha512', 'sha1'],
+      encryOptions: ['3des', 'aes128', 'aes256']
     };
   },
   mounted() {
@@ -445,7 +435,11 @@ export default {
           this.forwardModeList.push(forward);
         });
     }
-    if (this.ipsec.encryptionAlgorithms || this.ipsec.pfsGroups || this.ipsec.hashAlgorithms) {
+    if (
+      this.ipsec.encryptionAlgorithms ||
+      this.ipsec.pfsGroups ||
+      this.ipsec.hashAlgorithms
+    ) {
       this.cVPNProfile.tempIpsecNewOrOld = 'New';
     } else {
       this.cVPNProfile.tempIpsecNewOrOld = 'Old';
@@ -457,7 +451,7 @@ export default {
       this.$refs.encryListRef && this.$refs.encryListRef.param();
       this.$refs.dhGroupRef && this.$refs.dhGroupRef.param();
       this.cVPNProfile.ipsec = this.ipsec;
-      let data = {...this.cVPNProfile};
+      let data = { ...this.cVPNProfile };
       if (this.cVPNProfile.tempIpsecNewOrOld === 'New') {
         delete data.ipsec.transform;
         delete data.ipsec.group;
