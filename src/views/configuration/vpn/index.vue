@@ -254,12 +254,23 @@ export default {
       let isOK = this.satisfyValidation();
       if (isOK) {
         this.$refs.vpnProfileAddOrEditRef.getData();
-        console.log('ending....', this.curAddVPNProfile);
         this.addOrEditLoading = true;
         let params = { vpnProfile: this.vpnProfile };
         let curVPNProfile = {};
         for (let key in this.curAddVPNProfile) {
-          if (!(key.indexOf('temp') == 0)) {
+          if ( key === 'ike') {
+            curVPNProfile[key] = {};
+            for (let ikeKey in this.curAddVPNProfile['ike']) {
+              if (!(ikeKey.indexOf('temp') == 0))
+                curVPNProfile[key][ikeKey] = this.curAddVPNProfile[key][ikeKey];
+            }
+          } else if ( key === 'ipsec') {
+            curVPNProfile[key] = {};
+            for (let ipsecKey in this.curAddVPNProfile['ipsec']) {
+              if (!(ipsecKey.indexOf('temp') == 0))
+                curVPNProfile[key][ipsecKey] = this.curAddVPNProfile[key][ipsecKey];
+            }
+          } else if (!(key.indexOf('temp') == 0)) {
             curVPNProfile[key] = this.curAddVPNProfile[key];
           }
         }

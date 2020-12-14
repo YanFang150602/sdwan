@@ -1,10 +1,10 @@
 <template>
   <div>
-    <a-form-model layout="vertical" :model="ipsec">
+    <a-form-model layout="vertical" :model="ipsec" :rules="rules" ref="ipsecBaseRef">
       <a-row type="flex" justify="start" align="top">
         <a-col>
           <a-form-model-item :label="$t('VPNIPsecModel')">
-            <a-select v-model="ipsec.mode" style="width:250px" size="small">
+            <a-select v-model="ipsec.mode" style="width: 250px" size="small">
               <a-select-option
                 :value="item.value"
                 v-for="(item, index) in modeList"
@@ -19,7 +19,7 @@
             <a-select
               v-model="ipsec.antiReplay"
               placeholder="--Select--"
-              style="width:250px"
+              style="width: 250px"
               size="small"
             >
               <a-select-option
@@ -36,7 +36,7 @@
             <a-select
               v-model="ipsec.fragmentation"
               placeholder="--Select--"
-              style="width:250px"
+              style="width: 250px"
               size="small"
             >
               <a-select-option
@@ -55,7 +55,7 @@
             <a-select
               v-model="ipsec.forceNatT"
               placeholder="--Select--"
-              style="width:250px"
+              style="width: 250px"
               size="small"
             >
               <a-select-option
@@ -73,47 +73,79 @@
               size="small"
               v-model="ipsec.keepaliveTimeout"
               :placeholder="placeholders.keepaliveTimeout"
-              style="width:250px;"
+              style="width: 250px"
             />
           </a-form-model-item>
         </a-col>
       </a-row>
       <a-row type="flex" justify="start" align="top">
         <a-col>
-          <a-form-model-item :label="$t('VPNIPsecRestartTime')">
-            <a-select style="width:90px" size="small" default-value="seconds">
-              <a-select-option
-                :value="item.value"
-                v-for="(item, index) in restartTimeTypeOptions"
-                :key="index"
-                >{{ item.label }}</a-select-option
+          <a-row type="flex" justify="start" align="top">
+            <a-col>
+              <a-form-model-item :label="$t('VPNIPsecRestartTime')">
+                <a-select
+                  style="width: 120px"
+                  size="small"
+                  v-model="ipsec.tempRekeyTime"
+                  @change="changeRekeyTime"
+                >
+                  <a-select-option
+                    :value="item"
+                    v-for="(item, index) in restartTimeTypeOptions"
+                    :key="index"
+                    >{{ item }}</a-select-option
+                  >
+                </a-select>
+              </a-form-model-item>
+            </a-col>
+            <a-col>
+              <a-form-model-item
+                label=" "
+                prop="tempLifetime"
               >
-            </a-select>
-            <a-input
-              size="small"
-              v-model="ipsec.life.duration"
-              :placeholder="placeholders.duration"
-              style="width:160px;"
-            />
-          </a-form-model-item>
+                <a-input
+                  size="small"
+                  v-model="ipsec.tempLifetime"
+                  :placeholder="placeholders.duration"
+                  style="width: 200px;margin-top:21px"
+                />
+              </a-form-model-item>
+            </a-col>
+          </a-row>
         </a-col>
         <a-col>
-          <a-form-model-item :label="$t('VPNIPsecRestatVolumne')">
-            <a-select style="width:90px" size="small" default-value="MB">
-              <a-select-option
-                :value="item.value"
-                v-for="(item, index) in restartVolumneTypeOptions"
-                :key="index"
-                >{{ item.label }}</a-select-option
+           <a-row type="flex" justify="start" align="top">
+            <a-col>
+              <a-form-model-item :label="$t('VPNIPsecRestatVolumne')">
+                <a-select
+                  style="width: 120px"
+                  size="small"
+                  v-model="ipsec.tempVolumeType"
+                  @change="changeVolume"
+                >
+                  <a-select-option
+                    :value="item"
+                    v-for="(item, index) in restartVolumneTypeOptions"
+                    :key="index"
+                    >{{ item }}</a-select-option
+                  >
+                </a-select>
+              </a-form-model-item>
+            </a-col>
+            <a-col>
+              <a-form-model-item
+                label=" "
+                prop="tempVolume"
               >
-            </a-select>
-            <a-input
-              size="small"
-              v-model="ipsec.life.volume"
-              :placeholder="placeholders.volume"
-              style="width:160px;"
-            />
-          </a-form-model-item>
+                <a-input
+                  size="small"
+                  v-model="ipsec.tempVolume"
+                  :placeholder="placeholders.volume"
+                  style="width: 200px;margin-top: 21px;"
+                />
+              </a-form-model-item>
+            </a-col>
+          </a-row>
         </a-col>
       </a-row>
       <div class="change-cls">
@@ -123,6 +155,7 @@
             <a-radio-group
               v-model="cVPNProfile.tempIpsecNewOrOld"
               :options="newOrOldOptions"
+              @change="changeRadio"
             />
           </a-col>
         </a-row>
@@ -179,14 +212,14 @@
             <a-form-model-item :label="$t('VPNIKEChange')">
               <a-select
                 v-model="ipsec.transform"
-                style="width:320px"
+                style="width: 320px"
                 size="small"
               >
                 <a-select-option
-                  :value="item.value"
+                  :value="item"
                   v-for="(item, index) in changeOptions"
                   :key="index"
-                  >{{ item.label }}</a-select-option
+                  >{{ item }}</a-select-option
                 >
               </a-select>
             </a-form-model-item>
@@ -195,7 +228,7 @@
             <a-form-model-item :label="$t('VPNIPsecForwardSecretMode')">
               <a-select
                 v-model="ipsec.pfsGroup"
-                style="width:320px"
+                style="width: 320px"
                 size="small"
               >
                 <a-select-option
@@ -237,6 +270,10 @@ export default {
         encryptionAlgorithms: [],
         antiReplay: 'enable',
         keepaliveTimeout: '10',
+        tempRekeyTime: 'seconds',
+        tempLifetime: '28800',
+        tempVolumeType: 'MB',
+        tempVolume: '',
         life: {
           duration: '28800',
           volume: ''
@@ -248,7 +285,7 @@ export default {
       placeholders: {
         keepaliveTimeout: '3-30',
         duration: '120-28800',
-        volume: '512-4294967295'
+        volume: '512-4294967295MB'
       },
       modeList: [
         {
@@ -286,34 +323,8 @@ export default {
           value: 'enable'
         }
       ],
-      restartTimeTypeOptions: [
-        {
-          label: 'Hours',
-          value: 'hours'
-        },
-        {
-          label: 'Minutes',
-          value: 'minutes'
-        },
-        {
-          label: 'Seconds',
-          value: 'seconds'
-        }
-      ],
-      restartVolumneTypeOptions: [
-        {
-          label: 'MB',
-          value: 'MB'
-        },
-        {
-          label: 'GB',
-          value: 'GB'
-        },
-        {
-          label: 'TB',
-          value: 'TB'
-        }
-      ],
+      restartTimeTypeOptions: ['Hours', 'Minutes', 'Seconds'],
+      restartVolumneTypeOptions: ['MB', 'GB', 'TB'],
       newOrOldOptions: [
         {
           label: this.$t('VPNIKENew'),
@@ -328,39 +339,17 @@ export default {
       encryList: [],
       forwardModeList: [],
       changeOptions: [
-        {
-          label: 'esp-aes128-sha1'
-        },
-        {
-          label: 'esp-aes128-ctr-sha1'
-        },
-        {
-          label: 'esp-aes128-ctr-xcbc'
-        },
-        {
-          label: 'esp-aes128-gcm'
-        },
-        {
-          label: 'esp-aes128-md5'
-        },
-        {
-          label: 'esp-aes128-sha256'
-        },
-        {
-          label: 'esp-aes128-sha384'
-        },
-        {
-          label: 'esp-aes128-sha512'
-        },
-        {
-          label: 'esp-3des-md5'
-        },
-        {
-          label: 'esp-3des-sha1'
-        },
-        {
-          label: 'esp-null-md5'
-        }
+        'esp-aes128-sha1',
+        'esp-aes128-ctr-sha1',
+        'esp-aes128-ctr-xcbc',
+        'esp-aes128-gcm',
+        'esp-aes128-md5',
+        'esp-aes128-sha256',
+        'esp-aes128-sha384',
+        'esp-aes128-sha512',
+        'esp-3des-md5',
+        'esp-3des-sha1',
+        'esp-null-md5'
       ],
       forwardModeOptions: [
         {
@@ -413,7 +402,11 @@ export default {
         }
       ],
       hashOptions: ['md5', 'sha256', 'sha384', 'sha512', 'sha1'],
-      encryOptions: ['3des', 'aes128', 'aes256']
+      encryOptions: ['3des', 'aes128', 'aes256'],
+      rules: {
+        tempLifetime: [{ validator: this.validDuration, trgger: 'blur'}],
+        tempVolume: [{ validator: this.validVolume, trgger: 'blur'}],
+      }
     };
   },
   mounted() {
@@ -434,6 +427,11 @@ export default {
         this.ipsec.pfsGroups.forEach(forward => {
           this.forwardModeList.push(forward);
         });
+      
+      this.ipsec.tempRekeyTime = 'Seconds';
+      this.ipsec.tempLifetime = this.ipsec.life.duration;
+      this.ipsec.tempVolumeType = 'MB';
+      this.ipsec.tempVolume = this.ipsec.life.volume;
     }
     if (
       this.ipsec.encryptionAlgorithms ||
@@ -461,6 +459,150 @@ export default {
         delete data.ipsec.pfsGroups;
       }
       this.$emit('passChildContent', this.cVPNProfile);
+    },
+    changeRadio(e) {
+      if (e.target.value === 'Old') {
+        this.ipsec.transform = this.ipsec.transform ? this.ipsec.transform : 'esp-aes128-sha1';
+        this.ipsec.pfsGroup = this.ipsec.pfsGroup ? this.ipsec.pfsGroup : 'mod-none';
+      }
+    },
+    validDuration(rule, value, callback) {
+      value = Number(value);
+      if (value && isNaN(value)) {
+        callback('Input number');
+      } else if (!value) {
+        callback();
+      } else {
+        switch(this.ipsec.tempRekeyTime) {
+          case 'Hours':
+            if (value < 1 || value > 8) {
+              callback('Input error');
+            } else {
+              this.ipsec.life.duration = Number(this.ipsec.tempLifetime) * 60 * 60;
+              callback();
+            }
+            break;
+          case 'Minutes':
+            if (value < 2 || value > 480) {
+              callback('Input error');
+            } else {
+              this.ipsec.life.duration = Number(this.ipsec.tempLifetime) * 60;
+              callback();
+            }
+            break;
+          default:
+            if (value < 132 || value > 28800) {
+              callback('Input error');
+            } else {
+              this.ipsec.life.duration = Number(this.ipsec.tempLifetime);
+              callback();
+            }
+            break;
+        }
+      }
+    },
+    changeRekeyTime() {
+      switch(this.ipsec.tempRekeyTime) {
+        case 'Hours':
+          this.ipsec.tempLifetime = 1;
+          this.placeholders.lifetime = '1-8';
+          this.ipsec.life.duration = Number(this.ipsec.tempLifetime) * 60 * 60;
+          this.$refs.ipsecBaseRef.validate(valid => {
+            if (!valid) {
+              return false;
+            }
+          });
+          break;
+        case 'Minutes':
+          this.ipsec.tempLifetime = 2;
+          this.placeholders.lifetime = '2-480';
+          this.ipsec.life.duration = Number(this.ipsec.tempLifetime) * 60;
+          this.$refs.ipsecBaseRef.validate(valid => {
+            if (!valid) {
+              return false;
+            }
+          });
+          break;
+        default:
+          this.ipsec.tempLifetime = 132;
+          this.placeholders.lifetime = '132-28800';
+          this.ipsec.life.duration = Number(this.ipsec.tempLifetime);
+          this.$refs.ikeBipsecBaseRefaseRef.validate(valid => {
+            if (!valid) {
+              return false;
+            }
+          });
+          break;
+      }
+    },
+    changeVolume() {
+      switch(this.ipsec.tempVolumeType) {
+        case 'TB':
+          this.ipsec.tempVolume = 1;
+          this.placeholders.volume = '1-4095TB';
+          this.ipsec.life.volume = Number(this.ipsec.tempVolume);
+          this.$refs.ipsecBaseRef.validate(valid => {
+            if (!valid) {
+              return false;
+            }
+          });
+          break;
+        case 'GB':
+          this.ipsec.tempVolume = 1;
+          this.placeholders.volume = '1-4194303GB';
+          this.ipsec.life.volume = Number(this.ipsec.tempVolume);
+          this.$refs.ipsecBaseRef.validate(valid => {
+            if (!valid) {
+              return false;
+            }
+          });
+          break;
+        default:
+          this.ipsec.tempVolume = 512;
+          this.placeholders.volume = '512-4294967295MB';
+          this.ipsec.life.volume = Number(this.ipsec.tempVolume);
+          this.$refs.ipsecBaseRef.validate(valid => {
+            if (!valid) {
+              return false;
+            }
+          });
+          break;
+      }
+    },
+    validVolume(rule, value, callback) {
+      value = Number(value);
+      if (value && isNaN(value)) {
+        callback('Input number');
+      } else if (!value) {
+        callback();
+      } else {
+        switch(this.ipsec.tempVolumeType) {
+          case 'TB':
+            if (value < 1 || value > 4095) {
+              callback('Input error');
+            } else {
+              this.ipsec.life.volume = Number(this.ipsec.tempVolume);
+              callback();
+            }
+            break;
+          case 'GB':
+            if (value < 1 || value > 4194303) {
+              callback('Input error');
+            } else {
+              this.ipsec.life.volume = Number(this.ipsec.tempVolume);
+              callback();
+            }
+            break;
+          default:
+            if (value < 512 || value > 4294967295) {
+              callback('Input error');
+            } else {
+              this.ipsec.life.volume = Number(this.ipsec.tempVolume);
+              callback();
+            }
+            break;
+        }
+      }
     },
     hashCustomFunc(data) {
       this.ipsec.hashAlgorithms = data;

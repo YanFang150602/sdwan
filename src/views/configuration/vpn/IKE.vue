@@ -1,13 +1,13 @@
 <template>
   <div>
-    <a-form-model layout="vertical" :model="ike">
+    <a-form-model layout="vertical" :model="ike" :rules="rules" ref="ikeBaseRef">
       <a-row type="flex" justify="start" align="top">
         <a-col>
           <a-form-model-item :label="$t('VPNIKEVersion')">
             <a-select
               v-model="ike.version"
               size="small"
-              style="width:200px;"
+              style="width: 200px"
               @change="changeVersion"
             >
               <a-select-option
@@ -19,12 +19,18 @@
             </a-select>
           </a-form-model-item>
           <a-form-model-item :label="$t('VPNIKETime')">
-            <a-select size="small" style="width:200px;" default-value="seconds">
+            <a-select
+              size="small"
+              style="width: 200px"
+              default-value="seconds"
+              v-model="ike.tempRekeyTime"
+              @change="changeRekeyTime"
+            >
               <a-select-option
-                :value="item.value"
+                :value="item"
                 v-for="(item, index) in rekeyTimeOptions"
                 :key="index"
-                >{{ item.label }}</a-select-option
+                >{{ item }}</a-select-option
               >
             </a-select>
           </a-form-model-item>
@@ -34,17 +40,15 @@
             <a-input
               size="small"
               v-model="ike.authDimain"
-              style="width:200px;"
+              style="width: 200px"
             />
           </a-form-model-item>
-          <a-form-model-item label=" ">
-            <br />
+          <a-form-model-item label=" " prop="tempLifetime">
             <a-input
               size="small"
-              v-model="ike.lifetime"
+              v-model="ike.tempLifetime"
               :placeholder="placeholders.lifetime"
-              style="width:200px;"
-              @blur="validIkeData"
+              style="width: 200px;margin-top: 21px"
             />
           </a-form-model-item>
         </a-col>
@@ -53,7 +57,7 @@
             <a-input
               size="small"
               v-model="ike.dpdTimeout"
-              style="width:200px;"
+              style="width: 200px"
               :placeholder="placeholders.dpdTimeout"
               @blur="validIkeData"
             />
@@ -80,7 +84,7 @@
               v-model="ike.mode"
               placeholder="--Select--"
               size="small"
-              style="width:200px;"
+              style="width: 200px"
             >
               <a-select-option
                 :value="item.value"
@@ -159,21 +163,21 @@
               <a-form-model-item :label="$t('VPNIKEChange')">
                 <a-select
                   v-model="ike.transform"
-                  style="width:320px"
+                  style="width: 320px"
                   size="small"
                 >
                   <a-select-option
-                    :value="item.value"
+                    :value="item"
                     v-for="(item, index) in changeOptions"
                     :key="index"
-                    >{{ item.label }}</a-select-option
+                    >{{ item }}</a-select-option
                   >
                 </a-select>
               </a-form-model-item>
             </a-col>
             <a-col>
               <a-form-model-item :label="$t('VPNIKEDHGroup')">
-                <a-select v-model="ike.group" style="width:320px" size="small">
+                <a-select v-model="ike.group" style="width: 320px" size="small">
                   <a-select-option
                     :value="item.value"
                     v-for="(item, index) in dhOptions"
@@ -202,7 +206,7 @@
               >
                 <a-select
                   v-model="localAuthInfo.authType"
-                  style="width:200px"
+                  style="width: 200px"
                   size="small"
                   @change="changeLocalAuthType"
                 >
@@ -226,7 +230,7 @@
                   v-model="localAuthInfo.certName"
                   placeholder="--Select--"
                   size="small"
-                  style="width:200px"
+                  style="width: 200px"
                 >
                   <a-select-option
                     :value="item.value"
@@ -245,7 +249,7 @@
                 <a-input
                   size="small"
                   v-model="localAuthInfo.key"
-                  style="width:200px;"
+                  style="width: 200px"
                 />
               </a-form-model-item>
             </a-col>
@@ -260,7 +264,7 @@
                   v-model="localAuthInfo.caChain"
                   placeholder="--Select--"
                   size="small"
-                  style="width:200px"
+                  style="width: 200px"
                 >
                   <a-select-option
                     :value="item.value"
@@ -279,7 +283,7 @@
                 <a-select
                   v-model="localAuthInfo.idType"
                   size="small"
-                  style="width:200px"
+                  style="width: 200px"
                   @change="changeLocalIdType"
                 >
                   <a-select-option
@@ -300,7 +304,7 @@
                   v-model="localAuthInfo.certDomain"
                   placeholder="--Select--"
                   size="small"
-                  style="width:200px"
+                  style="width: 200px"
                   @change="changeCertArea"
                 >
                   <a-select-option
@@ -320,7 +324,7 @@
                 <a-input
                   size="small"
                   v-model="localAuthInfo.idString"
-                  style="width:200px;"
+                  style="width: 200px"
                   :placeholder="placeholders.localIdString"
                 />
               </a-form-model-item>
@@ -333,7 +337,7 @@
                   v-model="localAuthInfo.tenant"
                   placeholder="--Select--"
                   size="small"
-                  style="width:200px"
+                  style="width: 200px"
                 >
                   <a-select-option
                     :value="item.value"
@@ -373,7 +377,7 @@
               >
                 <a-select
                   v-model="peerAuthInfo.authType"
-                  style="width:200px"
+                  style="width: 200px"
                   size="small"
                   @change="changePeerAuthType"
                 >
@@ -397,7 +401,7 @@
                   v-model="peerAuthInfo.caChain"
                   placeholder="--Select--"
                   size="small"
-                  style="width:200px"
+                  style="width: 200px"
                 >
                   <a-select-option
                     :value="item.value"
@@ -416,7 +420,7 @@
                 <a-input
                   size="small"
                   v-model="peerAuthInfo.key"
-                  style="width:200px;"
+                  style="width: 200px"
                 />
               </a-form-model-item>
             </a-col>
@@ -430,7 +434,7 @@
                 <a-select
                   v-model="peerAuthInfo.idType"
                   size="small"
-                  style="width:200px"
+                  style="width: 200px"
                   @change="changePeerIdType"
                 >
                   <a-select-option
@@ -452,7 +456,7 @@
                 <a-input
                   size="small"
                   v-model="peerAuthInfo.idString"
-                  style="width:200px;"
+                  style="width: 200px"
                   :placeholder="placeholders.peerIdString"
                 />
               </a-form-model-item>
@@ -473,7 +477,7 @@
                 <a-select
                   v-model="peerAuthInfo.authType"
                   placeholder="--Select--"
-                  style="width:200px"
+                  style="width: 200px"
                   size="small"
                   @change="changeConPeerAuthType"
                 >
@@ -495,7 +499,7 @@
                 :columns="certAuthColumns"
                 :table-data="certAuthList"
                 :height="150"
-                style="width:800px"
+                style="width: 800px"
                 @on-custom-comp="customFunc"
               ></v-table>
             </a-col>
@@ -509,7 +513,7 @@
                 :columns="pskColumns"
                 :table-data="pskList"
                 :height="150"
-                style="width:800px"
+                style="width: 800px"
                 isFrozen="true"
                 @on-custom-comp="customFunc"
                 error-content="Temporarily no data"
@@ -530,26 +534,27 @@ export default {
   name: 'IKE',
   props: ['vpnProfile', 'conSDWAN'],
   components: {
-    ListCrt
+    ListCrt,
   },
   data() {
     return {
       visible: true,
       renderM: 'firstRender',
       cVPNProfile: {
-        tempIkeNewOrOld: 'Old'
+        tempIkeNewOrOld: 'Old',
       },
       ike: {
         version: 'v2',
         mode: '',
-        group: '',
-        transform: '',
+        group: 'mod2',
+        transform: 'aes128-sha1',
         authDimain: '',
         dpdTimeout: '30',
-        lifetime: '28800',
+        tempRekeyTime: 'Seconds',
+        tempLifetime: '28800',
         hashAlgorithms: [],
         encryptionAlgorithms: [],
-        groups: []
+        groups: [],
       },
       HashAlgorithms: 'Hash Algorithms',
       EncryptionAlgorithms: 'Encryption Algorithms',
@@ -558,149 +563,140 @@ export default {
         dpdTimeout: '10-180',
         lifetime: '132-28800',
         localIdString: '',
-        peerIdString: ''
+        peerIdString: '',
       },
       localAuthInfo: {},
       peerAuthInfo: {},
       versionOptions: [
         {
           label: this.$t('SelectNull'),
-          value: ''
+          value: '',
         },
         {
           label: 'v1',
-          value: 'v1'
+          value: 'v1',
         },
         {
           label: 'v2',
-          value: 'v2'
+          value: 'v2',
         },
         {
           label: 'v2-or-v1',
-          value: 'v2-or-v1'
-        }
+          value: 'v2-or-v1',
+        },
       ],
       showMode: false,
       rekeyTimeOptions: [
-        {
-          label: 'Hours',
-          value: 'hours'
-        },
-        {
-          label: 'Minutes',
-          value: 'minutes'
-        },
-        {
-          label: 'Seconds',
-          value: 'seconds'
-        }
+        'Hours',
+        'Minutes',
+        'Seconds',
       ],
       backCheckOptions: [
         {
           label: this.$t('SelectNull'),
-          value: ''
+          value: '',
         },
         {
           label: this.$t('VPNIKEBackCheckNull'),
-          value: 'none'
+          value: 'none',
         },
         {
           label: 'OCSP',
-          value: 'ocsp'
-        }
+          value: 'ocsp',
+        },
       ],
       modelOptions: [
         {
           label: this.$t('SelectNull'),
-          value: ''
+          value: '',
         },
         {
           label: 'Aggressive',
-          value: 'aggressive'
+          value: 'aggressive',
         },
         {
           label: 'Main',
-          value: 'main'
-        }
+          value: 'main',
+        },
       ],
       newOrOldOptions: [
         {
           label: this.$t('VPNIKENew'),
-          value: 'New'
+          value: 'New',
         },
         {
           label: this.$t('VPNIKEOld'),
-          value: 'Old'
-        }
+          value: 'Old',
+        },
       ],
       hashList: [],
       encryList: [],
       dhList: [],
       changeOptions: [
-        { label: '3des-md5' },
-        { label: '3des-sha1' },
-        { label: 'aes128-sha1' },
-        { label: 'aes128-md5' },
-        { label: 'aes256-sha1' },
-        { label: 'aes256-md5' },
-        { label: 'aes128-sha256' },
-        { label: 'aes256-sha256' },
-        { label: 'aes128-sha384' },
-        { label: 'aes256-sha384' },
-        { label: 'aes128-sha512' },
-        { label: 'aes256-sha512' }
+        '3des-md5',
+        '3des-sha1',
+        'aes128-sha1',
+        'aes128-md5',
+        'aes256-sha1',
+        'aes256-md5',
+        'aes128-sha256',
+        'aes256-sha256',
+        'aes128-sha384',
+        'aes256-sha384',
+        'aes128-sha512',
+        'aes256-sha512'
       ],
       hashOptions: ['md5', 'sha256', 'sha384', 'sha512', 'sha1'],
       encryOptions: ['3des', 'aes128', 'aes256'],
       dhOptions: [
         {
           label: 'No PFS',
-          value: 'mod-none'
+          value: 'mod-none',
         },
         {
           label: 'Diffie-Hellman Group 1 - 768-bit modulus',
-          value: 'mod1'
+          value: 'mod1',
         },
         {
           label: 'Diffie-Hellman Group 2 – 1024-bit modulus',
-          value: 'mod2'
+          value: 'mod2',
         },
         {
           label: 'Diffie-Hellman Group 5 - 1536-bit modulus',
-          value: 'mod5'
+          value: 'mod5',
         },
         {
           label: 'Diffie-Hellman Group 14 – 2048 bit modulus',
-          value: 'mod14'
+          value: 'mod14',
         },
         {
           label: 'Diffie-Hellman Group 15 – 3072 bit modulus',
-          value: 'mod15'
+          value: 'mod15',
         },
         {
           label: 'Diffie-Hellman Group 16 – 4096 bit modulus',
-          value: 'mod16'
+          value: 'mod16',
         },
         {
           label: 'Diffie-Hellman Group 19 – 256 bit elliptic curve',
-          value: 'mod19'
+          value: 'mod19',
         },
         {
           label: 'Diffie-Hellman Group 20 – 384 bit elliptic curve',
-          value: 'mod20'
+          value: 'mod20',
         },
         {
           label: 'Diffie-Hellman Group 21– 251 bit elliptic curve',
-          value: 'mod21'
+          value: 'mod21',
         },
         {
           label: 'Diffie-Hellman Group 25– 192 bit elliptic curve',
-          value: 'mod25'
+          value: 'mod25',
         },
         {
           label: 'Diffie-Hellman Group 26– 224 bit elliptic curve',
-          value: 'mod26'
-        }
+          value: 'mod26',
+        },
       ],
       authTypeOptions: [
         /* {
@@ -709,8 +705,8 @@ export default {
         }, */
         {
           label: 'psk',
-          value: 'psk'
-        }
+          value: 'psk',
+        },
       ],
       certNameOptions: [{ label: '', value: '' }],
       localCAOptions: [{ label: '', value: '' }],
@@ -720,39 +716,39 @@ export default {
       certAreaOptions: [
         {
           label: this.$t('SelectNull'),
-          value: ''
+          value: '',
         },
         {
           label: this.$t('VPNIKESystem'),
-          value: 'system'
+          value: 'system',
         },
         {
           label: this.$t('VPNIKETenant'),
-          value: 'tenant'
-        }
+          value: 'tenant',
+        },
       ],
       showTenant: false,
       idTypeOptions: [
         {
           label: this.$t('VPNIKEEmail'),
-          value: 'email'
+          value: 'email',
         },
         {
           label: 'FQDN',
-          value: 'fqdn'
+          value: 'fqdn',
         },
         {
           label: 'IP',
-          value: 'ip'
-        }
+          value: 'ip',
+        },
       ],
       showPeerCert: false,
       showPeerPsk: true,
       tenantOptions: [
         {
           label: '',
-          value: ''
-        }
+          value: '',
+        },
       ],
       certAuthColumns: [
         {
@@ -763,7 +759,7 @@ export default {
           width: 350,
           columnAlign: 'left',
           isResize: true,
-          componentName: 'idtype-opration'
+          componentName: 'idtype-opration',
         },
         {
           field: 'idStringInput',
@@ -773,7 +769,7 @@ export default {
           width: 350,
           columnAlign: 'left',
           isResize: true,
-          componentName: 'id-opration'
+          componentName: 'id-opration',
         },
         {
           field: 'operation',
@@ -781,8 +777,8 @@ export default {
           width: 100,
           columnAlign: 'left',
           isResize: true,
-          componentName: 'certoper-opration'
-        }
+          componentName: 'certoper-opration',
+        },
       ],
       certAuthList: [{ type: 'certificate' }],
       pskColumns: [
@@ -794,7 +790,7 @@ export default {
           width: 250,
           columnAlign: 'left',
           isResize: true,
-          componentName: 'idtype-opration'
+          componentName: 'idtype-opration',
         },
         {
           field: 'idStringInput',
@@ -804,7 +800,7 @@ export default {
           width: 200,
           columnAlign: 'left',
           isResize: true,
-          componentName: 'id-opration'
+          componentName: 'id-opration',
         },
         {
           field: 'keyInput',
@@ -812,7 +808,7 @@ export default {
           width: 250,
           columnAlign: 'left',
           isResize: true,
-          componentName: 'key-opration'
+          componentName: 'key-opration',
         },
         {
           field: 'operation',
@@ -820,10 +816,13 @@ export default {
           width: 100,
           columnAlign: 'left',
           isResize: true,
-          componentName: 'pskoper-opration'
-        }
+          componentName: 'pskoper-opration',
+        },
       ],
       pskList: [{ type: 'psk' }],
+      rules: {
+        tempLifetime: [{ validator: this.validLifetime, trigger: 'blur' }]
+      },
       localRules: {
         authType: [{ validator: required }],
         /* certName: [
@@ -842,7 +841,7 @@ export default {
         ], */
         key: [{ validator: required }],
         idType: [{ validator: required }],
-        idString: [{ validator: required }]
+        idString: [{ validator: required }],
       },
       peerRules: {
         authType: [{ validator: required }],
@@ -852,17 +851,17 @@ export default {
         */
         key: [{ validator: required }],
         idType: [{ validator: required }],
-        idString: [{ validator: required }]
+        idString: [{ validator: required }],
       },
       showConPsk: false,
-      showConCert: false
+      showConCert: false,
     };
   },
   computed: {
     ...mapState(['vpnTableSelects']),
     showCertAuthTable() {
       return this.conSDWAN;
-    }
+    },
   },
   mounted() {
     this.localAuthInfo = this.vpnProfile.localAuthInfo
@@ -874,7 +873,7 @@ export default {
           idString: '',
           caChain: '',
           certDomain: '',
-          certName: ''
+          certName: '',
         };
     this.peerAuthInfo = this.vpnProfile.peerAuthInfo
       ? this.vpnProfile.peerAuthInfo
@@ -883,7 +882,7 @@ export default {
           idType: 'email',
           idString: '',
           key: '',
-          caChain: ''
+          caChain: '',
         };
 
     if (this.vpnProfile.ike) {
@@ -892,17 +891,19 @@ export default {
       this.encryList = [];
       this.dhList = [];
       this.ike.hashAlgorithms &&
-        this.ike.hashAlgorithms.forEach(hash => {
+        this.ike.hashAlgorithms.forEach((hash) => {
           this.hashList.push(hash);
         });
       this.ike.encryptionAlgorithms &&
-        this.ike.encryptionAlgorithms.forEach(encry => {
+        this.ike.encryptionAlgorithms.forEach((encry) => {
           this.encryList.push(encry);
         });
       this.ike.groups &&
-        this.ike.groups.forEach(dh => {
+        this.ike.groups.forEach((dh) => {
           this.dhList.push(dh);
         });
+      this.ike.tempRekeyTime = 'Seconds';
+      this.ike.tempLifetime = this.ike.lifetime;
     }
     this.cVPNProfile.localAuthInfo = this.localAuthInfo;
     this.cVPNProfile.peerAuthInfo = this.peerAuthInfo;
@@ -923,7 +924,7 @@ export default {
     ...mapMutations([
       'vpnTableSelectsPlus',
       'vpnTableSelectsMinus',
-      'vpnTableSelectsAll'
+      'vpnTableSelectsAll',
     ]),
     getData() {
       this.$refs.hashRef && this.$refs.hashRef.param();
@@ -943,9 +944,44 @@ export default {
       }
       this.$emit('passChildContent', data);
     },
+    changeRekeyTime() {
+      switch(this.ike.tempRekeyTime) {
+        case 'Hours':
+          this.ike.tempLifetime = 1;
+          this.placeholders.lifetime = '1-8';
+          this.ike.lifetime = Number(this.ike.tempLifetime) * 60 * 60;
+          this.$refs.ikeBaseRef.validate(valid => {
+            if (!valid) {
+              return false;
+            }
+          });
+          break;
+        case 'Minutes':
+          this.ike.tempLifetime = 2;
+          this.placeholders.lifetime = '2-480';
+          this.ike.lifetime = Number(this.ike.tempLifetime) * 60;
+          this.$refs.ikeBaseRef.validate(valid => {
+            if (!valid) {
+              return false;
+            }
+          });
+          break;
+        default:
+          this.ike.tempLifetime = 132;
+          this.placeholders.lifetime = '132-28800';
+          this.ike.lifetime = Number(this.ike.tempLifetime);
+          this.$refs.ikeBaseRef.validate(valid => {
+            if (!valid) {
+              return false;
+            }
+          });
+          break;
+      }
+    },
     changeRadio(e) {
-      if (e.target.value === 'New') {
-        console.log(this.hashList);
+      if (e.target.value === 'Old') {
+        this.ike.transform = this.ike.transform ? this.ike.transform : 'aes128-sha1';
+        this.ike.group = this.ike.group ? this.ike.group : 'mod2';
       }
     },
     changeLocalIdType(value) {
@@ -956,11 +992,45 @@ export default {
       }
     },
     changePeerIdType(value) {
-      console.log('changePeerIdType', value);
       if (value === 'email') {
         this.placeholders.peerIdString = this.$t('IKE_IDTYPE_EMAIL');
       } else {
         this.placeholders.peerIdString = '';
+      }
+    },
+    validLifetime(rule, value, callback) {
+      value = Number(value);
+      if (value && isNaN(value)) {
+        callback('Input number');
+      } else if (!value) {
+        callback();
+      } else {
+        switch(this.ike.tempRekeyTime) {
+          case 'Hours':
+            if (value < 1 || value > 8) {
+              callback('Input error');
+            } else {
+              this.ike.lifetime = Number(this.ike.tempLifetime) * 60 * 60;
+              callback();
+            }
+            break;
+          case 'Minutes':
+            if (value < 2 || value > 480) {
+              callback('Input error');
+            } else {
+              this.ike.lifetime = Number(this.ike.tempLifetime) * 60;
+              callback();
+            }
+            break;
+          default:
+            if (value < 132 || value > 28800) {
+              callback('Input error');
+            } else {
+              this.ike.lifetime = Number(this.ike.tempLifetime);
+              callback();
+            }
+            break;
+        }
       }
     },
     validIkeData() {
@@ -1069,19 +1139,19 @@ export default {
       } else {
         this.showTenant = false;
       }
-    }
-  }
+    },
+  },
 };
 let props = {
   rowData: {
-    type: Object
+    type: Object,
   },
   field: {
-    type: String
+    type: String,
   },
   index: {
-    type: Number
-  }
+    type: Number,
+  },
 };
 Vue.component('idtype-opration', {
   template: `<span>
@@ -1103,7 +1173,7 @@ Vue.component('idtype-opration', {
     </span>`,
   props,
   computed: {
-    ...mapState(['vpnTableSelects'])
+    ...mapState(['vpnTableSelects']),
   },
   methods: {
     change(label) {
@@ -1112,11 +1182,11 @@ Vue.component('idtype-opration', {
         type: 'idtype',
         index: this.index,
         rowData: this.rowData,
-        label
+        label,
       };
       this.$emit('on-custom-comp', params);
-    }
-  }
+    },
+  },
 });
 Vue.component('id-opration', {
   template: `<span>
@@ -1135,11 +1205,11 @@ Vue.component('id-opration', {
         type: 'idString',
         index: this.index,
         rowData: this.rowData,
-        label
+        label,
       };
       this.$emit('on-custom-comp', params);
-    }
-  }
+    },
+  },
 });
 Vue.component('key-opration', {
   template: `<span>
@@ -1158,11 +1228,11 @@ Vue.component('key-opration', {
         type: 'key',
         index: this.index,
         rowData: this.rowData,
-        label
+        label,
       };
       this.$emit('on-custom-comp', params);
-    }
-  }
+    },
+  },
 });
 Vue.component('certoper-opration', {
   template: `<span>
@@ -1175,11 +1245,11 @@ Vue.component('certoper-opration', {
       let params = {
         type: 'cert_plus',
         index: this.index,
-        rowData: this.rowData
+        rowData: this.rowData,
       };
       this.$emit('on-custom-comp', params);
-    }
-  }
+    },
+  },
 });
 
 Vue.component('pskoper-opration', {
@@ -1193,11 +1263,11 @@ Vue.component('pskoper-opration', {
       let params = {
         type: 'psk_plus',
         index: this.index,
-        rowData: this.rowData
+        rowData: this.rowData,
       };
       this.$emit('on-custom-comp', params);
-    }
-  }
+    },
+  },
 });
 </script>
 <style lang="scss" scoped>

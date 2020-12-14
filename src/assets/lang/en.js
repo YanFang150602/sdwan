@@ -102,7 +102,7 @@ module.exports = {
   VPNIPsecEnable: 'Enabled',
   VPNIPsecKeepActiveTimeout: 'Keep Alive Timeout',
   VPNIPsecRestartTime: 'IPsec Rekey Time',
-  VPNIPsecRestatVolumne: 'IIPsec Rekey Volume',
+  VPNIPsecRestatVolumne: 'IPsec Rekey Volume',
   VPNIPsecForwardSecretMode: 'Perfect Forward Secrecy Group',
   IKE_ERROR: 'Input error',
   IKE_IDTYPE_EMAIL: '',
