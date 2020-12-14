@@ -159,7 +159,7 @@
         <a-button key="back" @click="visible = false">Cancel</a-button>
         <a-button
           type="primary"
-          v-if="userInfo.level === 1"
+          v-if="userInfo.level === 1 || 2"
           key="submit"
           @click="handleOk"
           :loading="loading"

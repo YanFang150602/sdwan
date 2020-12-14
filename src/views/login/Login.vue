@@ -1,31 +1,32 @@
 <template>
-  <a-spin :spinning="spinning" class="containters">
+  <div class="containters">
     <div class="login-con">
       <div class="login-top">
         <div class="logo"></div>
         <div class="title">CMCC SDWAN</div>
       </div>
       <div class="input-wrap">
+        <!-- 登录 -->
         <a-form-model
+          v-show="active === '0'"
           ref="loginRef"
           :model="loginData"
           :rules="loginRule"
           hideRequiredMark
           layout="vertical"
         >
-          <a-form-model-item prop="userName" ref="username">
+          <a-form-model-item prop="userName">
             <a-input v-model="loginData.userName" placeholder="User Name" />
           </a-form-model-item>
-          <a-form-model-item prop="evidence" ref="password">
+          <a-form-model-item prop="evidence">
             <a-input-password
               v-model="loginData.evidence"
-              type="password"
               placeholder="Password"
             />
           </a-form-model-item>
           <a-row type="flex" justify="space-between" align="middle">
-            <a-col :span="14">
-              <a-form-model-item prop="text" ref="text">
+            <a-col :span="15">
+              <a-form-model-item prop="text">
                 <a-input v-model="loginData.text" placeholder="Code" />
               </a-form-model-item>
             </a-col>
@@ -38,50 +39,154 @@
             </a-col>
           </a-row>
         </a-form-model>
-        <div class="tip-message">{{ tipMessage }}</div>
-        <div class="login-btn">
-          <a-button type="primary" html-type="submit" @click="userlogin()"
-            >Login</a-button
-          >
-        </div>
-        <div class="controls-link">
-          <a href="resetpassword" class="link">Forgot Password</a>
-        </div>
+        <!-- 邮箱 -->
+        <a-form-model
+          v-show="active === '1'"
+          ref="sendRef"
+          :model="emailData"
+          :rules="emailRule"
+          hideRequiredMark
+          layout="vertical"
+        >
+          <p class="resetTip">Enter your email address and identifying code.</p>
+          <a-form-model-item prop="email">
+            <a-input v-model="emailData.email" placeholder="Email Address" />
+          </a-form-model-item>
+          <a-row type="flex" justify="space-between" align="middle">
+            <a-col :span="15">
+              <a-form-model-item prop="text">
+                <a-input v-model="emailData.text" placeholder="Code" />
+              </a-form-model-item>
+            </a-col>
+            <a-col @click="verif" :span="8">
+              <img
+                width="100%"
+                :src="'data:image/png;base64,' + imgStr"
+                alt=""
+              />
+            </a-col>
+          </a-row>
+        </a-form-model>
+        <!-- 重置 -->
+        <a-form-model
+          v-show="active === '2'"
+          ref="resetRef"
+          :model="resetData"
+          :rules="resetRule"
+          hideRequiredMark
+          layout="vertical"
+        >
+          <p class="resetTip">Enter your password to reset your account.</p>
+          <a-form-model-item prop="evidence">
+            <a-input v-model="resetData.evidence" placeholder="Email Code" />
+          </a-form-model-item>
+          <a-form-model-item prop="newPwd">
+            <a-input-password
+              v-model="resetData.newPwd"
+              placeholder="New Password"
+            />
+          </a-form-model-item>
+          <a-form-model-item prop="confPwd">
+            <a-input-password
+              v-model="resetData.confPwd"
+              placeholder="Confirm Password"
+            />
+          </a-form-model-item>
+          <a-row type="flex" justify="space-between" align="middle">
+            <a-col :span="15">
+              <a-form-model-item prop="text" ref="text">
+                <a-input v-model="resetData.text" placeholder="Code" />
+              </a-form-model-item>
+            </a-col>
+            <a-col @click="verif" :span="8">
+              <img
+                width="100%"
+                :src="'data:image/png;base64,' + imgStr"
+                alt=""
+              />
+            </a-col>
+          </a-row>
+        </a-form-model>
+        <a-row
+          type="flex"
+          align="top"
+          justify="space-between"
+          :style="{ padding: '6px 90px 0 100px' }"
+        >
+          <a-col>
+            <div class="tip-message">{{ tipMessage }}</div>
+            <a
+              class="backBtn"
+              v-show="active == '1'"
+              href="javascript:;"
+              @click="toLogin"
+              >← Back to Login</a
+            >
+            <a
+              class="backBtn"
+              v-show="active == '2'"
+              href="javascript:;"
+              @click="toSend"
+              >← Back to Send</a
+            >
+          </a-col>
+          <a-col>
+            <a-button
+              v-show="active === '0'"
+              type="primary"
+              :loading="Load"
+              @click="userlogin()"
+              >Login</a-button
+            >
+            <a-button
+              v-show="active === '1'"
+              type="primary"
+              :loading="emLoad"
+              @click="sending()"
+              >Sending</a-button
+            >
+            <a-button
+              v-show="active === '2'"
+              type="primary"
+              :loading="rsLoad"
+              @click="rest()"
+              >Reset</a-button
+            >
+            <div class="controls-link">
+              <a
+                v-show="active === '0'"
+                href="javascript:;"
+                @click="active = '1'"
+                class="link"
+                >Forgot Password</a
+              >
+            </div>
+          </a-col>
+        </a-row>
       </div>
     </div>
-  </a-spin>
+  </div>
 </template>
 <script>
-import { login, getUserInfo, verification } from 'apis/common';
+import {
+  login,
+  getUserInfo,
+  verification,
+  emailCode,
+  passwordReset
+} from 'apis/common';
 import { mapMutations } from 'vuex';
 export default {
   data() {
-    const validatorUserName = (rule, value, callback) => {
-      if (!value) {
-        callback('Enter Username');
-      } else {
-        callback();
-      }
-    };
-    const validatorPassword = (rule, value, callback) => {
-      if (!value) {
-        callback('Enter Password');
-      } else {
-        callback();
-      }
-    };
-    const validatorCode = (rule, value, callback) => {
-      if (!value) {
-        callback('Enter Code');
-      } else {
-        callback();
-      }
-    };
     return {
-      spinning: false,
+      active: '0',
+      Load: false,
+      emLoad: false,
+      rsLoad: false,
       // 表单错误信息
       tipMessage: '',
       imgStr: '',
+      // 登录
       loginData: {
         loginType: 'ACCOUNT',
         evidenceType: 'PASSWORD',
@@ -93,39 +198,98 @@ export default {
         binded: false
       },
       loginRule: {
-        userName: [{ required: true, validator: validatorUserName }],
-        evidence: [{ required: true, validator: validatorPassword }],
-        text: [{ required: true, validator: validatorCode }]
+        userName: [{ required: true, message: 'Enter Username' }],
+        evidence: [{ required: true, message: 'Enter Password' }],
+        text: [{ required: true, message: 'Enter Code' }]
+      },
+      // 邮箱验证
+      emailData: {
+        email: 'xc-sweet@qq.com',
+        key: '',
+        text: '',
+        operateType: 'LOGIN'
+      },
+      emailRule: {
+        email: [
+          { required: true, message: 'Enter Email' },
+          {
+            type: 'email',
+            message: 'Format is incorrect'
+          }
+        ],
+        text: [{ required: true, message: 'Enter Code' }]
+      },
+      // 重置密码
+      resetData: {
+        userName: '',
+        loginType: 'EMAIL',
+        evidence: '',
+        newPwd: '',
+        confPwd: '',
+        encrypted: false,
+        key: '',
+        text: ''
+      },
+      resetRule: {
+        evidence: [{ required: true, message: 'Enter email code' }],
+        newPwd: [{ required: true, message: 'Enter Password' }],
+        confPwd: [
+          { required: true, message: 'Enter Password again' },
+          {
+            validator: () => {
+              return this.resetData.confPwd === this.resetData.newPwd;
+            },
+            message: 'Passwords do not match'
+          }
+        ],
+        text: [{ required: true, message: 'Enter Code' }]
       }
     };
   },
   created() {
     this.verif();
   },
+
   methods: {
     ...mapMutations('common', ['set_token', 'set_user_info']),
+    // 验证码
     async verif() {
       const { result } = await verification();
-      this.loginData.key = result.key;
+      switch (true) {
+        case this.active === '0':
+          this.loginData.key = result.key;
+          break;
+        case this.active === '1':
+          this.emailData.key = result.key;
+          break;
+        case this.active === '2':
+          this.resetData.key = result.key;
+          break;
+        default:
+          this.tipMessage = '';
+      }
       this.imgStr = result.img;
     },
+    // 登录
     userlogin() {
       this.$refs.loginRef.validate(async (valid, messages) => {
         switch (true) {
-          case Object.prototype.hasOwnProperty.call(messages, 'username'):
-            this.tipMessage = messages.username[0].message;
+          case 'userName' in messages:
+            this.tipMessage = messages.userName[0].message;
             break;
-          case Object.prototype.hasOwnProperty.call(messages, 'password'):
-            this.tipMessage = messages.password[0].message;
+          case 'evidence' in messages:
+            this.tipMessage = messages.evidence[0].message;
             break;
-          case Object.prototype.hasOwnProperty.call(messages, 'text'):
+          case 'text' in messages:
             this.tipMessage = messages.text[0].message;
             break;
+          default:
+            this.tipMessage = '';
         }
-        if (valid) {
-          this.spinning = true;
+        if (valid && !this.Load) {
+          this.Load = true;
           const loginRes = await login(this.loginData);
-          this.spinning = false;
+          this.Load = false;
           if (loginRes.status !== '000_0000_0000') {
             this.verif();
             return (this.tipMessage = 'Invalid user name or password or code.');
@@ -142,15 +306,108 @@ export default {
           }
         }
       });
+    },
+    // 邮件验证码
+    sending() {
+      this.$refs.sendRef.validate(async (valid, messages) => {
+        switch (true) {
+          case 'email' in messages:
+            this.tipMessage = messages.email[0].message;
+            break;
+          case 'text' in messages:
+            this.tipMessage = messages.text[0].message;
+            break;
+          default:
+            this.tipMessage = '';
+        }
+        if (valid && !this.emLoad) {
+          this.emLoad = true;
+          const emailRes = await emailCode(this.emailData);
+          this.emLoad = false;
+          if (emailRes.status !== '000_0000_0000') {
+            this.verif();
+            return (this.tipMessage = 'Invalid email or code.');
+          }
+          this.$message.success('验证码发送成功！');
+          this.active = '2';
+          this.verif();
+        }
+      });
+    },
+    // 密码重置
+    rest() {
+      this.$refs.resetRef.validate(async (valid, messages) => {
+        console.log('messages', messages);
+        switch (true) {
+          case 'evidence' in messages:
+            this.tipMessage = messages.evidence[0].message;
+            break;
+          case 'newPwd' in messages:
+            this.tipMessage = messages.newPwd[0].message;
+            break;
+          case 'confPwd' in messages:
+            this.tipMessage = messages.confPwd[0].message;
+            break;
+          case 'text' in messages:
+            this.tipMessage = messages.text[0].message;
+            break;
+          default:
+            this.tipMessage = '';
+        }
+        if (valid && !this.rsLoad) {
+          this.rsLoad = true;
+          const resetRes = await passwordReset(this.resetData);
+          this.rsLoad = false;
+          if (resetRes.status !== '000_0000_0000') {
+            this.verif();
+            return (this.tipMessage = 'Invalid email or code.');
+          }
+          this.$message.success('密码修改成功，请重新登录！');
+          this.active = '0';
+          this.verif();
+        }
+      });
+    },
+    toLogin() {
+      this.active = '0';
+      this.emailData = {
+        email: '',
+        key: '',
+        text: '',
+        operateType: 'LOGIN'
+      };
+      this.verif();
+    },
+    toSend() {
+      this.active = '1';
+      this.resetData = {
+        userName: '',
+        loginType: '',
+        evidence: '',
+        newPwd: '',
+        confPwd: '',
+        encrypted: false,
+        key: '',
+        text: ''
+      };
+      this.verif();
+    }
+  },
+  watch: {
+    'emailData.email': {
+      handler: function(val) {
+        this.resetData.userName = val;
+        console.log('this.resetData.userName', this.resetData.userName);
+      }
     }
   }
 };
 </script>
 <style lang="scss" scoped>
-/deep/.ant-form-explain {
-  display: none !important;
-}
 .containters {
+  /deep/.ant-form-explain {
+    display: none !important;
+  }
   background: #0d496a url('~@/assets/images/login/waves.png') no-repeat center
     bottom;
   background-attachment: fixed;
@@ -162,7 +419,7 @@ export default {
   bottom: 0;
   .login-con {
     width: 450px;
-    height: 320px;
+    padding-bottom: 35px;
     position: fixed;
     top: 50%;
     left: 50%;
@@ -205,6 +462,12 @@ export default {
       }
     }
     .input-wrap {
+      .resetTip {
+        margin-bottom: 0;
+        color: #fff;
+        font-size: 12px;
+      }
+
       /deep/.ant-form {
         margin: 20px 0 0 100px;
         width: 260px;
@@ -233,32 +496,32 @@ export default {
         }
       }
       .tip-message {
-        padding-left: 105px;
         font-size: 11px;
         color: #ee6978;
-        margin-bottom: 10px;
       }
-      .login-btn {
-        padding-left: 289px;
-        button {
-          font-weight: 500;
-          min-width: 70px;
-          font-size: 14px;
-          line-height: 20px;
-          text-align: center;
-          vertical-align: middle;
-          border-color: #5aa2d0;
-          background-color: #0090bc;
+      .backBtn {
+        color: #7bb7d4;
+        font-size: 12px;
+      }
+      button {
+        float: right;
+        font-weight: 500;
+        min-width: 70px;
+        font-size: 14px;
+        line-height: 20px;
+        text-align: center;
+        vertical-align: middle;
+        border-color: #5aa2d0;
+        background-color: #0090bc;
+        background-image: none;
+        text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+        &:hover {
+          background-color: #0072bc;
           background-image: none;
-          text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-          &:hover {
-            background-color: #0072bc;
-            background-image: none;
-          }
         }
       }
       .controls-link {
-        padding-left: 273px;
+        text-align: right;
       }
       .controls-link .link {
         color: #7bb7d4;

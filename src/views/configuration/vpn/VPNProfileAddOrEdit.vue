@@ -451,6 +451,7 @@
                         style="width:100%;"
                         isFrozen="true"
                         @on-custom-comp="customStrategyFunc"
+                        error-content="Temporarily no data"
                       ></v-table>
                     </a-form-model-item>
                   </a-col>
@@ -534,6 +535,7 @@
                         :title-click="serverTitleClick"
                         :cell-merge="serverCellMerge"
                         @on-custom-comp="customServerFunc"
+                        error-content="Temporarily no data"
                       ></v-table>
                     </a-form-model-item>
                   </a-col>
@@ -551,6 +553,7 @@
                         :title-click="domainTitleClick"
                         :cell-merge="domainCellMerge"
                         @on-custom-comp="customDomainFunc"
+                        error-content="Temporarily no data"
                       ></v-table>
                     </a-form-model-item>
                   </a-col>
@@ -1580,7 +1583,7 @@ export default {
         } else {
           this.strategyList.push(params);
         }
-        
+
         this.strategyNameList.push(params.name);
         this.cVPNProfile.rule = this.strategyList;
         this.pageIndex = 1;

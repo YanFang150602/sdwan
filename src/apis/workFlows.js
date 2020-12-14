@@ -3,8 +3,8 @@ import { $http } from '@/utils/axios';
 //  * @desc 获取设备列表
 //  */
 // 获取设备列表
-export const devicesTableForm = (deep, orgname, offset, limit) =>
-  $http.get('/controller/sdwan/v1/device', { deep, orgname, offset, limit });
+export const devicesTableForm = param =>
+  $http.get('/controller/sdwan/v1/device', param);
 
 // 删除设备
 export const devicesDelete = param =>

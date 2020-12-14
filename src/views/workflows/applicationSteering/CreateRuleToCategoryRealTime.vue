@@ -48,6 +48,8 @@
                       style="width:405px;margin-left:15px"
                       :listdate="address"
                       @subdata="val => (currentEdit.destinationAddress = val)"
+                      v-model="currentEdit.destinationAddress"
+                      ref="SourceAddressRef"
                     />
                   </a-form-model-item>
                 </p>
@@ -59,7 +61,9 @@
                       title="Destination Address"
                       style="width:405px;margin-left:15px"
                       :listdate="address"
-                      @subdata="val => (currentEdit.destinationAddress = val)"
+                      @subdata="val => (currentEdit.destinationAddresst = val)"
+                      v-model="currentEdit.destinationAddresst"
+                      ref="DestinationAddress"
                     />
                   </a-form-model-item>
                 </p>
@@ -70,7 +74,9 @@
                 title="Source Zones"
                 style="width:405px;margin-left:15px"
                 :listdate="FZones"
-                @subdata="val => subit(val, 'SourceZones')"
+                @subdata="val => subit(currentEdit.FZones = val)"
+                v-model="currentEdit.FZones"
+                ref="FZones"
               />
             </a-form-model-item>
             <a-form-model-item style="float:right">
@@ -78,7 +84,9 @@
                 title="Destination Zones"
                 style="width:405px;margin-left:15px"
                 :listdate="FZones"
-                @subdata="val => subit(val, 'DestinationZones')"
+                @subdata="val => subit(currentEdit.DestinationZones = val)"
+                v-model="currentEdit.Destination"
+                ref="DestinationZones"
               />
             </a-form-model-item>
           </a-tab-pane>
@@ -98,6 +106,7 @@
           </a-tab-pane>
           <!-- Enforce -->
           <a-tab-pane key="4" tab="Enforce">
+            <!-- <a-checkbox-group v-model="form.ruleActions"> -->
             <div class="EnforceTra">
               <div class="tracon">Traffic conditioning</div>
               <a-row type="flex" justify="space-between" align="bottom">
@@ -164,6 +173,7 @@
                 ref="addModleDoubleRef"
               ></AddModleDouble>
             </div>
+            <!-- </a-checkbox-group> -->
           </a-tab-pane>
         </a-tabs>
       </a-form-model>
@@ -223,17 +233,6 @@ export default {
       visible: false,
       //SourceZones下拉框数据
       addressSource: [],
-      sourceList: [],
-      predeList: [],
-      cusappList: [],
-      preAppGroList: [],
-      CustomerList: [],
-      cusSerList: [],
-      allListappGroups: [],
-      allListcategories: [],
-      allListpredefinedApps: [],
-      allListpredefinedFilters: [],
-      allListservices: [],
       address: [],
       FZones: [],
       form: {
@@ -261,14 +260,72 @@ export default {
     };
   },
   watch: {
+    'currentEdit.destinationAddress'(newVal) {
+      console.log(newVal);
+      if (newVal) {
+        this.form.srcAddresses = newVal;
+      }
+    },
+    'currentEdit.destinationAddresst'(newVal) {
+      console.log(newVal);
+      if (newVal) {
+        this.form.dstAddresses = newVal;
+      }
+    },
+    'currentEdit.FZones'(newVal) {
+      console.log(newVal);
+      if (newVal) {
+        this.form.srcZones = newVal;
+      }
+    },
+    'currentEdit.DestinationZones'(newVal) {
+      console.log(newVal);
+      if (newVal) {
+        this.form.dstZones = newVal;
+      }
+    },
     wanNetworkGroupsRes(newVal) {
       console.log(newVal);
+      this.form.pathPriorities = newVal;
+    },
+    currentEdit(newVal) {
+      console.log(newVal);
+      if (newVal.preDefinedApplications) {
+        this.form.preDefinedApplications = newVal.preDefinedApplications;
+      }
+      if (newVal.preDefinedFilters) {
+        this.form.preDefinedFilters = newVal.preDefinedFilters;
+      }
+      if (newVal.preDefinedGroups) {
+        this.form.preDefinedGroups = newVal.preDefinedGroups;
+      }
+      if (newVal.preDefinedCategories) {
+        this.form.preDefinedCategories = newVal.preDefinedCategories;
+      }
+      if (newVal.preDefinedService) {
+        this.form.preDefinedService = newVal.preDefinedService;
+      }
+      if (newVal.customApplications) {
+        this.form.customApplications = newVal.customApplications;
+      }
+      if (newVal.customFilters) {
+        this.form.customFilters = newVal.customFilters;
+      }
+      if (newVal.customGroups) {
+        this.form.customGroups = newVal.customGroups;
+      }
+      if (newVal.customCategories) {
+        this.form.customCategories = newVal.customCategories;
+      }
+      if (newVal.customService) {
+        this.form.customService = newVal.customService;
+      }
     }
   },
   directives: {
     // 拖拽自定义指令
     drag(el) {
-      console.log('移动', el);
+      // console.log('移动', el);
       // 将ant-modal的position改为静态，使拖拽框按照电脑屏幕定位
       // el.children[1].children[0].style.position = 'static';
       // 获取到ant-modal-content元素
@@ -285,13 +342,6 @@ export default {
           // 计算出元素的left 和 top 值
           let dx = offsetX + (e.pageX - startX);
           let dy = offsetY + (e.pageY - startY);
-          // // 进行拖拽范围的限制(不能超出屏幕)
-          // dx = Math.max(0, dx);
-          // dy = Math.max(0, dy);
-          // let scrollWidth = window.innerWidth - targetEl.offsetWidth;
-          // let scrollHeight = window.innerHeight - targetEl.offsetHeight;
-          // dx = Math.min(scrollWidth, dx);
-          // dy = Math.min(scrollHeight, dy);
           // 设置元素的left和top值，实现拖拽
           targetEl.style.left = dx + 'px';
           targetEl.style.top = dy + 'px';
@@ -317,37 +367,49 @@ export default {
       this.LoadBalance = '';
       this.originItem = originItem;
       this.visible = true;
-      // this.sourceList = this.EditRuleTo.sourceSelect;
-      // this.predeList = this.EditRuleTo.appSelect;
-      // this.cusappList = this.EditRuleTo.filterSelect;
-      // this.preAppGroList = this.EditRuleTo.groupSelect;
-      // this.CustomerList = this.EditRuleTo.categoriesSelect;
-      // this.cusSerList = this.EditRuleTo.serSelect;
-      // this.allListappGroups = this.EditRuleTo.leftSelectAll.appGroups;
-      // this.allListcategories = this.EditRuleTo.leftSelectAll.urlCategoryNames;
-      // this.allListpredefinedApps = this.EditRuleTo.leftSelectAll.predefinedApps;
-      // this.allListpredefinedFilters = this.EditRuleTo.leftSelectAll.predefinedFilters;
-      // this.allListservices = this.EditRuleTo.leftSelectAll.services;
-      // this.address = this.EditRuleTo.sourceAddressSelect;
-      // this.FZones = this.EditRuleTo.zones;
-      // console.log(this.address);
-      // console.log(this.EditRuleTo);
-      // console.log(originItem);
+      console.log(this.EditRuleTo);
+      this.address = this.EditRuleTo.sourceAddressSelect;
+      this.FZones = this.EditRuleTo.zones;
+      console.log(this.FZones);
       this.titleName =
         'Create Rule to category' + '-' + originItem.categoryName;
     },
     handleOk() {
       this.visible = false;
+      if (this.fec == true) {
+        this.form.ruleActions.push('FEC');
+      }
+      if (this.replication == true) {
+        this.form.ruleActions.push('REPLICATION');
+      }
+      if (this.LowLatency == true) {
+        this.form.ruleActions.push('LOW_LATENCY');
+      }
+      if (this.LowPacketLoss == true) {
+        this.form.ruleActions.push('LOW_PACKET_LOSS');
+      }
+      if (this.LowDelayVariation == true) {
+        this.form.ruleActions.push('LOW_DELAY_VARIATION');
+      }
+      if (this.LoadBalance == 'PER_FLOW') {
+        this.form.ruleActions.push('PER_FLOW');
+      } else if (this.LoadBalance == 'PER_PACKET') {
+        this.form.ruleActions.push('PER_PACKET');
+      }
+
       this.originItem.rules.push(this.form);
       this.originItem.rules.defaultPathPriorities = this.wanNetworkGroupsRes;
-      console.log(this.originItem.rules);
       this.form = {};
-      console.log(this.$refs.addModleRef);
       if (Array.isArray(this.$refs.addModleRef)) {
         this.$refs.addModleRef.forEach(item => item.init());
       }
-      console.log(this.$refs.addModleDoubleRef);
-      this.$refs.addModleDoubleRef.init();
+      if (Array.isArray(this.$refs.addModleDoubleRef)) {
+        this.$refs.addModleDoubleRef.init();
+      }
+      this.$refs.SourceAddressRef.init();
+      this.$refs.DestinationAddress.init();
+      this.$refs.DestinationZones.init();
+      this.$refs.FZones.init();
     },
     handleCancel() {
       this.visible = false;

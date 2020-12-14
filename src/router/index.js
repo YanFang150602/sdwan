@@ -24,6 +24,7 @@ const routes = [
   {
     path: '/',
     name: 'Home',
+    redirect: '/configuration/Devices',
     meta: {
       title: '首页'
     },
@@ -318,7 +319,10 @@ const routes = [
         // administration页面组
         path: '/administration',
         name: 'Administration',
-        redirect: '/administration/organize',
+        redirect:
+          vuex.state.common.userInfo.level !== 3
+            ? '/administration/organize'
+            : '/administration/devices/Devices',
         meta: {
           title: '组织管理'
         },
@@ -407,6 +411,9 @@ const routes = [
     ]
   }
 ];
+if (vuex.state.common.userInfo.level === 3) {
+  routes[0].children[3].children.shift();
+}
 //本地开发时启用本地登录
 if (process.env.VUE_APP_BUILD_MODE !== 'poc') {
   routes.push({

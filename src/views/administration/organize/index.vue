@@ -222,7 +222,7 @@
         <a-button key="back" @click="visible = false">Cancel</a-button>
         <a-button
           type="primary"
-          v-if="userInfo.level === 1"
+          v-if="userInfo.level !== 3"
           key="submit"
           @click="handleOk"
           :loading="loading"
@@ -396,6 +396,7 @@ export default {
     },
     // 创建组织
     async createItem() {
+      if (this.userInfo.level === 3) return;
       this.visible = true;
       this.modalTitle = 'Add Organization';
       this.modalType = 'add';

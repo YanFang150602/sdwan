@@ -321,7 +321,7 @@ export default {
     return {
       bgpCrt: {
         networkName: '',
-        localAS: '',
+        localAS: null,
         ibgp: false,
         neighborName: '',
         peerAS: null,
@@ -331,9 +331,33 @@ export default {
       bgpParam: this.routingData.bgpData,
       rulesBgp: {
         networkName: [{ required: true, message: 'field required' }],
-        localAS: [{ required: true, message: 'field required' }],
+        localAS: [
+          { required: true, message: 'field required' },
+          {
+            type: 'number',
+            message: 'Should be a number.'
+          },
+          {
+            validator: () => {
+              return this.bgpCrt.localAS > 0 && this.bgpCrt.localAS < 65535;
+            },
+            message: 'Allowed Range is 0-65535.'
+          }
+        ],
         neighborName: [{ required: true, message: 'field required' }],
-        peerAS: [{ required: true, message: 'field required' }]
+        peerAS: [
+          { required: true, message: 'field required' },
+          {
+            type: 'number',
+            message: 'Should be a number.'
+          },
+          {
+            validator: () => {
+              return this.bgpCrt.localAS > 0 && this.bgpCrt.localAS < 65535;
+            },
+            message: 'Allowed Range is 0-65535.'
+          }
+        ]
       },
 
       ospCrt: {
@@ -413,10 +437,10 @@ export default {
 
               this.bgpCrt = {
                 networkName: '',
-                localAS: '',
+                localAS: null,
                 ibgp: false,
                 neighborName: '',
-                peerAS: '',
+                peerAS: null,
                 bfd: false
               };
               this.bgpDisabled = false;

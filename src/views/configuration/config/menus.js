@@ -10,6 +10,10 @@ import dropProfile from 'assets/images/icon/DropProfile.png';
 import address from 'assets/images/icon/address.png';
 import customObj from 'assets/images/icon/CustomObj.png';
 import rule from 'assets/images/icon/rule.png';
+import application from 'assets/images/icon/application.png';
+import applicationGroup from 'assets/images/icon/applicationGroup.png';
+import applicationFilter from 'assets/images/icon/applicationFilter.png';
+import urlCategory from 'assets/images/icon/urlCategory.png';
 import service from 'assets/images/icon/Service.png';
 
 export default {
@@ -109,23 +113,28 @@ export default {
           children: [
             {
               title: 'Applications',
-              key: 'Applications'
+              key: 'Applications',
+              icon: application
             },
             {
               title: 'Application Filters',
-              key: 'ApplicationFilters'
+              key: 'ApplicationFilters',
+              icon: applicationFilter
             },
             {
               title: 'URL Categories',
-              key: 'URLCategories'
+              key: 'URLCategories',
+              icon: urlCategory
             },
             {
               title: 'Application Groups',
-              key: 'ApplicationGroups'
+              key: 'ApplicationGroups',
+              icon: applicationGroup
             },
             {
               title: 'Services',
-              key: 'Service'
+              key: 'Service',
+              icon: service
             }
           ]
         }

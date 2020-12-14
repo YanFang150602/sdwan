@@ -484,16 +484,6 @@ export default {
           objectType: 'template',
           objectName: this.objectName
         })
-        // SourceAddressSelect({
-        //   orgName: this.form.organization,
-        //   objectType: 'template',
-        //   objectName: this.objectName
-        // }),
-        // SourceZonesSelect({
-        //   orgName: this.form.organization,
-        //   objectName: this.objectName,
-        //   objectType: 'template'
-        // })
       ]).then(res => {
         console.log('preDefinedService', res);
         const keyArr = [
@@ -523,6 +513,7 @@ export default {
 
       // const res = await SourceZonesSelect({ orgName: this.form.organization });
       // this.group.sourceSelect = res.result;
+
       const res = await SourceZonesSelect({
         orgName: this.form.organization,
         objectName: this.objectName,
@@ -534,21 +525,13 @@ export default {
       this.wanNetworkGroups = resw.result[0].wanNetworkGroups.map(
         item => item.name
       );
-      console.log(this.wanNetworkGroups);
       const ressds = await SourceAddressSelect({
         orgName: this.form.organization,
         objectType: 'template',
         objectName: this.objectName
       });
+      console.log(ressds.result);
       this.group.sourceAddressSelect = ressds.result;
-
-      // const resap = (await this.group.appSelect = resap.result);
-      // const resf = (await this.group.filterSelect = resf.result);
-      // const resg = (await this.group.groupSelect = resg.result);
-      // const resc = (await this.group.categoriesSelect = resc.result);
-      // const ress = (await this.group.serSelect = ress.result);
-      // const resAll = await LeftSelectAll({ paramName: this.paramName });
-      // this.group.leftSelectAll = resAll.result;
     },
 
     // 四个盒子的编辑

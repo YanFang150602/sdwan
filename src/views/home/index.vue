@@ -77,18 +77,12 @@
               <router-link class="link-btn" to="/configuration">
                 {{ $t('Configuration') }}
               </router-link>
-              <router-link
-                v-if="!(userInfo.level === 3)"
-                class="link-btn"
-                to="/workflows"
-                >{{ $t('Workflows') }}</router-link
-              >
-              <router-link
-                v-if="!(userInfo.level === 3)"
-                class="link-btn"
-                to="/administration"
-                >{{ $t('Administration') }}</router-link
-              >
+              <router-link class="link-btn" to="/workflows">{{
+                $t('Workflows')
+              }}</router-link>
+              <router-link class="link-btn" to="/administration">{{
+                $t('Administration')
+              }}</router-link>
             </a-col>
             <a-col class="commit-btn" @click="showModel">{{
               $t('CommitTemplate')
@@ -395,8 +389,6 @@ export default {
   created() {
     // 页面创建判断是否要显示组织下拉框
     this.organShow = this.rotuerName.includes(this.$route.name);
-    // 获取组织列表数据
-    //this.getNameList();
   },
   mounted() {
     // 表单高度屏幕缩放自适应
@@ -407,24 +399,11 @@ export default {
         that.screenHeight = window.screenHeight - 93;
       })();
     };
-    if (this.$route.name === 'Home') {
-      this.userInfo.level === 3
-        ? this.$router.replace('/configuration')
-        : this.$router.replace('/administration');
-    }
   },
   methods: {
     ...mapMutations('common', ['clear']),
     ...mapMutations(['saveOrganization']),
-    ...mapActions([
-      'getNameList',
-      'adminUsersList',
-      'templateList',
-      'TableForm',
-      'Tabledevice',
-      'DeviceGroups',
-      'SPTableForm'
-    ]),
+    ...mapActions(['TableForm', 'Tabledevice', 'DeviceGroups', 'SPTableForm']),
     // 右上角国际化切换
     changeLanguage(language) {
       this.$i18n.locale = language;
@@ -441,32 +420,11 @@ export default {
     async handleChange(name) {
       this.saveOrganization(name);
       switch (this.$route.name) {
-        case 'OrganizationUsers': // 下拉组织对于租户列表jw
-          this.adminUsersList({
-            organization: name,
-            offset: 0,
-            limit: 20
-          });
-          break;
-        case 'Templates': // 下拉组织对于模板列表jw
-          this.templateList({
-            orgname: name,
-            offset: 0,
-            limit: 20
-          });
-          break;
-        case 'Zones': // 下拉组织对于模板列表jw
-          this.templateList({
-            orgname: name,
-            offset: 0,
-            limit: 20
-          });
-          break;
         case 'Devices': // 下拉组织对于Devices列表zwj
           this.TableForm({
             organization: name,
             offset: 0,
-            limit: 100,
+            limit: 20,
             name
           });
           break;
@@ -475,7 +433,7 @@ export default {
             deep: true,
             orgname: name,
             offset: 0,
-            limit: 100,
+            limit: 20,
             name
           });
           break;
@@ -483,7 +441,7 @@ export default {
           this.DeviceGroups({
             organization: name,
             offset: 0,
-            limit: 100
+            limit: 20
           });
           break;
       }

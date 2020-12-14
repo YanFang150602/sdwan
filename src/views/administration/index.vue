@@ -1,6 +1,6 @@
 <template>
   <a-layout :style="{ height: '100%' }">
-    <SideNav :navCon="navCon"/>
+    <SideNav :navCon="navCon" />
     <a-layout-content>
       <router-view></router-view>
     </a-layout-content>
@@ -8,6 +8,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import SideNav from 'components/SideNav';
 export default {
   data() {
@@ -30,6 +31,16 @@ export default {
         }
       ]
     };
+  },
+  computed: {
+    ...mapState({
+      level: state => state.common.userInfo.level
+    })
+  },
+  created() {
+    if (this.level === 3) {
+      this.navCon.shift();
+    }
   },
   components: {
     SideNav

@@ -2,7 +2,7 @@
   <div class="devices main-con">
     <!-- 搜索框 -->
     <Pagination
-      :total="device.totalCount"
+      :total="totalCount"
       :page-size="pageSize"
       @page-change="pageChange"
       @page-size-change="pageSizeChange"
@@ -20,7 +20,7 @@
       is-horizontal-resize
       column-width-drag
       :columns="columns"
-      :table-data="device['versanms.sdwan-device-list']"
+      :table-data="tableData"
       :select-all="selectALL"
       :select-change="selectChange"
       :select-group-change="selectGroupChange"
@@ -42,47 +42,31 @@
         :destroyOnClose="true"
         :maskClosable="false"
       >
-        <DevicesAdd
-          ref="devicesAddRef"
-          @dew="dew"
-          @tab="tab"
-          @show="show"
-        ></DevicesAdd>
+        <DevicesAdd ref="devicesAddRef" @dew="dew" @tab="tab" @show="show"></DevicesAdd>
         <template slot="footer">
           <span style="float: left;">
-            <a-button
-              key="back"
-              class="back"
-              @click="handleBack"
-              v-if="!showAdd.isShow"
-              >&lt; Back</a-button
-            >
+            <a-button key="back" class="back" @click="handleBack" v-if="!showAdd.isShow">&lt; Back</a-button>
           </span>
-          <a-button class="cancel" key="cancel" @click="handleCancel"
-            >Cancel</a-button
-          >
+          <a-button class="cancel" key="cancel" @click="handleCancel">Cancel</a-button>
           <a-button
             key="submit"
             type="primary"
             :loading="loading"
             @click="handleOk"
             v-if="isSave"
-            >Save</a-button
-          >
+          >Save</a-button>
           <a-button
             key="Deploy"
             type="primary"
             @click="handleOkDeploy"
             v-if="showAdd.isExhibition"
-            >Deploy</a-button
-          >
+          >Deploy</a-button>
           <a-button
             key="Continue"
             class="continue"
             @click="handleContinue"
             v-if="!showAdd.isExhibition"
-            >Continue &gt;</a-button
-          >
+          >Continue &gt;</a-button>
         </template>
       </a-modal>
     </div>
@@ -96,16 +80,8 @@
         :maskClosable="false"
       >
         <template slot="footer">
-          <a-button class="back" key="back" @click="handleCancelDelete"
-            >Yes</a-button
-          >
-          <a-button
-            key="submit"
-            type="primary"
-            :loading="loading"
-            @click="handleOkDelete"
-            >No</a-button
-          >
+          <a-button class="back" key="back" @click="handleCancelDelete">Yes</a-button>
+          <a-button key="submit" type="primary" :loading="loading" @click="handleOkDelete">No</a-button>
         </template>
         <!-- <DevicesDelete></DevicesDelete> -->
         <span>
@@ -117,21 +93,16 @@
           <li>Deletes Appliance</li>
           <li>Disassociates device from device-group</li>
           <li>Deletes device from Hardware Inventory</li>
-          <li>
-            Deletes devices IPSec VPN profile information on all the Controllers
-          </li>
+          <li>Deletes devices IPSec VPN profile information on all the Controllers</li>
         </ul>
         <!-- 单选框 -->
         <a-radio-group v-model="value" @change="onChange">
-          <a-radio :style="radioStyle" :value="1"
-            >Erase Running Configuration</a-radio
-          >
-          <a-radio :style="radioStyle" :value="2"
-            >Reset to Factory Default</a-radio
-          >
-          <a-radio :style="radioStyle" :value="3"
-            >Erase Running Configuration and Load Device Defaults</a-radio
-          >
+          <a-radio :style="radioStyle" :value="1">Erase Running Configuration</a-radio>
+          <a-radio :style="radioStyle" :value="2">Reset to Factory Default</a-radio>
+          <a-radio
+            :style="radioStyle"
+            :value="3"
+          >Erase Running Configuration and Load Device Defaults</a-radio>
         </a-radio-group>
       </a-modal>
     </div>
@@ -158,33 +129,22 @@
               class="back"
               @click="handleBackCheck"
               v-if="!showEdit.isShow"
-              >&lt; Back</a-button
-            >
+            >&lt; Back</a-button>
           </span>
-          <a-button class="cancel" key="back" @click="handleCancelCheck"
-            >Cancel</a-button
-          >
-          <a-button
-            key="submit"
-            type="primary"
-            :loading="loading"
-            @click="handleOkCheck"
-            >Save</a-button
-          >
+          <a-button class="cancel" key="back" @click="handleCancelCheck">Cancel</a-button>
+          <a-button key="submit" type="primary" :loading="loading" @click="handleOkCheck">Save</a-button>
           <a-button
             type="primary"
             key="Deploy"
             @click="handleOkDeployCheck"
             v-if="showEdit.isExhibition"
-            >Deploy</a-button
-          >
+          >Deploy</a-button>
           <a-button
             key="Continue"
             class="continue"
             @click="handleContinueCheck"
             v-if="!showEdit.isExhibition"
-            >Continue &gt;</a-button
-          >
+          >Continue &gt;</a-button>
         </template>
       </a-modal>
     </div>
@@ -198,6 +158,7 @@ import DevicesCheck from './DevicesCheck';
 import Pagination from 'components/Pagination';
 import { mapState, mapActions } from 'vuex';
 import {
+  devicesTableForm,
   devicesDelete,
   addDevices,
   DeviceCheck,
@@ -205,6 +166,7 @@ import {
   // DeviceSearch,
   DeviceDeploy
 } from 'apis/workFlows';
+
 import {
   DEVICES_HANDLE,
   DEVICES_SHOW,
@@ -332,45 +294,35 @@ export default {
   },
   created() {
     //获取组织列表
-    this.getNameList();
-
-    //console.log('organization', this.organization);
-    this.$store.dispatch('Tabledevice', {
-      deep: true,
-      orgname: this.organization,
-      offset: 0,
-      limit: this.pageSize
-    });
-    console.log('device', this.device);
-    // this.queryDevice();
+    // this.getNameList();
   },
   methods: {
     ...mapActions(['getNameList']),
     // 分页
-    queryDevice() {
-      this.$store.dispatch('Tabledevice', {
-        organization: this.organization,
-        offset: (this.pageIndex - 1) * this.pageSize,
-        limit: this.pageSize
-      });
-    },
     pageChange(pageIndex) {
+      // this.offset = (pageIndex - 1) * this.pageSize;
       this.pageIndex = pageIndex;
-      this.$store.dispatch('Tabledevice', {
-        organization: this.organization,
-        offset: (this.pageIndex - 1) * this.pageSize,
-        limit: this.pageSize
-      });
+
+      this.lists();
     },
     pageSizeChange(pageSize) {
-      this.pageIndex = 1;
+      this.offset = 1;
       this.pageSize = pageSize;
-      this.$store.dispatch('Tabledevice', {
-        organization: this.organization,
-        offset: (this.pageIndex - 1) * this.pageSize,
-        limit: this.pageSize
-      });
+      this.lists();
     },
+
+    async lists() {
+      const { result } = await devicesTableForm({
+        orgname: this.organization,
+        offset: (this.pageIndex - 1) * this.pageSize,
+        limit: this.pageSize,
+        deep: true
+      });
+      this.totalCount = result.totalCount;
+      //表单源获取数据
+      this.tableData = result['versanms.sdwan-device-list'];
+    },
+
     // 新增弹框
     showModal() {
       this.visible = true;
@@ -389,20 +341,12 @@ export default {
           this.$store.commit(DEVICES_HANDLEADD);
           this.clearAddDevice();
           this.$message.success('Add device successfully.');
-          this.$store.dispatch('Tabledevice', {
-            deep: true,
-            orgname: this.organization,
-            offset: 0,
-            limit: this.pageSize
-          });
-        } else {
-          console.log(res);
+          this.lists();
         }
       });
     },
     async showMessage() {
       const res = await addDevices(this.devAdd);
-      console.log(res, 43569823479);
       if (res.message && res.message === 'Success') {
         this.visible = false;
         this.$store.commit(DEVICES_HANDLEADD);
@@ -412,12 +356,7 @@ export default {
         this.$message.error(res.message);
       }
       // 刷新表格数据
-      this.$store.dispatch('Tabledevice', {
-        deep: true,
-        orgname: this.organization,
-        offset: 0,
-        limit: this.pageSize
-      });
+      this.lists();
     },
     handleCancel() {
       this.visible = false;
@@ -441,12 +380,8 @@ export default {
       } else {
         this.$message.error(res.message);
       }
-      this.$store.dispatch('Tabledevice', {
-        deep: true,
-        orgname: this.organization,
-        offset: 0,
-        limit: this.pageSize
-      });
+      // 刷新表格数据
+      this.lists();
     },
     // 表格方法
     selectALL(selection) {
@@ -549,7 +484,7 @@ export default {
     // 取消搜索，显示当前数据
     cancelSearch() {
       this.pageIndex = 1;
-      this.queryDevice();
+      this.lists();
     },
 
     // 新增中的部署按钮
@@ -563,14 +498,8 @@ export default {
         this.$store.commit(DEVICES_HANDLEADD);
         this.clearAddDevice();
         this.$message.success('Deploy device successfully.');
-        this.$store.dispatch('Tabledevice', {
-          deep: true,
-          orgname: this.organization,
-          offset: 0,
-          limit: this.pageSize
-        });
-      } else {
-        this.$message.error(res.message);
+        // 刷新表格数据
+        this.lists();
       }
 
       this.$store.dispatch('Tabledevice', {
@@ -710,6 +639,10 @@ export default {
         console.log('b.c: ' + val.c, oldVal.c);
       },
       deep: true //true 深度监听
+    },
+    organization: {
+      handler: 'lists',
+      immediate: true
     }
   },
   directives: {

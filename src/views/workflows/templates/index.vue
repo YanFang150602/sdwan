@@ -299,7 +299,8 @@ export default {
         isStaging: this.formParam.template.isStaging,
         isPrimary: this.formParam.template.isPrimary,
         isAnalyticsEnabled: this.formParam.template.isAnalyticsEnabled,
-        serviceBandwidth: this.formParam.template.serviceBandwidth
+        serviceBandwidth: this.formParam.template.serviceBandwidth,
+        solutionTier: this.formParam.template.solutionTier
       };
     },
     // interface数据传递

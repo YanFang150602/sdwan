@@ -24,8 +24,7 @@
           <a-menu-item v-if="!item.children" :key="item.key">
             <div class="device-menu-align-left">
               <span v-show="item.icon">
-                <img :src="item.icon"
-                    class="device-menu-icon"/>
+                <img :src="item.icon" class="device-menu-icon" />
               </span>
               <span>{{ item.title }}</span>
             </div>
@@ -46,8 +45,7 @@
           <a-menu-item v-if="!item.children" :key="item.key">
             <div class="device-menu-align-left">
               <span v-show="item.icon">
-                <img :src="item.icon"
-                    class="device-menu-icon"/>
+                <img :src="item.icon" class="device-menu-icon" />
               </span>
               <span>{{ item.title }}</span>
             </div>
@@ -68,8 +66,7 @@
           <a-menu-item v-if="!item.children" :key="item.key">
             <div class="device-menu-align-left">
               <span v-show="item.icon">
-                <img :src="item.icon"
-                    class="device-menu-icon"/>
+                <img :src="item.icon" class="device-menu-icon" />
               </span>
               <span>{{ item.title }}</span>
             </div>
@@ -91,8 +88,7 @@
           <a-menu-item v-if="!item.children" :key="item.key">
             <div class="device-menu-align-left">
               <span v-show="item.icon">
-                <img :src="item.icon"
-                    class="device-menu-icon"/>
+                <img :src="item.icon" class="device-menu-icon" />
               </span>
               <span>{{ item.title }}</span>
             </div>
@@ -135,13 +131,13 @@ const SubMenu = {
     ...Menu.SubMenu.props,
     menuInfo: {
       type: Object,
-      default: () => ({}),
-    },
-  },
+      default: () => ({})
+    }
+  }
 };
 export default {
   components: {
-    SubMenu,
+    SubMenu
   },
   name: 'Schedule',
   data() {
@@ -150,37 +146,37 @@ export default {
         {
           refObj: 'firstTabRef',
           style: {
-            backgroundColor: '#aac0d5',
+            backgroundColor: '#aac0d5'
           },
-          icon: 'radar-chart',
+          icon: 'radar-chart'
         },
         {
           refObj: 'secondTabRef',
           style: {
-            backgroundColor: '#8d9fb3',
+            backgroundColor: '#8d9fb3'
           },
-          icon: 'setting',
+          icon: 'setting'
         },
         {
           refObj: 'thirdTabRef',
           style: {
-            backgroundColor: '#8d9fb3',
+            backgroundColor: '#8d9fb3'
           },
-          icon: 'codepen-circle',
-        },
+          icon: 'codepen-circle'
+        }
       ],
       showTabObj: {
         firstTabRef: true,
         secondTabRef: false,
         thirdTabRef: false,
-        fourthTabRef: false,
+        fourthTabRef: false
       },
-      menus: menus,
+      menus: menus
     };
   },
   beforeRouteEnter(to, from, next) {
     console.log(to.params);
-    next((vm) => {
+    next(vm => {
       vm.curDeviceName = to.params.name;
       console.log(vm.menus);
     });
@@ -202,8 +198,8 @@ export default {
     },
     menuClick(menu) {
       this.$router.push({ name: menu.key });
-    },
-  },
+    }
+  }
 };
 </script>
 <style lang="scss" scoped>

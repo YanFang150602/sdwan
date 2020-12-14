@@ -77,7 +77,7 @@ import Vue from 'vue';
 import { mapState } from 'vuex';
 import Pagination from 'components/Pagination';
 import VPNProfileAddOrEdit from './VPNProfileAddOrEdit';
-import { columns, titleRows} from './table';
+import { columns, titleRows } from './table';
 import {
   VPNProfileQuery,
   VPNProfileCreate,

@@ -17,3 +17,15 @@ export const login = param => $http.post('/login-verification-standard', param);
  */
 export const getUserInfo = id =>
   $http.get(`/controller/sdwan/v1/tenant/modify/${id}`);
+
+/**
+ * @desc 邮件验证码
+ * @param {Object}
+ */
+export const emailCode = param => $http.post('/email-code', param);
+/**
+ * @desc 密码重置
+ * @param {Object}
+ */
+export const passwordReset = param =>
+  $http.post('/openapi/core/mds/subsystem/accounts/code-edit-pwd', param);

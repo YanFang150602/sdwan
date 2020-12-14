@@ -22,7 +22,12 @@
         <a-row type="flex" justify="space-between" align="middle">
           <!-- 组织用户添加 -->
           <a-col class="nav-item" v-if="flag" title="Add" @click="createItem">
-            <img width="100%" src="@/assets/images/icon/add.png" alt="" />
+            <img
+              :class="{ disabled: level === 3 }"
+              width="100%"
+              src="@/assets/images/icon/add.png"
+              alt=""
+            />
           </a-col>
           <!-- 组织用户删除 -->
           <a-col
@@ -31,7 +36,12 @@
             title="Delete"
             @click="deleteItem"
           >
-            <img width="100%" src="@/assets/images/icon/delete.png" alt="" />
+            <img
+              :class="{ disabled: level === 3 }"
+              width="100%"
+              src="@/assets/images/icon/delete.png"
+              alt=""
+            />
           </a-col>
           <!-- 分页功能模块 -->
           <a-col>
@@ -112,6 +122,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 export default {
   props: {
     total: {
@@ -143,7 +154,10 @@ export default {
     // 计算总page数
     nextNum() {
       return Math.ceil(this.total / this.selectVal);
-    }
+    },
+    ...mapState({
+      level: state => state.common.userInfo.level
+    })
   },
   methods: {
     // 前进 后退 输入框 事件
@@ -188,11 +202,11 @@ export default {
     },
     // 新建数据
     createItem() {
-      this.$emit('create-item');
+      if (this.level !== 3) this.$emit('create-item');
     },
     // 删除数据
     deleteItem() {
-      this.$emit('delete-item');
+      if (this.level !== 3) this.$emit('delete-item');
     }
   },
   watch: {

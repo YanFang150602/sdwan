@@ -126,97 +126,105 @@
         </a-form-model-item>
       </a-col>
     </a-row>
+    <a-row :style="{ margin: '20px 0 10px 0' }">
+      <a-col :style="{ height: '120px', width: '392px', background: '#fff' }">
+        <ListCrt
+          v-if="reloading"
+          ref="contro"
+          :list-data="controllerList"
+          :item-data="formParam.controllers"
+          title="Controllers"
+          @subdata="controSub"
+        />
+      </a-col>
+      <a-col class="mandatory">Please Select Available Resource</a-col>
+    </a-row>
     <!-- subscription -->
     <a-row class="subscription" type="flex" justify="space-between" align="top">
-      <a-col
-        @mouseenter="enter('controllers')"
-        @mouseleave="leave"
-        @mousemove="updateXY"
-      >
-        <a-form-model-item
-          class="mandatory"
-          style="width:252px"
-          label="Controllers"
-          prop="controllers"
-        >
-          <a-select
-            size="small"
-            mode="multiple"
-            @change="contrChange"
-            placeholder="Organizations must exist"
-            v-model="formParam.controllers"
+      <a-col :style="{ width: '282px' }">
+        <a-row>
+          <a-col>
+            <a-form-model-item class="mandatory" label="Solution Tier">
+              <a-select v-model="formParam.solutionTier">
+                <a-select-option value="Advanced-Pro-SDWAN"
+                  >Advanced-Pro-SDWAN</a-select-option
+                >
+                <a-select-option value="Advanced-SDWAN"
+                  >Advanced-SDWAN</a-select-option
+                >
+                <a-select-option value="Advanced-Secure-SDWAN"
+                  >Advanced-Secure-SDWAN</a-select-option
+                >
+                <a-select-option value="Standard-SDWAN"
+                  >Standard-SDWAN</a-select-option
+                >
+              </a-select>
+            </a-form-model-item>
+          </a-col>
+          <a-col
+            @mouseenter="enter('serviceBandwidth')"
+            @mouseleave="leave"
+            @mousemove="updateXY"
           >
-            <a-select-option
-              v-for="(item, index) in controllerList"
-              :key="index"
-              :value="item"
+            <a-form-model-item
+              class="mandatory"
+              label="Service Bandwidth"
+              prop="serviceBandwidth"
             >
-              {{ item }}
-            </a-select-option>
-          </a-select>
-        </a-form-model-item>
-      </a-col>
-      <a-col
-        @mouseenter="enter('serviceBandwidth')"
-        @mouseleave="leave"
-        @mousemove="updateXY"
-      >
-        <a-form-model-item
-          class="mandatory"
-          style="width: 185px"
-          label="Service Bandwidth"
-          prop="serviceBandwidth"
-        >
-          <a-select
-            mode="multiple"
-            placeholder="Select options"
-            size="small"
-            v-model="formParam.serviceBandwidth"
-            option-label-prop="label"
-            @change="handleChange"
-            maxTagPlaceholder="..."
-          >
-            <a-select-option :value="5" label="5 Mbps">
-              5 Mbps
-            </a-select-option>
-            <a-select-option :value="10" label="10 Mbps">
-              10 Mbps
-            </a-select-option>
-            <a-select-option :value="25" label="25 Mbps">
-              25 Mbps
-            </a-select-option>
-            <a-select-option :value="50" label="50 Mbps">
-              50 Mbps
-            </a-select-option>
-            <a-select-option :value="100" label="100 Mbps">
-              100 Mbps
-            </a-select-option>
-            <a-select-option :value="200" label="200 Mbps">
-              200 Mbps
-            </a-select-option>
-            <a-select-option :value="500" label="500 Mbps">
-              500 Mbps
-            </a-select-option>
-            <a-select-option :value="1000" label="1 Gbps">
-              1 Gbps
-            </a-select-option>
-            <a-select-option :value="5000" label="5 Gbps">
-              5 Gbps
-            </a-select-option>
-            <a-select-option :value="10000" label="10 Gbps">
-              10 Gbps
-            </a-select-option>
-            <a-select-option :value="20000" label="20 Gbps">
-              20 Gbps
-            </a-select-option>
-          </a-select>
-        </a-form-model-item>
+              <a-select
+                mode="multiple"
+                placeholder="Select options"
+                size="small"
+                v-model="formParam.serviceBandwidth"
+                option-label-prop="label"
+                @change="handleChange"
+                maxTagPlaceholder="..."
+              >
+                <a-select-option :value="5" label="5 Mbps">
+                  5 Mbps
+                </a-select-option>
+                <a-select-option :value="10" label="10 Mbps">
+                  10 Mbps
+                </a-select-option>
+                <a-select-option :value="25" label="25 Mbps">
+                  25 Mbps
+                </a-select-option>
+                <a-select-option :value="50" label="50 Mbps">
+                  50 Mbps
+                </a-select-option>
+                <a-select-option :value="100" label="100 Mbps">
+                  100 Mbps
+                </a-select-option>
+                <a-select-option :value="200" label="200 Mbps">
+                  200 Mbps
+                </a-select-option>
+                <a-select-option :value="500" label="500 Mbps">
+                  500 Mbps
+                </a-select-option>
+                <a-select-option :value="1000" label="1 Gbps">
+                  1 Gbps
+                </a-select-option>
+                <a-select-option :value="5000" label="5 Gbps">
+                  5 Gbps
+                </a-select-option>
+                <a-select-option :value="10000" label="10 Gbps">
+                  10 Gbps
+                </a-select-option>
+                <a-select-option :value="20000" label="20 Gbps">
+                  20 Gbps
+                </a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </a-col>
+          <a-col>
+            <a-form-model-item label="Aggregate Bandwidth">
+              <a-input disabled :value="bandwidthNew" />
+            </a-form-model-item>
+          </a-col>
+        </a-row>
       </a-col>
       <a-col>
-        <a-form-model-item style="width:252px" label="Aggregate Bandwidth">
-          <a-input size="small" disabled :value="bandwidthNew" />
-        </a-form-model-item>
-        <a-row class="check-btn" type="flex" justify="start" align="middle">
+        <a-row class="check-btn">
           <a-col
             ><a-checkbox
               default-checked
@@ -250,6 +258,8 @@ import tip from '@/mixins/tip';
 
 import { spokeList, controllerWrap } from 'apis/administration';
 
+import ListCrt from 'components/ListCrt';
+
 export default {
   mixins: [tip],
   props: {
@@ -265,6 +275,7 @@ export default {
   },
   data() {
     return {
+      reloading: true, //组件更新
       controllerList: [], //更加组织查询的控制器
       spokeOptions: [], //根据组织查询Spoke Group
       formParam: {
@@ -278,13 +289,13 @@ export default {
         isStaging: this.basicData.isStaging,
         isPrimary: this.basicData.isPrimary,
         isAnalyticsEnabled: this.basicData.isAnalyticsEnabled,
-        serviceBandwidth: this.basicData.serviceBandwidth
+        serviceBandwidth: this.basicData.serviceBandwidth,
+        solutionTier: this.basicData.solutionTier
       },
       //表单校验
       rules: {
         templateName: [{ validator: name }],
         'orgName.name': [{ validator: select }],
-        controllers: [{ validator: inputs }],
         serviceBandwidth: [{ validator: inputs }]
       }
     };
@@ -333,10 +344,6 @@ export default {
         this.formParam.spokeGroup = '';
       }
     },
-    //controller 获取
-    contrChange(selectedItems) {
-      this.formParam.controllers = selectedItems;
-    },
     // 计算带宽
     handleChange(value) {
       this.formParam.serviceBandwidth = value;
@@ -348,27 +355,38 @@ export default {
         this.formParam.bandwidth = '';
       }
     },
+    // 获取controller 给formParam
+    controSub(data) {
+      this.formParam.controllers = [...data];
+    },
     param() {
+      this.$refs.contro.param();
       this.$emit('basic-param', this.formParam);
     }
   },
   watch: {
     'formParam.orgName.name'(val) {
-      if (val) {
-        this.getControllerSpoke();
-      } else {
-        this.controllerList = [];
-        this.spokeOptions = [];
-        this.formParam.spokeGroup = '';
-      }
+      this.controllerList = [];
+      this.formParam.controllers = [];
+      this.spokeOptions = [];
+      this.formParam.spokeGroup = '';
+      if (val) this.getControllerSpoke();
+      this.reloading = false;
+      this.$nextTick(() => (this.reloading = true));
     }
+  },
+  components: {
+    ListCrt
   }
 };
 </script>
 
 <style lang="scss" scoped>
-/deep/.ant-form-explain {
-  display: none !important;
+.mandatory {
+  color: #ee6978;
+  font-size: 12px;
+  padding-left: 1px;
+  vertical-align: top;
 }
 .device-type,
 .subscription {
@@ -390,6 +408,10 @@ export default {
     font-size: 12px;
     color: #fff;
   }
+  .ant-form-item {
+    margin: 0;
+    padding: 0;
+  }
 }
 .subscription {
   width: 812px;
@@ -398,10 +420,12 @@ export default {
     content: 'Subscription';
   }
 }
-.check-btn .ant-col {
-  color: #f9f9f9;
-  font-size: 12px;
-  line-height: 18px;
-  margin-right: 5px;
+.check-btn {
+  .ant-col {
+    color: #f9f9f9;
+    font-size: 12px;
+    line-height: 18px;
+    margin-top: 20px;
+  }
 }
 </style>

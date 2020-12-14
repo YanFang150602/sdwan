@@ -208,7 +208,7 @@ export default {
         );
       } else if (this.nameList.indexOf(value) > -1) {
         callback(this.$t('VPNRuleNameError'));
-      }else {
+      } else {
         callback();
       }
     },

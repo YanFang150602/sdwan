@@ -183,7 +183,7 @@ const calcUrlPrefix = api => {
         break;
       default:
         url = axiosBaseUrl.url.length
-          ? axiosBaseUrl.url + '/api/openapi/sdwan'
+          ? axiosBaseUrl.url + '/api/openapi/sdwan/ft'
           : '';
     }
   }

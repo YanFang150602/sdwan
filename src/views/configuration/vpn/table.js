@@ -202,7 +202,11 @@ const titleRows = [
       colspan: 2
     },
     {
-      fields: ['peerAuthInfo-authType', 'peerAuthInfo-authInfo', 'pskAuthClients'],
+      fields: [
+        'peerAuthInfo-authType',
+        'peerAuthInfo-authInfo',
+        'pskAuthClients'
+      ],
       title: 'Peer Auth Info',
       titleAlign: 'center',
       colspan: 3
