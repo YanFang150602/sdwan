@@ -1081,9 +1081,7 @@ export default {
     ...mapMutations(['vpnTableSelectsMinus', 'vpnTableSelectsAll']),
     getData() {
       this.$refs.ikeRef.getData();
-      console.log('ike: ', this.cVPNProfile);
       this.$refs.ipsecRef.getData();
-      console.log('ipsec: ', this.cVPNProfile);
       let data = { ...this.cVPNProfile };
       switch (this.peer) {
         case '1':
@@ -1119,7 +1117,6 @@ export default {
         default:
           !this.showP2PStrategy ? delete data.tunnelRoutingInstance : null;
       }
-      console.log('getdata:', data);
       this.$emit('passChildContent', data);
     },
     validateTunnelInterface(rule, value, callback) {

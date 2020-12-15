@@ -47,7 +47,6 @@
             <a-input
               size="small"
               v-model="ike.tempLifetime"
-              :placeholder="placeholders.lifetime"
               style="width: 200px;margin-top: 21px"
             />
           </a-form-model-item>
@@ -561,12 +560,25 @@ export default {
       DHGroup: 'DH Group',
       placeholders: {
         dpdTimeout: '10-180',
-        lifetime: '132-28800',
         localIdString: '',
         peerIdString: '',
       },
-      localAuthInfo: {},
-      peerAuthInfo: {},
+      localAuthInfo: {
+        authType: 'psk',
+        idType: 'fqdn',
+        key: '',
+        idString: '',
+        caChain: '',
+        certDomain: '',
+        certName: '',
+      },
+      peerAuthInfo: {
+        authType: 'psk',
+        idType: 'email',
+        idString: '',
+        key: '',
+        caChain: '',
+      },
       versionOptions: [
         {
           label: this.$t('SelectNull'),
@@ -864,29 +876,11 @@ export default {
     },
   },
   mounted() {
-    this.localAuthInfo = this.vpnProfile.localAuthInfo
-      ? this.vpnProfile.localAuthInfo
-      : {
-          authType: 'psk',
-          idType: 'fqdn',
-          key: '',
-          idString: '',
-          caChain: '',
-          certDomain: '',
-          certName: '',
-        };
-    this.peerAuthInfo = this.vpnProfile.peerAuthInfo
-      ? this.vpnProfile.peerAuthInfo
-      : {
-          authType: 'psk',
-          idType: 'email',
-          idString: '',
-          key: '',
-          caChain: '',
-        };
+    Object.assign(this.localAuthInfo, this.vpnProfile.localAuthInfo);
+    Object.assign(this.peerAuthInfo, this.vpnProfile.peerAuthInfo);
 
     if (this.vpnProfile.ike) {
-      this.ike = this.vpnProfile.ike;
+      Object.assign(this.ike, this.vpnProfile.ike);
       this.hashList = [];
       this.encryList = [];
       this.dhList = [];
@@ -902,12 +896,8 @@ export default {
         this.ike.groups.forEach((dh) => {
           this.dhList.push(dh);
         });
-      this.ike.tempRekeyTime = 'Seconds';
-      this.ike.tempLifetime = this.ike.lifetime;
+      this.ike.tempLifetime = this.ike.lifetime ? this.ike.lifetime : '';
     }
-    this.cVPNProfile.localAuthInfo = this.localAuthInfo;
-    this.cVPNProfile.peerAuthInfo = this.peerAuthInfo;
-    this.cVPNProfile.ike = this.ike;
     this.changePeerIdType(this.peerAuthInfo.idType);
     if (
       this.ike.encryptionAlgorithms ||
@@ -918,7 +908,6 @@ export default {
     } else {
       this.cVPNProfile.tempIkeNewOrOld = 'Old';
     }
-    this.$emit('passChildContent', this.cVPNProfile);
   },
   methods: {
     ...mapMutations([
@@ -933,7 +922,7 @@ export default {
       this.cVPNProfile.localAuthInfo = this.localAuthInfo;
       this.cVPNProfile.peerAuthInfo = this.peerAuthInfo;
       this.cVPNProfile.ike = this.ike;
-      let data = { ...this.cVPNProfile };
+      let data = JSON.parse(JSON.stringify(this.cVPNProfile));
       if (this.cVPNProfile.tempIkeNewOrOld === 'New') {
         delete data.ike.transform;
         delete data.ike.group;
@@ -944,11 +933,44 @@ export default {
       }
       this.$emit('passChildContent', data);
     },
+    validLifetime(rule, value, callback) {
+      if (value && isNaN(Number(value))) {
+        callback('Input number');
+      } else if (!value) {
+        callback();
+      } else {
+        value = Number(value);
+        switch(this.ike.tempRekeyTime) {
+          case 'Hours':
+            if (value < 1 || value > 8) {
+              callback('Allowed Range is 1-8');
+            } else {
+              this.ike.lifetime = Number(this.ike.tempLifetime) * 60 * 60;
+              callback();
+            }
+            break;
+          case 'Minutes':
+            if (value < 3 || value > 480) {
+              callback('Allowed Range is 3-480');
+            } else {
+              this.ike.lifetime = Number(this.ike.tempLifetime) * 60;
+              callback();
+            }
+            break;
+          default:
+            if (value < 132 || value > 28800) {
+              callback('Allowed Range is 132-28800');
+            } else {
+              this.ike.lifetime = Number(this.ike.tempLifetime);
+              callback();
+            }
+            break;
+        }
+      }
+    },
     changeRekeyTime() {
       switch(this.ike.tempRekeyTime) {
         case 'Hours':
-          this.ike.tempLifetime = 1;
-          this.placeholders.lifetime = '1-8';
           this.ike.lifetime = Number(this.ike.tempLifetime) * 60 * 60;
           this.$refs.ikeBaseRef.validate(valid => {
             if (!valid) {
@@ -957,8 +979,6 @@ export default {
           });
           break;
         case 'Minutes':
-          this.ike.tempLifetime = 2;
-          this.placeholders.lifetime = '2-480';
           this.ike.lifetime = Number(this.ike.tempLifetime) * 60;
           this.$refs.ikeBaseRef.validate(valid => {
             if (!valid) {
@@ -967,8 +987,6 @@ export default {
           });
           break;
         default:
-          this.ike.tempLifetime = 132;
-          this.placeholders.lifetime = '132-28800';
           this.ike.lifetime = Number(this.ike.tempLifetime);
           this.$refs.ikeBaseRef.validate(valid => {
             if (!valid) {
@@ -998,55 +1016,12 @@ export default {
         this.placeholders.peerIdString = '';
       }
     },
-    validLifetime(rule, value, callback) {
-      value = Number(value);
-      if (value && isNaN(value)) {
-        callback('Input number');
-      } else if (!value) {
-        callback();
-      } else {
-        switch(this.ike.tempRekeyTime) {
-          case 'Hours':
-            if (value < 1 || value > 8) {
-              callback('Input error');
-            } else {
-              this.ike.lifetime = Number(this.ike.tempLifetime) * 60 * 60;
-              callback();
-            }
-            break;
-          case 'Minutes':
-            if (value < 2 || value > 480) {
-              callback('Input error');
-            } else {
-              this.ike.lifetime = Number(this.ike.tempLifetime) * 60;
-              callback();
-            }
-            break;
-          default:
-            if (value < 132 || value > 28800) {
-              callback('Input error');
-            } else {
-              this.ike.lifetime = Number(this.ike.tempLifetime);
-              callback();
-            }
-            break;
-        }
-      }
-    },
     validIkeData() {
-      let lifetime = Number(this.ike.lifetime) || 132;
       let dpdTimeout = Number(this.ike.dpdTimeout) || 10;
-      if (lifetime && isNaN(lifetime)) {
-        this.$message.error(this.$t('IKE_ERROR'));
-        return false;
-      } else if (dpdTimeout && isNaN(dpdTimeout)) {
+      if (dpdTimeout && isNaN(dpdTimeout)) {
         this.$message.error(this.$t('IKE_ERROR'));
         return false;
       } else {
-        if (lifetime < 132 || lifetime > 28800) {
-          this.$message.error(this.$t('IKE_ERROR'));
-          return false;
-        }
         if (dpdTimeout < 10 || dpdTimeout > 180) {
           this.$message.error(this.$t('IKE_ERROR'));
           return false;

@@ -106,7 +106,6 @@
                 <a-input
                   size="small"
                   v-model="ipsec.tempLifetime"
-                  :placeholder="placeholders.duration"
                   style="width: 200px;margin-top:21px"
                 />
               </a-form-model-item>
@@ -140,7 +139,6 @@
                 <a-input
                   size="small"
                   v-model="ipsec.tempVolume"
-                  :placeholder="placeholders.volume"
                   style="width: 200px;margin-top: 21px;"
                 />
               </a-form-model-item>
@@ -270,7 +268,7 @@ export default {
         encryptionAlgorithms: [],
         antiReplay: 'enable',
         keepaliveTimeout: '10',
-        tempRekeyTime: 'seconds',
+        tempRekeyTime: 'Seconds',
         tempLifetime: '28800',
         tempVolumeType: 'MB',
         tempVolume: '',
@@ -283,9 +281,7 @@ export default {
       EncryptionAlgorithms: 'Encryption Algorithms',
       PerfectGroup: 'Perfect Forward Secrecy Group',
       placeholders: {
-        keepaliveTimeout: '3-30',
-        duration: '120-28800',
-        volume: '512-4294967295MB'
+        keepaliveTimeout: '3-30'
       },
       modeList: [
         {
@@ -411,7 +407,7 @@ export default {
   },
   mounted() {
     if (this.vpnProfile.ipsec) {
-      this.ipsec = this.vpnProfile.ipsec;
+      Object.assign(this.ipsec, this.vpnProfile.ipsec);
       this.hashList = [];
       this.encryList = [];
       this.forwardModeList = [];
@@ -428,10 +424,8 @@ export default {
           this.forwardModeList.push(forward);
         });
       
-      this.ipsec.tempRekeyTime = 'Seconds';
-      this.ipsec.tempLifetime = this.ipsec.life.duration;
-      this.ipsec.tempVolumeType = 'MB';
-      this.ipsec.tempVolume = this.ipsec.life.volume;
+      this.ipsec.tempLifetime = this.ipsec.life.duration ? this.ipsec.life.duration : '';
+      this.ipsec.tempVolume = this.ipsec.life.volume ? this.ipsec.life.volume : '';
     }
     if (
       this.ipsec.encryptionAlgorithms ||
@@ -449,7 +443,7 @@ export default {
       this.$refs.encryListRef && this.$refs.encryListRef.param();
       this.$refs.dhGroupRef && this.$refs.dhGroupRef.param();
       this.cVPNProfile.ipsec = this.ipsec;
-      let data = { ...this.cVPNProfile };
+      let data = JSON.parse(JSON.stringify(this.cVPNProfile));
       if (this.cVPNProfile.tempIpsecNewOrOld === 'New') {
         delete data.ipsec.transform;
         delete data.ipsec.group;
@@ -458,7 +452,7 @@ export default {
         delete data.ipsec.encryptionAlgorithms;
         delete data.ipsec.pfsGroups;
       }
-      this.$emit('passChildContent', this.cVPNProfile);
+      this.$emit('passChildContent', data);
     },
     changeRadio(e) {
       if (e.target.value === 'Old') {
@@ -466,46 +460,9 @@ export default {
         this.ipsec.pfsGroup = this.ipsec.pfsGroup ? this.ipsec.pfsGroup : 'mod-none';
       }
     },
-    validDuration(rule, value, callback) {
-      value = Number(value);
-      if (value && isNaN(value)) {
-        callback('Input number');
-      } else if (!value) {
-        callback();
-      } else {
-        switch(this.ipsec.tempRekeyTime) {
-          case 'Hours':
-            if (value < 1 || value > 8) {
-              callback('Input error');
-            } else {
-              this.ipsec.life.duration = Number(this.ipsec.tempLifetime) * 60 * 60;
-              callback();
-            }
-            break;
-          case 'Minutes':
-            if (value < 2 || value > 480) {
-              callback('Input error');
-            } else {
-              this.ipsec.life.duration = Number(this.ipsec.tempLifetime) * 60;
-              callback();
-            }
-            break;
-          default:
-            if (value < 132 || value > 28800) {
-              callback('Input error');
-            } else {
-              this.ipsec.life.duration = Number(this.ipsec.tempLifetime);
-              callback();
-            }
-            break;
-        }
-      }
-    },
     changeRekeyTime() {
       switch(this.ipsec.tempRekeyTime) {
         case 'Hours':
-          this.ipsec.tempLifetime = 1;
-          this.placeholders.lifetime = '1-8';
           this.ipsec.life.duration = Number(this.ipsec.tempLifetime) * 60 * 60;
           this.$refs.ipsecBaseRef.validate(valid => {
             if (!valid) {
@@ -514,8 +471,6 @@ export default {
           });
           break;
         case 'Minutes':
-          this.ipsec.tempLifetime = 2;
-          this.placeholders.lifetime = '2-480';
           this.ipsec.life.duration = Number(this.ipsec.tempLifetime) * 60;
           this.$refs.ipsecBaseRef.validate(valid => {
             if (!valid) {
@@ -524,10 +479,8 @@ export default {
           });
           break;
         default:
-          this.ipsec.tempLifetime = 132;
-          this.placeholders.lifetime = '132-28800';
           this.ipsec.life.duration = Number(this.ipsec.tempLifetime);
-          this.$refs.ikeBipsecBaseRefaseRef.validate(valid => {
+          this.$refs.ipsecBaseRef.validate(valid => {
             if (!valid) {
               return false;
             }
@@ -535,12 +488,45 @@ export default {
           break;
       }
     },
+    validDuration(rule, value, callback) {
+      if (value && isNaN(Number(value))) {
+        callback('Input number');
+      } else if (!value) {
+        callback();
+      } else {
+        value = Number(value);
+        switch(this.ipsec.tempRekeyTime) {
+          case 'Hours':
+            if (value < 1 || value > 8) {
+              callback('Allowed Range is 1-8');
+            } else {
+              this.ipsec.life.duration = Number(this.ipsec.tempLifetime) * 60 * 60;
+              callback();
+            }
+            break;
+          case 'Minutes':
+            if (value < 2 || value > 480) {
+              callback('Allowed Range is 2-480');
+            } else {
+              this.ipsec.life.duration = Number(this.ipsec.tempLifetime) * 60;
+              callback();
+            }
+            break;
+          default:
+            if (value < 120 || value > 28800) {
+              callback('Allowed Range is 120-28800');
+            } else {
+              this.ipsec.life.duration = Number(this.ipsec.tempLifetime);
+              callback();
+            }
+            break;
+        }
+      }
+    },
     changeVolume() {
       switch(this.ipsec.tempVolumeType) {
         case 'TB':
-          this.ipsec.tempVolume = 1;
-          this.placeholders.volume = '1-4095TB';
-          this.ipsec.life.volume = Number(this.ipsec.tempVolume);
+          this.ipsec.life.volume = Number(this.ipsec.tempVolume) * 1024 * 1024;
           this.$refs.ipsecBaseRef.validate(valid => {
             if (!valid) {
               return false;
@@ -548,9 +534,7 @@ export default {
           });
           break;
         case 'GB':
-          this.ipsec.tempVolume = 1;
-          this.placeholders.volume = '1-4194303GB';
-          this.ipsec.life.volume = Number(this.ipsec.tempVolume);
+          this.ipsec.life.volume = Number(this.ipsec.tempVolume) * 1024;
           this.$refs.ipsecBaseRef.validate(valid => {
             if (!valid) {
               return false;
@@ -558,8 +542,6 @@ export default {
           });
           break;
         default:
-          this.ipsec.tempVolume = 512;
-          this.placeholders.volume = '512-4294967295MB';
           this.ipsec.life.volume = Number(this.ipsec.tempVolume);
           this.$refs.ipsecBaseRef.validate(valid => {
             if (!valid) {
@@ -570,32 +552,32 @@ export default {
       }
     },
     validVolume(rule, value, callback) {
-      value = Number(value);
-      if (value && isNaN(value)) {
+      if (value && isNaN(Number(value))) {
         callback('Input number');
       } else if (!value) {
         callback();
       } else {
+        value = Number(value);
         switch(this.ipsec.tempVolumeType) {
           case 'TB':
             if (value < 1 || value > 4095) {
-              callback('Input error');
+              callback('Allowed Range 1-4095TB');
             } else {
-              this.ipsec.life.volume = Number(this.ipsec.tempVolume);
+              this.ipsec.life.volume = Number(this.ipsec.tempVolume) * 1024 * 1024;
               callback();
             }
             break;
           case 'GB':
             if (value < 1 || value > 4194303) {
-              callback('Input error');
+              callback('Allowed Range 1-4194303GB');
             } else {
-              this.ipsec.life.volume = Number(this.ipsec.tempVolume);
+              this.ipsec.life.volume = Number(this.ipsec.tempVolume) * 1024;
               callback();
             }
             break;
           default:
             if (value < 512 || value > 4294967295) {
-              callback('Input error');
+              callback('Allowed Range 512-4294967295MB');
             } else {
               this.ipsec.life.volume = Number(this.ipsec.tempVolume);
               callback();
