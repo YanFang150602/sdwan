@@ -640,6 +640,7 @@ import { mapState, mapMutations } from 'vuex';
 import common from '@/mixins/common';
 import {
   RouteInstanceQuery,
+  BrNameQuery,
   TunnelRouteInsQuery,
   TunnelRouteInsQueryByName,
   PeerFQDNQuery,
@@ -814,10 +815,6 @@ export default {
         {
           label: this.$t('SelectNull'),
           value: ''
-        },
-        {
-          label: 'b2b-sdwan',
-          value: 'b2b-sdwan'
         }
       ],
       disableTunnerStart: false,
@@ -1072,6 +1069,7 @@ export default {
     // 设置VPN Type
     this.changeVPNType(this.cVPNProfile.vpnType);
     this.queryRouteInsOptions();
+    this.queryBranchNames();
     this.queryTunnelRouteInsOptions();
     this.queryPeerFQDN();
     this.queryLocalInterfaceOptions();
@@ -1148,6 +1146,24 @@ export default {
             } else {
               this.nExistInterfaceRoute.set(item.name, item.networks);
             }
+          }
+        });
+      }
+    },
+    async queryBranchNames() {
+      const res = await BrNameQuery({
+        deviceName: this.deviceName,
+        orgName: this.organization
+      });
+
+      if (res.status === '0000' && res.message === 'Success') {
+        const result = res.result['branch-sdwan-profile'];
+        result && result.length && result.forEach(item => {
+          if (item.name) {
+            this.brSDWCfgFileOptions.push({
+              label: item.name,
+              value: item.name
+            });
           }
         });
       }

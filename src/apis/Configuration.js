@@ -58,6 +58,9 @@ export const RouteInstanceQuery = ({ deviceName }) =>
     `/controller/sdwan/v1/vpnprofile/getRoutingInstance?routingInstanceParam=name;interfaces;networks&deviceName=${deviceName}`
   );
 
+export const BrNameQuery = ({deviceName, orgName}) => $http.get(`/controller/sdwan/v1/config/branchName?deviceName=${deviceName}&orgName=${orgName}`);
+;
+
 // 查询本地接口接口
 export const LocalInterfaceQuery = ({ deviceName }) =>
   $http.get(

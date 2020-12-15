@@ -22,8 +22,12 @@
       >
         <template v-for="item in menus.firstMenus">
           <a-menu-item v-if="!item.children" :key="item.key">
-            <a-icon type="area-chart" style="padding-left:7px"/>
-            <span>{{ item.title }}</span>
+            <div class="device-menu-align-left">
+              <span v-show="item.icon">
+                <img :src="item.icon" class="device-menu-icon" />
+              </span>
+              <span>{{ item.title }}</span>
+            </div>
           </a-menu-item>
           <sub-menu v-else :key="item.key" :menu-info="item"/>
         </template>
@@ -39,8 +43,12 @@
       >
         <template v-for="item in menus.secondMenus">
           <a-menu-item v-if="!item.children" :key="item.key">
-            <a-icon type="fund"/>
-            <span>{{ item.title }}</span>
+            <div class="device-menu-align-left">
+              <span v-show="item.icon">
+                <img :src="item.icon" class="device-menu-icon" />
+              </span>
+              <span>{{ item.title }}</span>
+            </div>
           </a-menu-item>
           <sub-menu v-else :key="item.key" :menu-info="item"/>
         </template>
@@ -49,18 +57,25 @@
   </a-layout-sider>
 </template>
 <script>
-import menus from '@/assets/json/templateMenus.json';
+import menus from './templateMenus.js';
 import { Menu } from 'ant-design-vue';
 const SubMenu = {
   template: `
       <a-sub-menu :key="menuInfo.key" v-bind="$props" v-on="$listeners">
-        <span slot="title">
-          <a-icon type="mail" /><span>{{ menuInfo.title }}</span>
-        </span>
+        <div class="device-menu-align-left" slot="title">
+          <span v-show="menuInfo.icon">
+            <img :src="menuInfo.icon" class="device-menu-icon"/>
+          </span>
+          <span>{{ menuInfo.title }}</span>
+        </div>
         <template v-for="item in menuInfo.children">
           <a-menu-item v-if="!item.children" :key="item.key">
-            <a-icon type="pie-chart" />
-            <span>{{ item.title }}</span>
+            <div class="device-menu-align-left">
+              <span v-show="item.icon">
+                <img :src="item.icon" class="device-menu-icon" />
+              </span>
+              <span>{{ item.title }}</span>
+            </div>
           </a-menu-item>
           <sub-menu v-else :key="item.key" :menu-info="item" />
         </template>

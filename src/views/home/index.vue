@@ -8,7 +8,7 @@
           :style="{
             padding: '5px 15px 0 5px',
             lineHeight: 'normal',
-            height: '63px'
+            height: '63px',
           }"
         >
           <!-- 头部top区 -->
@@ -34,7 +34,7 @@
                   <a-dropdown>
                     <a
                       class="ant-dropdown-link"
-                      @click="e => e.preventDefault()"
+                      @click="(e) => e.preventDefault()"
                     >
                       {{
                         userInfo.username ? userInfo.username.toUpperCase() : ''
@@ -100,7 +100,7 @@
             <a-row type="flex" justify="start" align="middle">
               <a-col
                 v-show="showDevcieConfig"
-                style="margin-right:5px;font-size:14px"
+                style="margin-right: 5px; font-size: 14px"
               >
                 <a-button
                   size="small"
@@ -113,7 +113,7 @@
               <!-- v-model="curDeviceName" -->
               <a-col
                 v-show="showDevcieConfig"
-                style="color:#626c82;margin-right:5px;font-size:14px"
+                style="color: #626c82; margin-right: 5px; font-size: 14px"
               >
                 <!-- <a-select
                   size="small"
@@ -132,19 +132,19 @@
                 <a-input
                   v-model="curDeviceName"
                   size="small"
-                  style="width:200px"
+                  style="width: 200px"
                 />
               </a-col>
               <a-col
-                v-show="organShow"
-                style="color: #626c82; margin-right: 5px;font-size:14px"
+                v-show="organShow || showOrganization"
+                style="color: #626c82; margin-right: 5px; font-size: 14px"
                 >Organization:</a-col
               >
-              <a-col v-show="organShow">
+              <a-col v-show="organShow || showOrganization">
                 <a-select
                   size="small"
                   placeholder="select"
-                  style="width: 375px;"
+                  style="width: 375px"
                   :value="organization"
                   @change="handleChange"
                 >
@@ -166,7 +166,7 @@
         <!-- 主体区域 -->
         <a-layout-content
           :style="{ height: screenHeight + 'px' }"
-          style="overflow-y:auto"
+          style="overflow-y: auto"
         >
           <router-view ref="main" :key="key"></router-view>
         </a-layout-content>
@@ -196,7 +196,7 @@
         title="Change  Password"
         @ok="handleOk"
         :bodyStyle="{
-          padding: '0 10px'
+          padding: '0 10px',
         }"
         :width="300"
         wrapClassName="form-wrap"
@@ -312,8 +312,8 @@ export default {
       rotuerName: [
         'OrganizationUsers',
         'Templates',
+        'DeviceConfig',
         'Device',
-        'VPNConfigFile',
         'Schedules',
         'DeviceGroup',
         'SpokeGroups',
@@ -324,7 +324,7 @@ export default {
         'dropProfile',
         'AssociateInterfaceNetwork',
         'Address',
-        'URLCategories'
+        'URLCategories',
       ],
       // 弹框开关
       visible: false,
@@ -336,19 +336,19 @@ export default {
         oldPassword: '',
         newPassword: '',
         confirm: '',
-        systemId: ''
+        systemId: '',
       },
       // 密码表单验证
       rules: {
         oldPassword: [{ validator: oldPassword }],
         newPassword: [{ validator: newPassword }],
-        confirm: [{ validator: confirm }]
+        confirm: [{ validator: confirm }],
       },
       // 修改密码提示信息
       message: {
         oldPassword: '',
         newPassword: '',
-        confirm: ''
+        confirm: '',
       },
       key: 1,
       // 修改密码表单悬浮框
@@ -357,34 +357,36 @@ export default {
         tipText: '',
         x: 0,
         y: 0,
-        positionStyle: { top: '20px', left: '20px' }
-      }
+        positionStyle: { top: '20px', left: '20px' },
+      },
     };
   },
   computed: {
     ...mapState({
-      admNameList: state => state.admNameList,
+      admNameList: (state) => state.admNameList,
       // 获取用户信息
-      userInfo: state => state.common.userInfo,
+      userInfo: (state) => state.common.userInfo,
       // 获取用户accountId
-      accountId: state => state.common.accountId,
+      accountId: (state) => state.common.accountId,
       // 获取当前组织
-      organization: state => state.organization,
+      organization: (state) => state.organization,
       deviceNameList: 'deviceNameList',
-      curDeviceName: 'deviceName'
+      curDeviceName: 'deviceName',
     }),
     showDevcieConfig() {
-      return this.$route.path.indexOf('/configuration/deviceConfig') == 0;
+      return (
+        this.$route.path.indexOf('/configuration/deviceConfig') == 0 ||
+        this.$route.path.indexOf('/configuration/Template') == 0 ||
+        this.$route.path.indexOf('/configuration/commonTemplate') == 0
+      );
     },
     showOrganization() {
       return (
-        this.$route.name === 'Organization Users' ||
-        this.$route.name === 'Templates' ||
-        this.$route.name === 'Devices' ||
-        this.$route.name === 'Device' ||
-        this.$route.path.indexOf('/configuration/deviceConfig') == 0
+        this.$route.path.indexOf('/configuration/deviceConfig') == 0 ||
+        this.$route.path.indexOf('/configuration/Template') == 0 ||
+        this.$route.path.indexOf('/configuration/commonTemplate') == 0
       );
-    }
+    },
   },
   created() {
     // 页面创建判断是否要显示组织下拉框
@@ -409,8 +411,7 @@ export default {
       this.$i18n.locale = language;
     },
     backDevicePage() {
-      this.$router.push('/administration/devices/Devices');
-      // this.$router.go(-1);
+      this.$router.push('/configuration/Devices');
     },
     changeDevice(value) {
       console.log('changeDevice', value);
@@ -425,7 +426,7 @@ export default {
             organization: name,
             offset: 0,
             limit: 20,
-            name
+            name,
           });
           break;
         case 'Device': // 下拉组织对于Device列表zwj
@@ -434,14 +435,14 @@ export default {
             orgname: name,
             offset: 0,
             limit: 20,
-            name
+            name,
           });
           break;
         case 'DeviceGroup': // 下拉组织对于DeviceGroup列表zwj
           this.DeviceGroups({
             organization: name,
             offset: 0,
-            limit: 20
+            limit: 20,
           });
           break;
       }
@@ -458,7 +459,7 @@ export default {
     handleOk() {
       this.passWordData.systemId = this.userInfo.systemId;
       this.passWordData.userId = this.accountId;
-      this.$refs.passWordChange.validate(async valid => {
+      this.$refs.passWordChange.validate(async (valid) => {
         if (valid) {
           const changePassWordRes = await passWordEdt(this.passWordData);
           if (changePassWordRes.status !== '0000')
@@ -505,13 +506,13 @@ export default {
       this.y = event.pageY;
       this.formTips.positionStyle = {
         top: this.y + 14 + 'px',
-        left: this.x - 2 + 'px'
+        left: this.x - 2 + 'px',
       };
     },
     // 右上角弹框
     showModel() {
       this.$refs.commitRef.showModalAdd();
-    }
+    },
   },
   watch: {
     // 屏幕高度监视
@@ -520,21 +521,21 @@ export default {
         this.screenHeight = val;
         this.timer = true;
         let that = this;
-        setTimeout(function() {
+        setTimeout(function () {
           that.timer = false;
         }, 400);
       }
     },
     // 监视路由变化通过路由name判断是否显示下拉框
     $route: {
-      handler: function(val) {
+      handler: function (val) {
         this.rotuerName.includes(val.name)
           ? (this.organShow = true)
           : (this.organShow = false);
       },
-      deep: true
-    }
-  }
+      deep: true,
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>
